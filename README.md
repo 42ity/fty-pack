@@ -15,14 +15,14 @@ struct MyData: public pack::Node
     pack::Float  fl       = FIELD("float-value", 10.f);
     pack::StringList list = FIELD("mylist")
 
-    META_FIELDS(MyData, str, fl)
+    META_FIELDS(MyData, str, fl, list)
 };
 
 ```
 Supported basic types are: Int32, Int64, UInt32, UInt64, Float, Double, Bool, String.
 
 
-To convert `MyData` to, for example, `yaml` just use:
+For example, to convert `MyData` to `yaml` just use:
 ```
 MyData data;
 data.str = "string";
