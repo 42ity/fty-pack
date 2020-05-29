@@ -4,7 +4,10 @@
 
 std::string pack::Node::dump() const
 {
-    return yaml::serialize(*this);
+    if (auto cnt = yaml::serialize(*this)) {
+        return *cnt;
+    }
+    return {};
 }
 
 
@@ -44,11 +47,6 @@ bool pack::Node::compare(const pack::Attribute& other) const
     }
     return false;
 }
-
-// std::string pack::Node::typeName() const
-//{
-//    return "Node";
-//}
 
 void pack::Node::set(const Attribute& other)
 {

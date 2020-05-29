@@ -1,66 +1,29 @@
 #pragma once
-#include <string>
+
+#include "pack/node.h"
 #include <fty/expected.h>
+#include <string>
 
 namespace pack {
 
 class INode;
 
-fty::Expected<std::string> read(const std::string& filename);
-
 namespace json {
-    std::string serialize(const INode& node);
-    void        deserialize(const std::string& content, INode& node);
-
-    inline void deserializeFile(const std::string& fileName, INode& node)
-    {
-        if (auto cnt = read(fileName)) {
-            deserialize(*cnt, node);
-        }
-    }
+    fty::Expected<std::string> serialize(const INode& node);
+    fty::Expected<bool>        deserialize(const std::string& content, INode& node);
+    fty::Expected<bool>        deserializeFile(const std::string& fileName, INode& node);
 } // namespace json
 
 namespace yaml {
-    std::string serialize(const INode& node);
-    void        deserialize(const std::string& content, INode& node);
-
-    inline void deserializeFile(const std::string& fileName, INode& node)
-    {
-        if (auto cnt = read(fileName)) {
-            deserialize(*cnt, node);
-        }
-    }
+    fty::Expected<std::string> serialize(const INode& node);
+    fty::Expected<bool>        deserialize(const std::string& content, INode& node);
+    fty::Expected<bool>        deserializeFile(const std::string& fileName, INode& node);
 } // namespace yaml
 
 #ifdef WITH_ZCONFIG
 namespace zconfig {
     std::string serialize(const INode& node);
     void        deserialize(const std::string& content, INode& node);
-
-    template <typename T>
-    T deserialize(const std::string& content)
-    {
-        T node;
-        deserialize(content, node);
-        return node;
-    }
-
-    inline void deserializeFile(const std::string& fileName, INode& node)
-    {
-        if (auto cnt = read(fileName)) {
-            deserialize(*cnt, node);
-        }
-    }
-
-    template <typename T>
-    T deserializeFile(const std::string& fileName)
-    {
-        T node;
-        if (auto cnt = read(fileName)) {
-            deserialize(*cnt, node);
-        }
-        return node;
-    }
 } // namespace zconfig
 #endif
 

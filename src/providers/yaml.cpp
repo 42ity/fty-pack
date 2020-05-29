@@ -1,6 +1,7 @@
 #include "pack/pack.h"
 #include "pack/serialization.h"
 #include "visitor.h"
+#include <fstream>
 #include <iostream>
 #include <yaml-cpp/yaml.h>
 
@@ -98,13 +99,12 @@ public:
             INode& obj = map.create();
 
             YAML::Node temp;
-            temp["key"] = child.first;
+            temp["key"]   = child.first;
             temp["value"] = child.second;
 
             visit(obj, temp);
         }
     }
-
 };
 
 // ===========================================================================================================
@@ -147,7 +147,7 @@ public:
 
     static void packValue(const IProtoMap& map, YAML::Node& yaml)
     {
-        for(int i = 0; i < map.size(); ++i) {
+        for (int i = 0; i < map.size(); ++i) {
             const INode& node = map.get(i);
 
             YAML::Node temp;
@@ -158,43 +158,90 @@ public:
     }
 };
 
+fty::Expected<std::string> read(const std::string& filename)
+{
+    std::ifstream st(filename);
+    if (st.is_open()) {
+        return fty::Expected<std::string>(
+            {std::istreambuf_iterator<char>(st), std::istreambuf_iterator<char>()});
+    }
+    return fty::unexpected() << "Cannot read file" << filename;
+}
+
 // ===========================================================================================================
 
 namespace yaml {
-    std::string serialize(const INode& node)
+    fty::Expected<std::string> serialize(const INode& node)
     {
-        YAML::Node yaml;
-        YamlSerializer::visit(node, yaml);
-        return YAML::Dump(yaml);
+        try {
+            YAML::Node yaml;
+            YamlSerializer::visit(node, yaml);
+            return YAML::Dump(yaml);
+        } catch (const std::exception& e) {
+            return fty::unexpected(e.what());
+        }
     }
 
-    void deserialize(const std::string& content, INode& node)
+    fty::Expected<bool> deserialize(const std::string& content, INode& node)
     {
-        YAML::Node yaml = YAML::Load(content);
-        YamlDeserializer::visit(node, yaml);
+        try {
+            YAML::Node yaml = YAML::Load(content);
+            YamlDeserializer::visit(node, yaml);
+            return true;
+        } catch (const std::exception& e) {
+            return fty::unexpected(e.what());
+        }
+    }
+
+    fty::Expected<bool> deserializeFile(const std::string& fileName, INode& node)
+    {
+        if (auto cnt = read(fileName)) {
+            return deserialize(*cnt, node);
+        } else {
+            return fty::unexpected(cnt.error());
+        }
     }
 } // namespace yaml
 
 // ===========================================================================================================
 
 namespace json {
-    std::string serialize(const INode& node)
+    fty::Expected<std::string> serialize(const INode& node)
     {
-        YAML::Node yaml;
-        YamlSerializer::visit(node, yaml);
+        try {
+            YAML::Node yaml;
+            YamlSerializer::visit(node, yaml);
 
-        YAML::Emitter out;
-        out.SetIndent(4);
+            YAML::Emitter out;
+            out.SetIndent(4);
 
-        out << YAML::DoubleQuoted << YAML::Flow << yaml;
-        return out.c_str();
+            out << YAML::DoubleQuoted << YAML::Flow << yaml;
+            return std::string(out.c_str());
+        } catch (const std::exception& e) {
+            return fty::unexpected(e.what());
+        }
     }
 
-    void deserialize(const std::string& content, INode& node)
+    fty::Expected<bool> deserialize(const std::string& content, INode& node)
     {
-        YAML::Node yaml = YAML::Load(content);
-        YamlDeserializer::visit(node, yaml);
+        try {
+            YAML::Node yaml = YAML::Load(content);
+            YamlDeserializer::visit(node, yaml);
+            return true;
+        } catch (const std::exception& e) {
+            return fty::unexpected(e.what());
+        }
     }
+
+    inline fty::Expected<bool> deserializeFile(const std::string& fileName, INode& node)
+    {
+        if (auto cnt = read(fileName)) {
+            return deserialize(*cnt, node);
+        } else {
+            return fty::unexpected(cnt.error());
+        }
+    }
+
 } // namespace json
 
 // ===========================================================================================================

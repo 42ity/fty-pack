@@ -33,7 +33,6 @@ etn_target(shared ${PROJECT_NAME}
         src/attribute.cpp
         src/providers/visitor.h
         src/providers/yaml.cpp
-        src/providers/serialization.cpp
     USES_PUBLIC
         fty-utils
     USES
