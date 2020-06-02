@@ -67,13 +67,15 @@ Value<ValType>::Value(Attribute* parent, const std::string& key, const CppType& 
 }
 
 template <Type ValType>
-Value<ValType>::Value(const Value& other)
+Value<ValType>::Value(const Value& other):
+    IValue(other)
 {
     m_val = other.m_val;
 }
 
 template <Type ValType>
-Value<ValType>::Value(Value&& other)
+Value<ValType>::Value(Value&& other):
+    IValue(other)
 {
     m_val = std::move(other.m_val);
 }

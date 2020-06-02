@@ -44,6 +44,9 @@ public:
     using IEnum::IEnum;
 
 public:
+    Enum(const Enum& other);
+    Enum(Enum&& other);
+
     const T& value() const;
              operator const T&() const;
     void     setValue(const T& val);
@@ -76,6 +79,20 @@ protected:
 // ===========================================================================================================
 // Enum implementation
 // ===========================================================================================================
+
+template <typename T>
+Enum<T>::Enum(const Enum& other):
+    IEnum(other)
+{
+    setValue(other.value());
+}
+
+template <typename T>
+Enum<T>::Enum(Enum&& other):
+    IEnum(other)
+{
+    setValue(other.value());
+}
 
 template <typename T>
 Enum<T>& Enum<T>::operator=(const Enum& other)
