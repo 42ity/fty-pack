@@ -27,11 +27,11 @@ etn_target(shared ${PROJECT_NAME}
         pack/types.h
         pack/serialization.h
         pack/proto-map.h
+        src/visitor.h
 
     SOURCES
         src/node.cpp
         src/attribute.cpp
-        src/providers/visitor.h
         src/providers/yaml.cpp
     USES_PUBLIC
         fty-utils

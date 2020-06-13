@@ -1,6 +1,6 @@
 #include "pack/pack.h"
 #include "pack/serialization.h"
-#include "visitor.h"
+#include "pack/visitor.h"
 #include <fstream>
 #include <iostream>
 #include <yaml-cpp/yaml.h>
@@ -206,7 +206,7 @@ namespace yaml {
 // ===========================================================================================================
 
 namespace json {
-    fty::Expected<std::string> serialize(const INode& node)
+    fty::Expected<std::string> serialize(const Attribute& node)
     {
         try {
             YAML::Node yaml;
