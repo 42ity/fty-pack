@@ -128,7 +128,6 @@ template <typename KeyValue>
 void ProtoMap<KeyValue>::clear()
 {
     m_value.clear();
-    m_parent->valueUpdated(*this);
 }
 
 template <typename KeyValue>
@@ -141,7 +140,6 @@ template <typename KeyValue>
 void ProtoMap<KeyValue>::setValue(const MapType& val)
 {
     m_value = val;
-    m_parent->valueUpdated(*this);
 }
 
 template <typename KeyValue>
@@ -160,7 +158,6 @@ void ProtoMap<KeyValue>::append(const KeyType& key, const ValueType& val)
     it.key   = key;
     it.value = val;
     m_value.emplace_back(std::move(it));
-    m_parent->valueUpdated(*this);
 }
 
 template <typename KeyValue>

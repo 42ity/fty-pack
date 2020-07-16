@@ -17,13 +17,6 @@ const std::string& pack::Attribute::key() const
     return m_key;
 }
 
-void pack::Attribute::valueUpdated(const Attribute& /*attr*/)
-{
-    if (m_parent) {
-        m_parent->valueUpdated(*this);
-    }
-}
-
 bool pack::Attribute::operator==(const pack::Attribute& other) const
 {
     return compare(other);

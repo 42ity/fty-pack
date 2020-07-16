@@ -81,11 +81,14 @@ public:
     T&              append();
 
     template <typename Func>
-    std::optional<T&> find(Func&& func);
+    std::optional<T> find(Func&& func);
     template <typename Func>
-    bool     remove(Func&& func);
+    bool remove(Func&& func);
+    template <typename Func>
+    void     sort(Func&& func);
     const T& operator[](int index) const;
     bool     empty() const;
+
 
 public:
     int          size() const override;
@@ -133,6 +136,9 @@ public:
     const CppType& operator[](int index) const;
     void           clear() override;
     bool           empty() const;
+
+    template <typename Func>
+    void sort(Func&& func);
 
 public:
     int         size() const override;
@@ -207,12 +213,19 @@ T& ObjectList<T>::append()
 
 template <typename T>
 template <typename Func>
-std::optional<T&> ObjectList<T>::find(Func&& func)
+std::optional<T> ObjectList<T>::find(Func&& func)
 {
-    if (auto it = std::find_if(m_value.begin(), m_value.end(), func)) {
+    if (auto it = std::find_if(m_value.begin(), m_value.end(), func); it != m_value.end()) {
         return *it;
     }
     return std::nullopt;
+}
+
+template <typename T>
+template <typename Func>
+void ObjectList<T>::sort(Func&& func)
+{
+    std::sort(m_value.begin(), m_value.end(), std::forward<Func>(func));
 }
 
 template <typename T>
@@ -236,7 +249,6 @@ template <typename T>
 void ObjectList<T>::clear()
 {
     m_value.clear();
-    m_parent->valueUpdated(*this);
 }
 
 template <typename T>
@@ -265,7 +277,6 @@ void ObjectList<T>::set(const Attribute& other)
 {
     if (auto casted = dynamic_cast<const ObjectList<T>*>(&other)) {
         m_value = casted->m_value;
-        m_parent->valueUpdated(*this);
     }
 }
 
@@ -274,7 +285,6 @@ void ObjectList<T>::set(Attribute&& other)
 {
     if (auto casted = dynamic_cast<ObjectList<T>*>(&other)) {
         m_value = std::move(casted->m_value);
-        m_parent->valueUpdated(*this);
     }
 }
 
@@ -340,21 +350,18 @@ template <Type ValType>
 void ValueList<ValType>::setValue(const ValueList<ValType>::ListType& val)
 {
     m_value = val;
-    m_parent->valueUpdated(*this);
 }
 
 template <Type ValType>
 void ValueList<ValType>::append(const CppType& value)
 {
     m_value.push_back(value);
-    m_parent->valueUpdated(*this);
 }
 
 template <Type ValType>
 void ValueList<ValType>::append(CppType&& value)
 {
     m_value.push_back(std::move(value));
-    m_parent->valueUpdated(*this);
 }
 
 template <Type ValType>
@@ -365,11 +372,18 @@ bool ValueList<ValType>::find(const CppType& val) const
 }
 
 template <Type ValType>
+template <typename Func>
+void ValueList<ValType>::sort(Func&& func)
+{
+    std::sort(m_value.begin(), m_value.end(), std::forward<Func>(func));
+}
+
+
+template <Type ValType>
 bool ValueList<ValType>::remove(const CppType& toRemove)
 {
     if (auto it = std::find(m_value.begin(), m_value.end(), toRemove)) {
         m_value.erase(it);
-        m_parent->valueUpdated(*this);
         return true;
     }
     return false;
@@ -385,7 +399,6 @@ template <Type ValType>
 void ValueList<ValType>::clear()
 {
     m_value.clear();
-    m_parent->valueUpdated(*this);
 }
 
 template <Type ValType>
@@ -414,7 +427,6 @@ void ValueList<ValType>::set(const Attribute& other)
 {
     if (auto casted = dynamic_cast<const ValueList<ValType>*>(&other)) {
         m_value = casted->m_value;
-        m_parent->valueUpdated(*this);
     }
 }
 
@@ -423,7 +435,6 @@ void ValueList<ValType>::set(Attribute&& other)
 {
     if (auto casted = dynamic_cast<ValueList<ValType>*>(&other)) {
         m_value = std::move(casted->m_value);
-        m_parent->valueUpdated(*this);
     }
 }
 

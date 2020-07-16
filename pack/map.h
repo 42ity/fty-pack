@@ -211,7 +211,6 @@ void Map<T>::setValue(const MapType& val)
     if (m_value == val)
         return;
 
-    m_parent->valueUpdated(*this);
     m_value = val;
 }
 
@@ -335,7 +334,6 @@ void ValueMap<ValType>::setValue(const MapType& val)
     if (m_value == val)
         return;
 
-    m_parent->valueUpdated(*this);
     m_value = val;
 }
 

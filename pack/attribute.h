@@ -105,7 +105,6 @@ public:
     virtual ~Attribute() = default;
 
     virtual bool        compare(const Attribute& other) const = 0;
-    virtual void        valueUpdated(const Attribute& attr);
     virtual std::string typeName() const            = 0;
     virtual void        set(const Attribute& other) = 0;
     virtual void        set(Attribute&& other)      = 0;

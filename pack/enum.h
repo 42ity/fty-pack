@@ -130,20 +130,18 @@ Enum<T>& Enum<T>::operator=(const T& val)
 template <typename T>
 void Enum<T>::setValue(const T& val)
 {
-    if (m_value == val)
+    if (value() == val)
         return;
 
-    m_parent->valueUpdated(*this);
     m_value = val;
 }
 
 template <typename T>
 void Enum<T>::setValue(T&& val)
 {
-    if (m_value == val)
+    if (value() == val)
         return;
 
-    m_parent->valueUpdated(*this);
     m_value = std::move(val);
 }
 

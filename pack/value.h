@@ -93,7 +93,6 @@ void Value<ValType>::setValue(const CppType& val)
         return;
 
     m_val = val;
-    m_parent->valueUpdated(*this);
 }
 
 template <Type ValType>
