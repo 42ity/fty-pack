@@ -68,6 +68,11 @@ public:
     using ConstIterator = typename ListType::const_iterator;
 
 public:
+    ObjectList(const ObjectList& other);
+    ObjectList(ObjectList&& other);
+    ObjectList& operator=(const ObjectList& other);
+
+public:
     ConstIterator begin() const;
     ConstIterator end() const;
     Iterator      begin();
@@ -120,6 +125,11 @@ public:
     using ConstIterator = typename ListType::const_iterator;
 
 public:
+    ValueList(const ValueList& other);
+    ValueList(ValueList&& other);
+    ValueList& operator=(const ValueList& other);
+
+public:
     ConstIterator begin() const;
     ConstIterator end() const;
     Iterator      begin();
@@ -156,6 +166,27 @@ private:
 // ===========================================================================================================
 // Object list implementation
 // ===========================================================================================================
+
+template <typename T>
+ObjectList<T>::ObjectList(const ObjectList& other):
+    IObjectList(other)
+{
+    setValue(other.value());
+}
+
+template <typename T>
+ObjectList<T>::ObjectList(ObjectList&& other):
+    IObjectList(other)
+{
+    setValue(std::move(other.value()));
+}
+
+template <typename T>
+ObjectList<T>& ObjectList<T>::operator=(const ObjectList& other)
+{
+    setValue(other.value());
+    return *this;
+}
 
 template <typename T>
 typename ObjectList<T>::ConstIterator ObjectList<T>::begin() const
@@ -317,6 +348,27 @@ bool ObjectList<T>::empty() const
 // ===========================================================================================================
 
 template <Type ValType>
+ValueList<ValType>::ValueList(const ValueList& other):
+    IValueList(other)
+{
+    setValue(other.value());
+}
+
+template <Type ValType>
+ValueList<ValType>::ValueList(ValueList&& other):
+    IValueList(other)
+{
+    setValue(std::move(other.value()));
+}
+
+template <Type ValType>
+ValueList<ValType>& ValueList<ValType>::operator=(const ValueList& other)
+{
+    setValue(other.value());
+    return *this;
+}
+
+template <Type ValType>
 typename ValueList<ValType>::ConstIterator ValueList<ValType>::begin() const
 {
     return m_value.begin();
@@ -331,7 +383,7 @@ typename ValueList<ValType>::ConstIterator ValueList<ValType>::end() const
 template <Type ValType>
 typename ValueList<ValType>::Iterator ValueList<ValType>::begin()
 {
-    return m_value.end();
+    return m_value.begin();
 }
 
 template <Type ValType>
