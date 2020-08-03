@@ -10,14 +10,14 @@ class INode;
 
 namespace json {
     fty::Expected<std::string> serialize(const Attribute& node);
-    fty::Expected<bool>        deserialize(const std::string& content, INode& node);
-    fty::Expected<bool>        deserializeFile(const std::string& fileName, INode& node);
+    fty::Expected<bool>        deserialize(const std::string& content, Attribute& node);
+    fty::Expected<bool>        deserializeFile(const std::string& fileName, Attribute& node);
 } // namespace json
 
 namespace yaml {
-    fty::Expected<std::string> serialize(const INode& node);
-    fty::Expected<bool>        deserialize(const std::string& content, INode& node);
-    fty::Expected<bool>        deserializeFile(const std::string& fileName, INode& node);
+    fty::Expected<std::string> serialize(const Attribute& node);
+    fty::Expected<bool>        deserialize(const std::string& content, Attribute& node);
+    fty::Expected<bool>        deserializeFile(const std::string& fileName, Attribute& node);
 } // namespace yaml
 
 #ifdef WITH_ZCONFIG

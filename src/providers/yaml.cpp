@@ -44,6 +44,8 @@ struct Convert
             for (auto it : node) {
                 yaml.push_back(YAML::convert<CppType>::encode(it));
             }
+        } else if constexpr (ValType == Type::UChar) {
+            yaml = YAML::Binary(&node.value()[0], size_t(node.size()));
         } else {
             for (const auto& it : node) {
                 yaml.push_back(YAML::convert<CppType>::encode(it));
@@ -171,7 +173,7 @@ fty::Expected<std::string> read(const std::string& filename)
 // ===========================================================================================================
 
 namespace yaml {
-    fty::Expected<std::string> serialize(const INode& node)
+    fty::Expected<std::string> serialize(const Attribute& node)
     {
         try {
             YAML::Node yaml;
@@ -182,7 +184,7 @@ namespace yaml {
         }
     }
 
-    fty::Expected<bool> deserialize(const std::string& content, INode& node)
+    fty::Expected<bool> deserialize(const std::string& content, Attribute& node)
     {
         try {
             YAML::Node yaml = YAML::Load(content);
@@ -193,7 +195,7 @@ namespace yaml {
         }
     }
 
-    fty::Expected<bool> deserializeFile(const std::string& fileName, INode& node)
+    fty::Expected<bool> deserializeFile(const std::string& fileName, Attribute& node)
     {
         if (auto cnt = read(fileName)) {
             return deserialize(*cnt, node);
@@ -222,7 +224,7 @@ namespace json {
         }
     }
 
-    fty::Expected<bool> deserialize(const std::string& content, INode& node)
+    fty::Expected<bool> deserialize(const std::string& content, Attribute& node)
     {
         try {
             YAML::Node yaml = YAML::Load(content);
@@ -233,7 +235,7 @@ namespace json {
         }
     }
 
-    inline fty::Expected<bool> deserializeFile(const std::string& fileName, INode& node)
+    inline fty::Expected<bool> deserializeFile(const std::string& fileName, Attribute& node)
     {
         if (auto cnt = read(fileName)) {
             return deserialize(*cnt, node);

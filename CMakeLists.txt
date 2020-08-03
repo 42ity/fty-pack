@@ -5,14 +5,43 @@ cmake_policy(VERSION 3.13)
 
 project(fty-pack VERSION 1.0.0)
 
-##############################################################################################################
+########################################################################################################################
 
 find_package(fty-cmake PATHS ${CMAKE_BINARY_DIR})
 
-##############################################################################################################
+########################################################################################################################
 
 option(WITH_PROTOBUF "Using protobuf provider" OFF)
 option(WITH_ZCONFIG "Using zconfig provider" OFF)
+
+########################################################################################################################
+
+set(sources)
+set(defs)
+set(libs)
+
+if (WITH_PROTOBUF)
+    find_package(Protobuf QUIET)
+    if (NOT Protobuf_FOUND OR NOT Protobuf_PROTOC_EXECUTABLE)
+        message(FATAL_ERROR "You tried to compile with protobuf support, but protobuf was not found, please install \
+            libprotobuf-dev \
+            libprotoc-dev \
+            protobuf-compiler ")
+    endif()
+
+    list(APPEND sources src/providers/protobuf.cpp)
+    list(APPEND defs    -DWITH_PROTOBUF)
+    list(APPEND libs    protobuf::libprotobuf)
+endif()
+
+if (WITH_ZCONFIG)
+    resolve(czmq)
+    list(APPEND sources src/providers/zconfig.cpp)
+    list(APPEND defs    -DWITH_ZCONFIG)
+    list(APPEND libs    czmq)
+endif()
+
+########################################################################################################################
 
 etn_target(shared ${PROJECT_NAME}
     PUBLIC
@@ -33,31 +62,26 @@ etn_target(shared ${PROJECT_NAME}
         src/node.cpp
         src/attribute.cpp
         src/providers/yaml.cpp
+        ${sources}
+    PREPROCESSOR ${defs}
     USES_PUBLIC
         fty-utils
     USES
         yaml-cpp
+        ${libs}
 )
 
-if (WITH_PROTOBUF)
-    target_sources(${PROJECT_NAME} src/providers/protobuf.cpp)
-    target_compile_definitions(${PROJECT_NAME} -DWITH_PROTOBUF)
-    resolve_lib(protobuf::libprotobuf)
-    target_link_libraries(${PROJECT_NAME} PRIVATE protobuf::libprotobuf)
-endif()
 
-if (WITH_ZCONFIG)
-    target_sources(${PROJECT_NAME} src/providers/zconfig.cpp)
-    target_compile_definitions(${PROJECT_NAME} -DWITH_ZCONFIG)
-    resolve_lib(libczmq)
-    target_link_libraries(${PROJECT_NAME} PRIVATE libczmq)
+##############################################################################################################
+
+if (WITH_PROTOBUF)
+    add_subdirectory(protoc)
+    include(protoc/cmake/protogen.cmake)
 endif()
 
 ##############################################################################################################
 
 if (BUILD_TESTING AND WITH_PROTOBUF)
-    find_package(fty-protoc PATHS ${CMAKE_BINARY_DIR})
-
     etn_target(exe ${PROJECT_NAME}-test
         SOURCES
             tests/main.cpp
@@ -67,10 +91,10 @@ if (BUILD_TESTING AND WITH_PROTOBUF)
             tests/enums.cpp
             tests/map.cpp
             tests/include.cpp
-            tests/oneof.cpp
+            #tests/oneof.cpp
         PREPROCESSOR -DCATCH_CONFIG_FAST_COMPILE
         USES
-            pack
+            ${PROJECT_NAME}
             Catch2::Catch2
     )
 

@@ -12,6 +12,11 @@ namespace pack {
 class IList : public Attribute
 {
 public:
+    IList()
+        : Attribute(NodeType::List, nullptr, "")
+    {
+    }
+
     IList(Attribute* parent, const std::string& key = {})
         : Attribute(NodeType::List, parent, key)
     {
@@ -68,6 +73,7 @@ public:
     using ConstIterator = typename ListType::const_iterator;
 
 public:
+    ObjectList();
     ObjectList(const ObjectList& other);
     ObjectList(ObjectList&& other);
     ObjectList& operator=(const ObjectList& other);
@@ -125,6 +131,7 @@ public:
     using ConstIterator = typename ListType::const_iterator;
 
 public:
+    ValueList();
     ValueList(const ValueList& other);
     ValueList(ValueList&& other);
     ValueList& operator=(const ValueList& other);
@@ -159,7 +166,7 @@ public:
     bool        hasValue() const override;
     Type        valueType() const override;
 
-private:
+protected:
     ListType m_value;
 };
 
@@ -168,15 +175,21 @@ private:
 // ===========================================================================================================
 
 template <typename T>
-ObjectList<T>::ObjectList(const ObjectList& other):
-    IObjectList(other)
+ObjectList<T>::ObjectList()
+    : IObjectList()
+{
+}
+
+template <typename T>
+ObjectList<T>::ObjectList(const ObjectList& other)
+    : IObjectList(other)
 {
     setValue(other.value());
 }
 
 template <typename T>
-ObjectList<T>::ObjectList(ObjectList&& other):
-    IObjectList(other)
+ObjectList<T>::ObjectList(ObjectList&& other)
+    : IObjectList(other)
 {
     setValue(std::move(other.value()));
 }
@@ -348,15 +361,21 @@ bool ObjectList<T>::empty() const
 // ===========================================================================================================
 
 template <Type ValType>
-ValueList<ValType>::ValueList(const ValueList& other):
-    IValueList(other)
+ValueList<ValType>::ValueList()
+    : IValueList()
+{
+}
+
+template <Type ValType>
+ValueList<ValType>::ValueList(const ValueList& other)
+    : IValueList(other)
 {
     setValue(other.value());
 }
 
 template <Type ValType>
-ValueList<ValType>::ValueList(ValueList&& other):
-    IValueList(other)
+ValueList<ValType>::ValueList(ValueList&& other)
+    : IValueList(other)
 {
     setValue(std::move(other.value()));
 }

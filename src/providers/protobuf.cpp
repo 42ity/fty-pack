@@ -1,4 +1,4 @@
-#include "visitor.h"
+#include "pack/visitor.h"
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/descriptor.pb.h>
 #include <google/protobuf/descriptor_database.h>
@@ -36,6 +36,8 @@ struct Convert
             node = refl->GetUInt32(*std::get<0>(proto), std::get<1>(proto));
         } else if constexpr (ValType == Type::UInt64) {
             node = refl->GetUInt64(*std::get<0>(proto), std::get<1>(proto));
+        } else if constexpr (ValType == Type::UChar) {
+            node = static_cast<unsigned char>(refl->GetUInt32(*std::get<0>(proto), std::get<1>(proto)));
         }
     }
 
@@ -43,23 +45,28 @@ struct Convert
     {
         auto refl = std::get<0>(proto)->GetReflection();
 
-        for (int i = 0; i < refl->FieldSize(*std::get<0>(proto), std::get<1>(proto)); ++i) {
-            if constexpr (ValType == Type::Bool) {
-                node.append(refl->GetRepeatedBool(*std::get<0>(proto), std::get<1>(proto), i));
-            } else if constexpr (ValType == Type::Double) {
-                node.append(refl->GetRepeatedDouble(*std::get<0>(proto), std::get<1>(proto), i));
-            } else if constexpr (ValType == Type::Float) {
-                node.append(refl->GetRepeatedFloat(*std::get<0>(proto), std::get<1>(proto), i));
-            } else if constexpr (ValType == Type::Int32) {
-                node.append(refl->GetRepeatedInt32(*std::get<0>(proto), std::get<1>(proto), i));
-            } else if constexpr (ValType == Type::Int64) {
-                node.append(refl->GetRepeatedInt64(*std::get<0>(proto), std::get<1>(proto), i));
-            } else if constexpr (ValType == Type::String) {
-                node.append(refl->GetRepeatedString(*std::get<0>(proto), std::get<1>(proto), i));
-            } else if constexpr (ValType == Type::UInt32) {
-                node.append(refl->GetRepeatedUInt32(*std::get<0>(proto), std::get<1>(proto), i));
-            } else if constexpr (ValType == Type::UInt64) {
-                node.append(refl->GetRepeatedUInt64(*std::get<0>(proto), std::get<1>(proto), i));
+        if constexpr (ValType == Type::UChar) {
+            std::string str = refl->GetString(*std::get<0>(proto), std::get<1>(proto));
+            node.setValue(typename ValueList<ValType>::ListType(str.begin(), str.end()));
+        } else {
+            for (int i = 0; i < refl->FieldSize(*std::get<0>(proto), std::get<1>(proto)); ++i) {
+                if constexpr (ValType == Type::Bool) {
+                    node.append(refl->GetRepeatedBool(*std::get<0>(proto), std::get<1>(proto), i));
+                } else if constexpr (ValType == Type::Double) {
+                    node.append(refl->GetRepeatedDouble(*std::get<0>(proto), std::get<1>(proto), i));
+                } else if constexpr (ValType == Type::Float) {
+                    node.append(refl->GetRepeatedFloat(*std::get<0>(proto), std::get<1>(proto), i));
+                } else if constexpr (ValType == Type::Int32) {
+                    node.append(refl->GetRepeatedInt32(*std::get<0>(proto), std::get<1>(proto), i));
+                } else if constexpr (ValType == Type::Int64) {
+                    node.append(refl->GetRepeatedInt64(*std::get<0>(proto), std::get<1>(proto), i));
+                } else if constexpr (ValType == Type::String) {
+                    node.append(refl->GetRepeatedString(*std::get<0>(proto), std::get<1>(proto), i));
+                } else if constexpr (ValType == Type::UInt32) {
+                    node.append(refl->GetRepeatedUInt32(*std::get<0>(proto), std::get<1>(proto), i));
+                } else if constexpr (ValType == Type::UInt64) {
+                    node.append(refl->GetRepeatedUInt64(*std::get<0>(proto), std::get<1>(proto), i));
+                }
             }
         }
     }
@@ -87,6 +94,8 @@ struct Convert
             refl->SetUInt32(std::get<0>(proto), std::get<1>(proto), node.value());
         } else if constexpr (ValType == Type::UInt64) {
             refl->SetUInt64(std::get<0>(proto), std::get<1>(proto), node.value());
+        } else if constexpr (ValType == Type::UChar) {
+            refl->SetUInt32(std::get<0>(proto), std::get<1>(proto), node.value());
         }
     }
 
@@ -114,7 +123,10 @@ struct Convert
             }
         };
 
-        if constexpr (ValType == Type::Bool) {
+        if constexpr (ValType == Type::UChar) {
+            std::string str(node.value().begin(), node.value().end());
+            refl->SetString(std::get<0>(proto), std::get<1>(proto), str);
+        } else if constexpr (ValType == Type::Bool) {
             for (auto it : node) {
                 setFunc(it);
             }

@@ -59,6 +59,9 @@ public:
             case Type::UInt64:
                 Worker::unpackValue(static_cast<ValueList<Type::UInt64>&>(list), res);
                 break;
+            case Type::UChar:
+                Worker::unpackValue(static_cast<ValueList<Type::UChar>&>(list), res);
+                break;
             case Type::Unknown:
                 throw std::runtime_error("Unsupported type to unpack");
             }
@@ -94,6 +97,9 @@ public:
             case Type::UInt64:
                 Worker::unpackValue(static_cast<ValueMap<Type::UInt64>&>(map), res);
                 break;
+            case Type::UChar:
+                Worker::unpackValue(static_cast<ValueMap<Type::UChar>&>(map), res);
+                break;
             case Type::Unknown:
                 throw std::runtime_error("Unsupported type to unpack");
             }
@@ -127,6 +133,9 @@ public:
             break;
         case Type::UInt64:
             Worker::unpackValue(static_cast<UInt64&>(value), res);
+            break;
+        case Type::UChar:
+            Worker::unpackValue(static_cast<UChar&>(value), res);
             break;
         case Type::Unknown:
             throw std::runtime_error("Unsupported type to unpack");
@@ -217,6 +226,9 @@ public:
             case Type::UInt64:
                 Worker::packValue(static_cast<const ValueList<Type::UInt64>&>(list), res);
                 break;
+            case Type::UChar:
+                Worker::packValue(static_cast<const ValueList<Type::UChar>&>(list), res);
+                break;
             case Type::Unknown:
                 throw std::runtime_error("Unsupported type to unpack");
             }
@@ -252,6 +264,9 @@ public:
             case Type::UInt64:
                 Worker::packValue(static_cast<const ValueMap<Type::UInt64>&>(map), res);
                 break;
+            case Type::UChar:
+                Worker::packValue(static_cast<const ValueMap<Type::UChar>&>(map), res);
+                break;
             case Type::Unknown:
                 throw std::runtime_error("Unsupported type to unpack");
             }
@@ -285,6 +300,9 @@ public:
             break;
         case Type::UInt64:
             Worker::packValue(static_cast<const UInt64&>(value), res);
+            break;
+        case Type::UChar:
+            Worker::packValue(static_cast<const UChar&>(value), res);
             break;
         case Type::Unknown:
             throw std::runtime_error("Unsupported type to unpack");

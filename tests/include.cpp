@@ -16,7 +16,7 @@ TEST_CASE("Include serialization/deserialization")
 
     SECTION("Serialization yaml")
     {
-        std::string cnt = pack::yaml::serialize(origin);
+        std::string cnt = *pack::yaml::serialize(origin);
         REQUIRE(!cnt.empty());
 
         test6::Item restored;
@@ -27,7 +27,7 @@ TEST_CASE("Include serialization/deserialization")
 
     SECTION("Serialization json")
     {
-        std::string cnt = pack::json::serialize(origin);
+        std::string cnt = *pack::json::serialize(origin);
         REQUIRE(!cnt.empty());
 
         test6::Item restored;

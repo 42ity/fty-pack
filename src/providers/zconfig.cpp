@@ -1,9 +1,9 @@
 #include "pack/pack.h"
+#include "pack/visitor.h"
 #include <czmq.h>
+#include <fty/convert.h>
 #include <memory>
 #include <zconfig.h>
-#include "visitor.h"
-#include <fty/convert.h>
 
 namespace pack {
 
@@ -27,7 +27,8 @@ struct Convert
     static void decode(ValueMap<ValType>& node, zconfig_t* zconf)
     {
         for (zconfig_t* item = zconfig_child(zconf); item; item = zconfig_next(item)) {
-            node.append(fty::convert<std::string>(zconfig_name(item)), fty::convert<CppType>(zconfig_value(item)));
+            node.append(
+                fty::convert<std::string>(zconfig_name(item)), fty::convert<CppType>(zconfig_value(item)));
         }
     }
 
@@ -87,8 +88,8 @@ public:
     static void packValue(const IObjectList& val, zconfig_t* zconf)
     {
         for (int i = 0; i < val.size(); ++i) {
-            const INode& node = val.get(i);
-            auto child = zconfig_new(fty::convert<std::string>(i+1).c_str(), zconf);
+            const INode& node  = val.get(i);
+            auto         child = zconfig_new(fty::convert<std::string>(i + 1).c_str(), zconf);
             visit(node, child);
         }
     }
@@ -110,7 +111,7 @@ public:
 
     static void packValue(const IProtoMap& map, zconfig_t* zconf)
     {
-        for(int i = 0; i < map.size(); ++i) {
+        for (int i = 0; i < map.size(); ++i) {
             const INode& node = map.get(i);
 
             auto temp = zconfig_new("", nullptr);
@@ -150,7 +151,7 @@ public:
         if (auto first = zconfig_child(conf)) {
             auto& obj = list.create();
             visit(obj, first);
-            while((first = zconfig_next(first)) != nullptr) {
+            while ((first = zconfig_next(first)) != nullptr) {
                 auto& next = list.create();
                 visit(next, first);
             }
@@ -195,7 +196,7 @@ namespace zconfig {
     {
         zconfig_t* config = zconfig_new("root", nullptr);
         ZSerializer::visit(node, config);
-        auto zret = zconfig_str_save(config);
+        auto        zret = zconfig_str_save(config);
         std::string ret(zret);
         zstr_free(&zret);
         zconfig_destroy(&config);

@@ -23,7 +23,7 @@ TEST_CASE("Map serialization/deserialization")
 
     SECTION("Serialization yaml")
     {
-        std::string cnt = pack::yaml::serialize(origin);
+        std::string cnt = *pack::yaml::serialize(origin);
         REQUIRE(!cnt.empty());
 
         test5::Item restored;
@@ -34,7 +34,7 @@ TEST_CASE("Map serialization/deserialization")
 
     SECTION("Serialization json")
     {
-        std::string cnt = pack::json::serialize(origin);
+        std::string cnt = *pack::json::serialize(origin);
         REQUIRE(!cnt.empty());
 
         test5::Item restored;
@@ -93,7 +93,7 @@ TEST_CASE("Map of structs serialization/deserialization")
 
     SECTION("Serialization yaml")
     {
-        std::string cnt = pack::yaml::serialize(origin);
+        std::string cnt = *pack::yaml::serialize(origin);
         REQUIRE(!cnt.empty());
 
         test5::Item1 restored;
@@ -104,7 +104,7 @@ TEST_CASE("Map of structs serialization/deserialization")
 
     SECTION("Serialization json")
     {
-        std::string cnt = pack::json::serialize(origin);
+        std::string cnt = *pack::json::serialize(origin);
         REQUIRE(!cnt.empty());
 
         test5::Item1 restored;
@@ -143,7 +143,7 @@ struct TestMap : public pack::Node
     pack::StringMap strs = FIELD("strs");
     pack::Int32Map  ints = FIELD("ints");
 
-    META(TestMap, strs, ints)
+    META(TestMap, strs, ints);
 };
 
 TEST_CASE("Simple map serialization/deserialization")
@@ -172,7 +172,7 @@ TEST_CASE("Simple map serialization/deserialization")
 
     SECTION("Serialization yaml")
     {
-        std::string cnt = pack::yaml::serialize(origin);
+        std::string cnt = *pack::yaml::serialize(origin);
         REQUIRE(!cnt.empty());
 
         TestMap restored;
@@ -183,7 +183,7 @@ TEST_CASE("Simple map serialization/deserialization")
 
     SECTION("Serialization json")
     {
-        std::string cnt = pack::json::serialize(origin);
+        std::string cnt = *pack::json::serialize(origin);
         REQUIRE(!cnt.empty());
 
         TestMap restored;

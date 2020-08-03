@@ -17,7 +17,8 @@ enum class Type
     UInt64,
     Float,
     Double,
-    Bool
+    Bool,
+    UChar
 };
 
 template<Type>
@@ -31,6 +32,7 @@ template<> struct ResolveType<Type::UInt64> { using type = uint64_t; };
 template<> struct ResolveType<Type::Float> { using type = float; };
 template<> struct ResolveType<Type::Double> { using type = double; };
 template<> struct ResolveType<Type::Bool> { using type = bool; };
+template<> struct ResolveType<Type::UChar> { using type = unsigned char; };
 
 inline std::string valueTypeName(Type type)
 {

@@ -1,0 +1,18 @@
+@PACKAGE_INIT@
+
+if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/CMakeFiles")
+    set(FTY_PACK_DIR     "@CMAKE_CURRENT_SOURCE_DIR@")
+    set(FTY_PACK_BIN_DIR "@CMAKE_CURRENT_BINARY_DIR@")
+else()
+    set_and_check(FTY_PACK_DIR     "@PACKAGE_CMAKE_INSTALL_DIR@")
+    set_and_check(FTY_PACK_BIN_DIR "@PACKAGE_CMAKE_INSTALL_BINDIR@")
+endif()
+
+# Append ourselfs to search path
+list(APPEND CMAKE_PREFIX_PATH "${FTY_PACK_DIR}/../")
+
+include(${FTY_PACK_DIR}/protoc/cmake/protogen.cmake)
+
+if (NOT FTY_PACK_FOUND)
+    set(FTY_PACK_FOUND ON CACHE INTERNAL "" FORCE)
+endif ()

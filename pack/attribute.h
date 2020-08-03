@@ -13,7 +13,7 @@ namespace pack {
         this, key, ##__VA_ARGS__                                                                             \
     }
 
-#define META_CTR(className, ...)                                                                             \
+#define _META_CTR(className, ...)                                                                            \
     className(const className& other)                                                                        \
     {                                                                                                        \
         for (auto& it : fields()) {                                                                          \
@@ -41,7 +41,7 @@ namespace pack {
         return *this;                                                                                        \
     }
 
-#define META_FIELDS(className, ...)                                                                          \
+#define _META_FIELDS(className, ...)                                                                         \
 public:                                                                                                      \
     std::vector<const pack::Attribute*> fields() const override                                              \
     {                                                                                                        \
@@ -65,21 +65,22 @@ public:                                                                         
     }                                                                                                        \
     std::string typeName() const override                                                                    \
     {                                                                                                        \
-        return #className;                                                                                   \
+        return m_className;                                                                                  \
     }                                                                                                        \
     static std::string typeInfo()                                                                            \
     {                                                                                                        \
-        return #className;                                                                                   \
-    }
+        return m_className;                                                                                  \
+    }                                                                                                        \
+    static constexpr const char* m_className = #className
 
 #define META(className, ...)                                                                                 \
 public:                                                                                                      \
-    META_FIELDS(className, __VA_ARGS__)                                                                      \
-    META_CTR(className, __VA_ARGS__)
+    _META_CTR(className, __VA_ARGS__)                                                                        \
+    _META_FIELDS(className, __VA_ARGS__)
 
 #define META_WOC(className, ...)                                                                             \
 public:                                                                                                      \
-    META_FIELDS(className, __VA_ARGS__)
+    _META_FIELDS(className, __VA_ARGS__)
 
 // ===========================================================================================================
 
@@ -105,11 +106,11 @@ public:
     virtual ~Attribute() = default;
 
     virtual bool        compare(const Attribute& other) const = 0;
-    virtual std::string typeName() const            = 0;
-    virtual void        set(const Attribute& other) = 0;
-    virtual void        set(Attribute&& other)      = 0;
-    virtual bool        hasValue() const            = 0;
-    virtual void        clear()                     = 0;
+    virtual std::string typeName() const                      = 0;
+    virtual void        set(const Attribute& other)           = 0;
+    virtual void        set(Attribute&& other)                = 0;
+    virtual bool        hasValue() const                      = 0;
+    virtual void        clear()                               = 0;
 
     const std::string& key() const;
 

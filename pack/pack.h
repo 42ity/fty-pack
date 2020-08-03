@@ -6,6 +6,7 @@
 #include "pack/serialization.h"
 #include "pack/value.h"
 #include "pack/proto-map.h"
+#include "fty/convert.h"
 
 namespace pack {
 
@@ -16,6 +17,7 @@ using UInt64 = Value<Type::UInt64>;
 using Float  = Value<Type::Float>;
 using Double = Value<Type::Double>;
 using Bool   = Value<Type::Bool>;
+using UChar  = Value<Type::UChar>;
 
 //============================================================================================================
 
@@ -47,6 +49,53 @@ inline bool operator==(const T& l, const String& r)
 {
     return r.value() == l;
 }
+
+//============================================================================================================
+
+class Binary : public ValueList<Type::UChar>
+{
+public:
+    using pack::ValueList<Type::UChar>::ValueList;
+    using pack::ValueList<Type::UChar>::operator=;
+    using pack::ValueList<Type::UChar>::set;
+
+    bool empty() const
+    {
+        return value().empty();
+    }
+
+    void set(const std::string& data)
+    {
+        m_value = ListType(data.begin(), data.end());
+    }
+
+    void set(const char* data, size_t size)
+    {
+        m_value = ListType(data, data+size);
+    }
+
+    std::string asString() const
+    {
+        return std::string(m_value.begin(), m_value.end());
+    }
+
+    template<typename T>
+    fty::Expected<T> decode() const
+    {
+        if constexpr (std::is_base_of_v<Attribute, T>) {
+            T out;
+            if (auto res = json::deserialize(asString(), out)) {
+                return out;
+            } else {
+                return fty::unexpected(res.error());
+            }
+        } else {
+            return fty::convert<T>(asString());
+        }
+    }
+};
+
+//============================================================================================================
 
 using Int32List  = ValueList<Type::Int32>;
 using Int64List  = ValueList<Type::Int64>;

@@ -19,7 +19,7 @@ TEST_CASE("Oneof serialization/deserialization")
 
     SECTION("Serialization yaml")
     {
-        std::string cnt = pack::yaml::serialize(origin);
+        std::string cnt = *pack::yaml::serialize(origin);
         REQUIRE(!cnt.empty());
 
         test7::Item restored;
@@ -30,7 +30,7 @@ TEST_CASE("Oneof serialization/deserialization")
 
     SECTION("Serialization json")
     {
-        std::string cnt = pack::json::serialize(origin);
+        std::string cnt = *pack::json::serialize(origin);
         REQUIRE(!cnt.empty());
 
         test7::Item restored;
@@ -85,7 +85,7 @@ TEST_CASE("Oneof adv serialization/deserialization")
 
     SECTION("Serialization yaml")
     {
-        std::string cnt = pack::yaml::serialize(origin);
+        std::string cnt = *pack::yaml::serialize(origin);
         REQUIRE(!cnt.empty());
 
         test8::Item restored;
@@ -96,7 +96,7 @@ TEST_CASE("Oneof adv serialization/deserialization")
 
     SECTION("Serialization json")
     {
-        std::string cnt = pack::json::serialize(origin);
+        std::string cnt = *pack::json::serialize(origin);
         REQUIRE(!cnt.empty());
 
         test8::Item restored;
