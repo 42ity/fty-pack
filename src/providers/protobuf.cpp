@@ -72,7 +72,8 @@ struct Convert
     }
 
     static void decode(ValueMap<ValType>& /*node*/, const ConstWalkType& /*proto*/)
-    {}
+    {
+    }
 
     static void encode(const Value<ValType>& node, WalkType& proto)
     {
@@ -172,7 +173,8 @@ public:
         for (auto& it : node.fields()) {
             if (it->hasValue()) {
                 auto fdesc = std::get<0>(proto)->GetDescriptor()->FindFieldByName(it->key());
-                if (fdesc && fdesc->cpp_type() == pb::FieldDescriptor::CPPTYPE_MESSAGE && !fdesc->is_repeated()) {
+                if (fdesc && fdesc->cpp_type() == pb::FieldDescriptor::CPPTYPE_MESSAGE &&
+                    !fdesc->is_repeated()) {
                     auto refl  = std::get<0>(proto)->GetReflection();
                     auto child = WalkType(refl->MutableMessage(std::get<0>(proto), fdesc), fdesc);
                     visit(*it, child);
@@ -202,7 +204,6 @@ public:
             visit(node, childProto);
         }
     }
-
 };
 
 class ProtoDeserializer : public Deserialize<ProtoDeserializer>
@@ -255,65 +256,78 @@ public:
         auto refl = std::get<0>(proto)->GetReflection();
 
         for (int i = 0; i < refl->FieldSize(*std::get<0>(proto), std::get<1>(proto)); ++i) {
-            const pb::Message& msg   = refl->GetRepeatedMessage(*std::get<0>(proto), std::get<1>(proto), i);
+            const pb::Message& msg = refl->GetRepeatedMessage(*std::get<0>(proto), std::get<1>(proto), i);
 
-            auto&              obj   = map.create();
-            auto               child = WalkType(&msg, nullptr);
+            auto& obj   = map.create();
+            auto  child = WalkType(&msg, nullptr);
             visit(obj, child);
         }
     }
-
 };
 
 
 namespace protobuf {
 
-    static pb::Message* getMessage(const INode& node)
+    static pb::Message* getMessage(const Attribute& attr)
     {
-        static pb::SimpleDescriptorDatabase db;
-        static pb::DescriptorPool           pool(&db);
+        if (const INode* node = dynamic_cast<const INode*>(&attr)) {
+            static pb::SimpleDescriptorDatabase db;
+            static pb::DescriptorPool           pool(&db);
 
-        auto descr = pool.FindMessageTypeByName(node.protoName());
-        if (!descr) {
-            pb::FileDescriptorSet fs;
-            fs.ParseFromString(node.fileDescriptor());
-            for (int i = 0; i < fs.file().size(); ++i) {
-                if (!pool.FindFileByName(fs.file(i).name())) {
-                    db.Add(fs.file(i));
+            auto descr = pool.FindMessageTypeByName(node->protoName());
+            if (!descr) {
+                pb::FileDescriptorSet fs;
+                fs.ParseFromString(node->fileDescriptor());
+                for (int i = 0; i < fs.file().size(); ++i) {
+                    if (!pool.FindFileByName(fs.file(i).name())) {
+                        db.Add(fs.file(i));
+                    }
                 }
+                descr = pool.FindMessageTypeByName(node->protoName());
             }
-            descr = pool.FindMessageTypeByName(node.protoName());
-        }
 
-        if (!descr) {
-            throw std::runtime_error("Cannot find description for " + node.protoName());
-        }
+            if (!descr) {
+                throw std::runtime_error("Cannot find description for " + node->protoName());
+            }
 
-        static pb::DynamicMessageFactory dmf(&pool);
-        const pb::Message*               protoMsg = dmf.GetPrototype(descr);
-        return protoMsg->New();
+            static pb::DynamicMessageFactory dmf(&pool);
+            const pb::Message*               protoMsg = dmf.GetPrototype(descr);
+            return protoMsg->New();
+        }
+        return nullptr;
     }
 
-    std::string serialize(const INode& node)
+    fty::Expected<std::string> serialize(const Attribute& node)
     {
-        std::unique_ptr<pb::Message> msg(getMessage(node));
+        try {
+            std::unique_ptr<pb::Message> msg(getMessage(node));
 
-        auto proto = ProtoSerializer::WalkType(msg.get(), nullptr);
-        ProtoSerializer::visit(node, proto);
+            auto proto = ProtoSerializer::WalkType(msg.get(), nullptr);
+            ProtoSerializer::visit(node, proto);
 
-//        std::cerr << "--------------" << std::endl;
-//        std::cerr << msg->DebugString() << std::endl;
-//        std::cerr << "--------------" << std::endl;
-        return msg->SerializeAsString();
+            //        std::cerr << "--------------" << std::endl;
+            //        std::cerr << msg->DebugString() << std::endl;
+            //        std::cerr << "--------------" << std::endl;
+            return msg->SerializeAsString();
+        } catch (google::protobuf::FatalException& ex) {
+            return fty::unexpected(ex.message());
+        } catch (std::exception& ex) {
+            return fty::unexpected(ex.what());
+        }
     }
 
-    void deserialize(const std::string& content, INode& node)
+    fty::Expected<void> deserialize(const std::string& content, Attribute& node)
     {
         std::unique_ptr<pb::Message> msg(getMessage(node));
-        msg->ParseFromString(content);
+        try {
+            msg->ParseFromString(content);
+        } catch (google::protobuf::FatalException& ex) {
+            return fty::unexpected(ex.message());
+        }
 
         auto proto = ProtoDeserializer::WalkType(msg.get(), nullptr);
         ProtoDeserializer::visit(node, proto);
+        return {};
     }
 
 } // namespace protobuf

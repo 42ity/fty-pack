@@ -4,6 +4,7 @@
 #include <fty/convert.h>
 #include <memory>
 #include <zconfig.h>
+#include <yaml-cpp/yaml.h>
 
 namespace pack {
 
@@ -19,8 +20,12 @@ struct Convert
 
     static void decode(ValueList<ValType>& node, zconfig_t* zconf)
     {
-        for (zconfig_t* item = zconfig_child(zconf); item; item = zconfig_next(item)) {
-            node.append(fty::convert<CppType>(zconfig_value(item)));
+        if constexpr (ValType == Type::UChar) {
+            node.setValue(typename ValueList<ValType>::ListType(YAML::DecodeBase64(zconfig_value(zconf))));
+        } else {
+            for (zconfig_t* item = zconfig_child(zconf); item; item = zconfig_next(item)) {
+                node.append(fty::convert<CppType>(zconfig_value(item)));
+            }
         }
     }
 
@@ -45,6 +50,8 @@ struct Convert
                 auto child = zconfig_new(fty::convert<std::string>(i++).c_str(), zconf);
                 zconfig_set_value(child, "%s", fty::convert<std::string>(it).c_str());
             }
+        } else if constexpr (ValType == Type::UChar) {
+            zconfig_set_value(zconf, "%s", YAML::EncodeBase64(node.value().data(), size_t(node.size())).c_str());
         } else {
             for (const auto& it : node) {
                 auto child = zconfig_new(fty::convert<std::string>(i++).c_str(), zconf);
@@ -192,7 +199,7 @@ public:
 
 
 namespace zconfig {
-    std::string serialize(const INode& node)
+    fty::Expected<std::string> serialize(const Attribute& node)
     {
         zconfig_t* config = zconfig_new("root", nullptr);
         ZSerializer::visit(node, config);
@@ -203,11 +210,12 @@ namespace zconfig {
         return ret;
     }
 
-    void deserialize(const std::string& content, INode& node)
+    fty::Expected<void> deserialize(const std::string& content, Attribute& node)
     {
         zconfig_t* config = zconfig_str_load(content.c_str());
         ZDeserializer::visit(node, config);
         zconfig_destroy(&config);
+        return {};
     }
 } // namespace zconfig
 

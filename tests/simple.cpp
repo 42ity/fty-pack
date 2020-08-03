@@ -7,11 +7,13 @@ TEST_CASE("Simple serialization/deserialization")
     origin.email = "person@email.org";
     origin.id    = 42;
     origin.name  = "Person";
+    origin.binary.set("some bin data");
 
     auto check = [](const test::Person& item) {
         REQUIRE(42 == item.id);
         REQUIRE("person@email.org" == item.email);
         REQUIRE("Person" == item.name);
+        REQUIRE("some bin data" == item.binary.asString());
     };
 
     check(origin);
@@ -41,7 +43,7 @@ TEST_CASE("Simple serialization/deserialization")
 
     SECTION("Serialization zconfig")
     {
-        std::string cnt = pack::zconfig::serialize(origin);
+        std::string cnt = *pack::zconfig::serialize(origin);
         REQUIRE(!cnt.empty());
 
         test::Person restored;
@@ -52,7 +54,7 @@ TEST_CASE("Simple serialization/deserialization")
 
     SECTION("Serialization protobuf bin")
     {
-        std::string cnt = pack::protobuf::serialize(origin);
+        std::string cnt = *pack::protobuf::serialize(origin);
         REQUIRE(!cnt.empty());
 
         test::Person restored;

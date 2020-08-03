@@ -21,8 +21,15 @@ struct Convert
 
     static void decode(ValueList<ValType>& node, const YAML::Node& yaml)
     {
-        for (const auto& it : yaml) {
-            node.append(it.as<CppType>());
+        if constexpr (ValType == Type::UChar) {
+            YAML::Binary binary = yaml.as<YAML::Binary>();
+            const unsigned char * data = binary.data();
+            std::size_t size = binary.size();
+            node.setValue({data, data+size});
+        } else {
+            for (const auto& it : yaml) {
+                node.append(it.as<CppType>());
+            }
         }
     }
 
@@ -184,18 +191,18 @@ namespace yaml {
         }
     }
 
-    fty::Expected<bool> deserialize(const std::string& content, Attribute& node)
+    fty::Expected<void> deserialize(const std::string& content, Attribute& node)
     {
         try {
             YAML::Node yaml = YAML::Load(content);
             YamlDeserializer::visit(node, yaml);
-            return true;
+            return {};
         } catch (const std::exception& e) {
             return fty::unexpected(e.what());
         }
     }
 
-    fty::Expected<bool> deserializeFile(const std::string& fileName, Attribute& node)
+    fty::Expected<void> deserializeFile(const std::string& fileName, Attribute& node)
     {
         if (auto cnt = read(fileName)) {
             return deserialize(*cnt, node);
@@ -224,18 +231,18 @@ namespace json {
         }
     }
 
-    fty::Expected<bool> deserialize(const std::string& content, Attribute& node)
+    fty::Expected<void> deserialize(const std::string& content, Attribute& node)
     {
         try {
             YAML::Node yaml = YAML::Load(content);
             YamlDeserializer::visit(node, yaml);
-            return true;
+            return {};
         } catch (const std::exception& e) {
             return fty::unexpected(e.what());
         }
     }
 
-    inline fty::Expected<bool> deserializeFile(const std::string& fileName, Attribute& node)
+    inline fty::Expected<void> deserializeFile(const std::string& fileName, Attribute& node)
     {
         if (auto cnt = read(fileName)) {
             return deserialize(*cnt, node);

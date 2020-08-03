@@ -57,7 +57,7 @@ TEST_CASE("List serialization/deserialization")
 
     SECTION("Serialization zconfig")
     {
-        std::string cnt = pack::zconfig::serialize(origin);
+        std::string cnt = *pack::zconfig::serialize(origin);
         REQUIRE(!cnt.empty());
 
         test::Person2 restored;
@@ -68,7 +68,7 @@ TEST_CASE("List serialization/deserialization")
 
     SECTION("Serialization protobuf")
     {
-        std::string cnt = pack::protobuf::serialize(origin);
+        std::string cnt = *pack::protobuf::serialize(origin);
         REQUIRE(!cnt.empty());
 
         test::Person2 restored;

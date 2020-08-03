@@ -45,7 +45,7 @@ TEST_CASE("Map serialization/deserialization")
 
     SECTION("Serialization zconfig")
     {
-        std::string cnt = pack::zconfig::serialize(origin);
+        std::string cnt = *pack::zconfig::serialize(origin);
         REQUIRE(!cnt.empty());
 
         test5::Item restored;
@@ -56,7 +56,7 @@ TEST_CASE("Map serialization/deserialization")
 
     SECTION("Serialization protobuf bin")
     {
-        std::string cnt = pack::protobuf::serialize(origin);
+        std::string cnt = *pack::protobuf::serialize(origin);
         REQUIRE(!cnt.empty());
 
         test5::Item restored;
@@ -115,7 +115,7 @@ TEST_CASE("Map of structs serialization/deserialization")
 
     SECTION("Serialization zconfig")
     {
-        std::string cnt = pack::zconfig::serialize(origin);
+        std::string cnt = *pack::zconfig::serialize(origin);
         REQUIRE(!cnt.empty());
 
         test5::Item1 restored;
@@ -126,7 +126,7 @@ TEST_CASE("Map of structs serialization/deserialization")
 
     SECTION("Serialization protobuf bin")
     {
-        std::string cnt = pack::protobuf::serialize(origin);
+        std::string cnt = *pack::protobuf::serialize(origin);
         REQUIRE(!cnt.empty());
 
         test5::Item1 restored;
@@ -194,7 +194,7 @@ TEST_CASE("Simple map serialization/deserialization")
 
     SECTION("Serialization zconfig")
     {
-        std::string cnt = pack::zconfig::serialize(origin);
+        std::string cnt = *pack::zconfig::serialize(origin);
         REQUIRE(!cnt.empty());
 
         TestMap restored;

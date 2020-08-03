@@ -41,7 +41,7 @@ static std::string usingType(const protobuf::FieldDescriptor* fld)
 {
     switch (fld->cpp_type()) {
         case FieldDescriptor::CPPTYPE_STRING:
-            return "std::string";
+            return fld->type() == FieldDescriptor::TYPE_BYTES ? "std::vector<unsigned char>" : "std::string";
         case FieldDescriptor::CPPTYPE_BOOL:
             return "bool";
         case FieldDescriptor::CPPTYPE_INT64:
@@ -273,7 +273,11 @@ std::string ClassGenerator::cppType(const FieldDescriptor* fld) const
     bool isList = fld->is_repeated();
     switch (fld->cpp_type()) {
         case FieldDescriptor::CPPTYPE_STRING:
-            return "pack::String"s + (isList ? "List" : "");
+            if (fld->type() == FieldDescriptor::TYPE_BYTES) {
+                return "pack::Binary"s + (isList ? "List" : "");
+            } else {
+                return "pack::String"s + (isList ? "List" : "");
+            }
         case FieldDescriptor::CPPTYPE_BOOL:
             return "pack::Bool"s + (isList ? "List>" : "");
         case FieldDescriptor::CPPTYPE_INT64:
