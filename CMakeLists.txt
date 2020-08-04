@@ -11,8 +11,8 @@ find_package(fty-cmake PATHS ${CMAKE_BINARY_DIR})
 
 ########################################################################################################################
 
-option(WITH_PROTOBUF "Using protobuf provider" OFF)
-option(WITH_ZCONFIG "Using zconfig provider" OFF)
+option(WITH_PROTOBUF "Using protobuf provider" ON)
+option(WITH_ZCONFIG "Using zconfig provider" ON)
 
 ########################################################################################################################
 
