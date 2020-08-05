@@ -79,12 +79,12 @@ public:
         return value().empty();
     }
 
-    void set(const std::string& data)
+    void setString(const std::string& data)
     {
         m_value = ListType(data.begin(), data.end());
     }
 
-    void set(const char* data, size_t size)
+    void setString(const char* data, size_t size)
     {
         m_value = ListType(data, data+size);
     }

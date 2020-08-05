@@ -22,7 +22,7 @@ TEST_CASE("Simple serialization/deserialization")
     origin.email = "person@email.org";
     origin.id    = 42;
     origin.name  = "Person";
-    origin.binary.set("some bin data");
+    origin.binary.setString("some bin data");
 
     auto check = [](const test::Person& item) {
         REQUIRE(42 == item.id);

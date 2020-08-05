@@ -1,4 +1,5 @@
 @PACKAGE_INIT@
+include("${CMAKE_CURRENT_LIST_DIR}/fty-pack-targets.cmake")
 
 if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/CMakeFiles")
     set(FTY_PACK_DIR     "@CMAKE_CURRENT_SOURCE_DIR@")
