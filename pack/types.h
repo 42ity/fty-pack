@@ -17,7 +17,6 @@
 #include <string>
 #include "pack/attribute.h"
 #include "pack/node.h"
-#include "pack/magic_enum.h"
 #include <sstream>
 
 namespace pack {
@@ -49,9 +48,45 @@ template<> struct ResolveType<Type::Double> { using type = double; };
 template<> struct ResolveType<Type::Bool> { using type = bool; };
 template<> struct ResolveType<Type::UChar> { using type = unsigned char; };
 
+inline std::ostream& operator<<(std::ostream& ss, Type value)
+{
+    switch (value) {
+    case Type::Unknown:
+        ss << "Unknown";
+        break;
+    case Type::String:
+        ss << "String";
+        break;
+    case Type::Bool:
+        ss << "Bool";
+        break;
+    case Type::Double:
+        ss << "Double";
+        break;
+    case Type::Float:
+        ss << "Float";
+        break;
+    case Type::Int32:
+        ss << "Int32";
+        break;
+    case Type::Int64:
+        ss << "Int64";
+        break;
+    case Type::UChar:
+        ss << "UChar";
+        break;
+    case Type::UInt32:
+        ss << "UInt32";
+        break;
+    case Type::UInt64:
+        ss << "UInt64";
+        break;
+    }
+    return ss;
+}
+
 inline std::string valueTypeName(Type type)
 {
-    using namespace magic_enum::ostream_operators;
     std::stringstream ss;
     ss << type;
     return ss.str();

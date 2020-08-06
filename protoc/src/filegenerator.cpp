@@ -132,9 +132,64 @@ void FileGenerator::generateHeader(io::Printer& printer) const
         gen.generateHeader(frm, path);
     }
 
+    // Generate enums conversions
+    for (int i = 0; i < m_file->message_type_count(); i++) {
+        frm << "\n";
+        auto desc = m_file->message_type(i);
+        for (int e = 0; e < desc->enum_type_count(); ++e) {
+            const auto& type = desc->enum_type(e);
+
+            std::string            name = type->full_name();
+            std::string::size_type n    = 0;
+            while ((n = name.find(".", n)) != std::string::npos) {
+                name.replace(n, 1, "::");
+                ++n;
+            }
+
+            frm << "inline std::ostream& operator<<(std::ostream& ss, " << name << " value)\n";
+            frm << "{\n";
+            frm.indent();
+            frm << "switch(value){\n";
+            frm.indent();
+            for (int j = 0; j < type->value_count(); ++j) {
+                const auto& val = type->value(j);
+                frm << "case " << name << "::" << val->name() << ":\n";
+                frm.indent();
+                frm << "ss << \"" << val->name() << "\";\n";
+                frm << "break;\n";
+                frm.outdent();
+            }
+            frm.outdent();
+            frm << "}\n";
+            frm << "return ss;\n";
+            frm.outdent();
+            frm << "}\n";
+            frm << "\n";
+            frm << "inline std::istream& operator>>(std::istream& ss, " << name << "& value)\n";
+            frm << "{\n";
+            frm.indent();
+            frm << "std::string strval;\n";
+            frm << "ss >> strval;\n";
+            for (int j = 0; j < type->value_count(); ++j) {
+                const auto& val = type->value(j);
+                frm << (j != 0 ? "} else " : "") << "if (strval == \"" << val->name() << "\") {\n";
+                frm.indent();
+                frm << "value = " << name << "::" << val->name() << ";\n";
+                frm.outdent();
+                if (j == type->value_count()-1) {
+                    frm << "}\n";
+                }
+            }
+            frm << "return ss;\n";
+            frm.outdent();
+            frm << "}\n";
+        }
+    }
+
     if (!m_file->package().empty()) {
         frm << "}\n";
     }
+    frm.outdent();
 }
 
 static void grabDependencies(std::set<const FileDescriptor*>& toWrite, const FileDescriptor* desc)

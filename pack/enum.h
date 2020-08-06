@@ -15,7 +15,6 @@
 */
 #pragma once
 #include "pack/attribute.h"
-#include "pack/magic_enum.h"
 #include <sstream>
 
 namespace pack {
@@ -34,8 +33,8 @@ public:
     }
 
 public:
-    /// Returns a list of the enum values
-    virtual ValuesType values() const = 0;
+//    /// Returns a list of the enum values
+//    virtual ValuesType values() const = 0;
 
     /// Returns a string representation of the enum value
     virtual std::string asString() const = 0;
@@ -76,7 +75,7 @@ private:
 public:
     bool        compare(const Attribute& other) const override;
     std::string typeName() const override;
-    ValuesType  values() const override;
+    //ValuesType  values() const override;
     void        set(const Attribute& other) override;
     void        set(Attribute&& other) override;
     bool        hasValue() const override;
@@ -175,21 +174,20 @@ std::string Enum<T>::typeName() const
     return "Enum";
 }
 
-template <typename T>
-typename Enum<T>::ValuesType Enum<T>::values() const
-{
-    std::vector<std::pair<std::string, int>> map;
-    for (const auto& it : magic_enum::enum_values<T>()) {
-        map.emplace_back(asString(it), int(it));
-    }
+//template <typename T>
+//typename Enum<T>::ValuesType Enum<T>::values() const
+//{
+//    std::vector<std::pair<std::string, int>> map;
+//    for (const auto& it : magic_enum::enum_values<T>()) {
+//        map.emplace_back(asString(it), int(it));
+//    }
 
-    return map;
-}
+//    return map;
+//}
 
 template <typename T>
 std::string Enum<T>::asString(const T& value)
 {
-    using namespace magic_enum::ostream_operators;
     std::stringstream ss;
     ss << value;
     return ss.str();
@@ -226,9 +224,11 @@ std::string Enum<T>::asString() const
 template <typename T>
 void Enum<T>::fromString(const std::string& value)
 {
-    if (auto casted = magic_enum::enum_cast<T>(value)) {
-        setValue(*casted);
-    }
+    T val;
+    std::stringstream ss;
+    ss << value;
+    ss >> val;
+    setValue(val);
 }
 
 template <typename T>
@@ -240,9 +240,7 @@ int Enum<T>::asInt() const
 template <typename T>
 void Enum<T>::fromInt(int value)
 {
-    if (auto casted = magic_enum::enum_cast<T>(value)) {
-        setValue(*casted);
-    }
+    setValue(static_cast<T>(value));
 }
 
 template <typename T>
