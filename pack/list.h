@@ -357,7 +357,7 @@ template <typename T>
 const INode& ObjectList<T>::get(int index) const
 {
     return m_value[index];
-};
+}
 
 template <typename T>
 INode& ObjectList<T>::create()
@@ -534,7 +534,7 @@ template <Type ValType>
 Type ValueList<ValType>::valueType() const
 {
     return ValType;
-};
+}
 
 template <Type ValType>
 bool ValueList<ValType>::empty() const
