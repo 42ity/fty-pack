@@ -143,7 +143,7 @@ public:
             auto zval = zconfig_locate(temp, "value");
 
             auto child = zconfig_new(zconfig_value(zkey), zconf);
-            if (auto val = zconfig_child(zval)) {
+            if (zconfig_child(zval)) {
                 copy(child, zval);
             } else {
                 zconfig_set_value(child, "%s", zconfig_value(zval));
