@@ -83,6 +83,10 @@ endif()
 ##############################################################################################################
 
 if (BUILD_TESTING AND WITH_PROTOBUF)
+    #add Catch2
+    find_package(Catch2 REQUIRED)
+    include(Catch)
+    
     etn_target(exe ${PROJECT_NAME}-test
         SOURCES
             tests/main.cpp
