@@ -119,36 +119,38 @@ struct Convert
     {
         auto refl = std::get<0>(proto)->GetReflection();
 
-        auto setFunc = [&](const auto& val) {
-            if constexpr (ValType == Type::Bool) {
-                refl->AddBool(std::get<0>(proto), std::get<1>(proto), val);
-            } else if constexpr (ValType == Type::Double) {
-                refl->AddDouble(std::get<0>(proto), std::get<1>(proto), val);
-            } else if constexpr (ValType == Type::Float) {
-                refl->AddFloat(std::get<0>(proto), std::get<1>(proto), val);
-            } else if constexpr (ValType == Type::Int32) {
-                refl->AddInt32(std::get<0>(proto), std::get<1>(proto), val);
-            } else if constexpr (ValType == Type::Int64) {
-                refl->AddInt64(std::get<0>(proto), std::get<1>(proto), val);
-            } else if constexpr (ValType == Type::String) {
-                refl->AddString(std::get<0>(proto), std::get<1>(proto), val);
-            } else if constexpr (ValType == Type::UInt32) {
-                refl->AddUInt32(std::get<0>(proto), std::get<1>(proto), val);
-            } else if constexpr (ValType == Type::UInt64) {
-                refl->AddUInt64(std::get<0>(proto), std::get<1>(proto), val);
-            }
-        };
-
         if constexpr (ValType == Type::UChar) {
             std::string str(node.value().begin(), node.value().end());
             refl->SetString(std::get<0>(proto), std::get<1>(proto), str);
-        } else if constexpr (ValType == Type::Bool) {
-            for (auto it : node) {
-                setFunc(it);
-            }
         } else {
-            for (const auto& it : node) {
-                setFunc(it);
+            auto setFunc = [&](const auto& val) {
+                if constexpr (ValType == Type::Bool) {
+                    refl->AddBool(std::get<0>(proto), std::get<1>(proto), val);
+                } else if constexpr (ValType == Type::Double) {
+                    refl->AddDouble(std::get<0>(proto), std::get<1>(proto), val);
+                } else if constexpr (ValType == Type::Float) {
+                    refl->AddFloat(std::get<0>(proto), std::get<1>(proto), val);
+                } else if constexpr (ValType == Type::Int32) {
+                    refl->AddInt32(std::get<0>(proto), std::get<1>(proto), val);
+                } else if constexpr (ValType == Type::Int64) {
+                    refl->AddInt64(std::get<0>(proto), std::get<1>(proto), val);
+                } else if constexpr (ValType == Type::String) {
+                    refl->AddString(std::get<0>(proto), std::get<1>(proto), val);
+                } else if constexpr (ValType == Type::UInt32) {
+                    refl->AddUInt32(std::get<0>(proto), std::get<1>(proto), val);
+                } else if constexpr (ValType == Type::UInt64) {
+                    refl->AddUInt64(std::get<0>(proto), std::get<1>(proto), val);
+                }
+            };
+
+            if constexpr (ValType == Type::Bool) {
+                for (auto it : node) {
+                    setFunc(it);
+                }
+            } else {
+                for (const auto& it : node) {
+                    setFunc(it);
+                }
             }
         }
     }
