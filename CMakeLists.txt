@@ -112,6 +112,8 @@ if (BUILD_TESTING AND WITH_PROTOBUF)
             tests/examples/example7.proto
             tests/examples/example8.proto
     )
+    
+    catch_discover_tests(${PROJECT_NAME}-test)
 endif()
 
 ##############################################################################################################
