@@ -86,7 +86,11 @@ if (BUILD_TESTING AND WITH_PROTOBUF)
     #add Catch2
     #find_package(Catch2 REQUIRED)
     #include(Catch)
-    
+    if (NOT COMMAND ParseAndAddCatchTests)
+        find_package(Catch2 REQUIRED)
+        include(Catch)
+    endif()
+
     etn_target(exe ${PROJECT_NAME}-test
         SOURCES
             tests/main.cpp
@@ -106,8 +110,6 @@ if (BUILD_TESTING AND WITH_PROTOBUF)
     if (COMMAND ParseAndAddCatchTests)
         ParseAndAddCatchTests(${PROJECT_NAME}-test)
     else()
-        find_package(Catch2 REQUIRED)
-        include(Catch)
         catch_discover_tests(${PROJECT_NAME}-test)
     endif()
 
