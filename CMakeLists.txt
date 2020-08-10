@@ -103,7 +103,11 @@ if (BUILD_TESTING AND WITH_PROTOBUF)
             Catch2::Catch2
     )
 
-    ParseAndAddCatchTests(${PROJECT_NAME}-test)
+    if (COMMAND ParseAndAddCatchTests)
+        ParseAndAddCatchTests(${PROJECT_NAME}-test)
+    elseif(COMMAND catch_discover_tests)
+        catch_discover_tests(${PROJECT_NAME}-test)
+    endif()
 
     fty_protogen(
         TARGET ${PROJECT_NAME}-test
