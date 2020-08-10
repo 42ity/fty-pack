@@ -84,8 +84,8 @@ endif()
 
 if (BUILD_TESTING AND WITH_PROTOBUF)
     #add Catch2
-    find_package(Catch2 REQUIRED)
-    include(Catch)
+    #find_package(Catch2 REQUIRED)
+    #include(Catch)
     
     etn_target(exe ${PROJECT_NAME}-test
         SOURCES
@@ -103,6 +103,8 @@ if (BUILD_TESTING AND WITH_PROTOBUF)
             Catch2::Catch2
     )
 
+    ParseAndAddCatchTests(${PROJECT_NAME}-test)
+
     fty_protogen(
         TARGET ${PROJECT_NAME}-test
         WORKDIR tests
@@ -117,7 +119,7 @@ if (BUILD_TESTING AND WITH_PROTOBUF)
             tests/examples/example8.proto
     )
     
-    catch_discover_tests(${PROJECT_NAME}-test)
+    #catch_discover_tests(${PROJECT_NAME}-test)
 endif()
 
 ##############################################################################################################

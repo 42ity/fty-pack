@@ -10,6 +10,7 @@ macro(fty_protogen)
     if (NOT Protobuf_PROTOC_EXECUTABLE)
         message(FATAL_ERROR "Protobuf compiler was not found, please install `protobuf-compiler`")
     endif()
+    add_dependencies(${arg_TARGET} fty-protoc)
 
     set(protoc ${Protobuf_PROTOC_EXECUTABLE})
     set(plugin ${FTY_PACK_BIN_DIR}/protoc-gen-fty)
