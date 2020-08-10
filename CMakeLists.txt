@@ -105,7 +105,7 @@ if (BUILD_TESTING AND WITH_PROTOBUF)
 
     if (COMMAND ParseAndAddCatchTests)
         ParseAndAddCatchTests(${PROJECT_NAME}-test)
-    elseif(COMMAND catch_discover_tests)
+    else()
         find_package(Catch2 REQUIRED)
         include(Catch)
         catch_discover_tests(${PROJECT_NAME}-test)
