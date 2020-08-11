@@ -1,15 +1,15 @@
 Source: fty-pack
 Maintainer: Clement Perrette <clementperrette@eaton.com>
-Build-Depends:  cmake (>=3.0),
-                debhelper (>= 9),
-                fty-cmake-dev,
-                fty-utils-dev,
-                libyaml-cpp-dev,
-                libczmq-dev,
-                libprotobuf-dev,
-                protobuf-compiler,
-                libprotoc-dev
-
+Build-Depends:
+    cmake (>=3.0),
+    debhelper (>= 9),
+    fty-cmake-dev,
+    fty-utils-dev,
+    libyaml-cpp-dev,
+    libczmq-dev,
+    libprotobuf-dev,
+    protobuf-compiler,
+    libprotoc-dev
 Standards-Version: 1.0.0
 Section: devel
 Priority: extra
@@ -19,13 +19,17 @@ Architecture: any
 Depends:    libyaml-cpp0.6,
             libczmq4,
             libprotobuf17,
+            ${shlibs:Depends},
             ${misc:Depends}
 Description: fty-pack library
 
-Package: fty-pack-dev
+Package: libfty-pack-dev
 Architecture: any
-Depends:    libfty-pack,
-            libprotoc17,
-            protobuf-compiler,
-            ${misc:Depends}
+Section: libdevel
+Depends:
+    libfty-pack,
+    libprotoc17,
+    protobuf-compiler,
+    ${shlibs:Depends},
+    ${misc:Depends}
 Description: fty-pack tools including fty-protoc
