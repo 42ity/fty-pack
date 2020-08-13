@@ -16,10 +16,7 @@ Priority: extra
 
 Package: libfty-pack
 Architecture: any
-Depends:    libyaml-cpp0.6,
-            libczmq4,
-            libprotobuf17,
-            ${shlibs:Depends},
+Depends:    ${shlibs:Depends},
             ${misc:Depends}
 Description: fty-pack library
 
@@ -28,7 +25,6 @@ Architecture: any
 Section: libdevel
 Depends:
     libfty-pack,
-    libprotoc17,
     protobuf-compiler,
     ${shlibs:Depends},
     ${misc:Depends}
