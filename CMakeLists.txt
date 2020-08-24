@@ -83,15 +83,7 @@ endif()
 ##############################################################################################################
 
 if (BUILD_TESTING AND WITH_PROTOBUF)
-    #add Catch2
-    #find_package(Catch2 REQUIRED)
-    #include(Catch)
-    if (NOT COMMAND ParseAndAddCatchTests)
-        find_package(Catch2 REQUIRED)
-        include(Catch)
-    endif()
-
-    etn_target(exe ${PROJECT_NAME}-test
+    etn_test(${PROJECT_NAME}-test
         SOURCES
             tests/main.cpp
             tests/simple.cpp
@@ -107,12 +99,6 @@ if (BUILD_TESTING AND WITH_PROTOBUF)
             Catch2::Catch2
     )
 
-    if (COMMAND ParseAndAddCatchTests)
-        ParseAndAddCatchTests(${PROJECT_NAME}-test)
-    else()
-        catch_discover_tests(${PROJECT_NAME}-test)
-    endif()
-
     fty_protogen(
         TARGET ${PROJECT_NAME}-test
         WORKDIR tests
@@ -126,8 +112,6 @@ if (BUILD_TESTING AND WITH_PROTOBUF)
             tests/examples/example7.proto
             tests/examples/example8.proto
     )
-    
-    #catch_discover_tests(${PROJECT_NAME}-test)
 endif()
 
 ##############################################################################################################
