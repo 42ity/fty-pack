@@ -1,0 +1,4 @@
+/usr/lib/*/pkgconfig/*
+/usr/share/*
+/usr/bin/*
+/usr/include/*
