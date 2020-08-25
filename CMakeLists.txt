@@ -57,7 +57,7 @@ etn_target(shared ${PROJECT_NAME}
         pack/types.h
         pack/serialization.h
         pack/proto-map.h
-        src/visitor.h
+        pack/visitor.h
 
     SOURCES
         src/node.cpp
