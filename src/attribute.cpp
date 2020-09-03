@@ -1,4 +1,4 @@
-/*  ========================================================================
+/*  ====================================================================================================================
     Copyright (C) 2020 Eaton
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -11,19 +11,20 @@
     You should have received a copy of the GNU General Public License along
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-    ========================================================================
+    ====================================================================================================================
 */
+
 #include "pack/attribute.h"
 #include <regex>
-
-//pack::Attribute::Attribute()
-//{
-//}
 
 pack::Attribute::Attribute(NodeType type, Attribute* parent, const std::string& key)
     : m_parent(parent)
     , m_key(key)
     , m_type(type)
+{
+}
+
+pack::Attribute::~Attribute()
 {
 }
 
@@ -56,10 +57,10 @@ std::vector<std::string> pack::split(const std::string& str)
 {
     static std::regex rgx("\\s+");
 
-    std::vector<std::string> ret;
+    std::vector<std::string>   ret;
     std::sregex_token_iterator iter(str.begin(), str.end(), rgx, -1);
     std::sregex_token_iterator end;
-    for ( ; iter != end; ++iter)
+    for (; iter != end; ++iter)
         ret.push_back(*iter);
     return ret;
 }

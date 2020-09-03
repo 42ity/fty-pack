@@ -1,4 +1,4 @@
-/*  ========================================================================
+/*  ====================================================================================================================
     Copyright (C) 2020 Eaton
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -11,18 +11,18 @@
     You should have received a copy of the GNU General Public License along
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-    ========================================================================
+    ====================================================================================================================
 */
+
 #pragma once
 #include "pack/attribute.h"
-#include "pack/node.h"
 #include "pack/types.h"
 #include <algorithm>
 #include <map>
 
 namespace pack {
 
-// ===========================================================================================================
+// =====================================================================================================================
 
 class IMap : public Attribute
 {
@@ -33,7 +33,7 @@ public:
     }
 };
 
-// ===========================================================================================================
+// =====================================================================================================================
 
 /// Object map interface.
 ///
@@ -49,7 +49,7 @@ public:
     virtual INode&       create()                          = 0;
 };
 
-// ===========================================================================================================
+// =====================================================================================================================
 
 /// Values list interface.
 ///
@@ -64,7 +64,7 @@ public:
     virtual Type valueType() const = 0;
 };
 
-// ===========================================================================================================
+// =====================================================================================================================
 
 template <typename T>
 class Map : public IObjectMap
@@ -89,7 +89,7 @@ public:
     const T&       operator[](const std::string& key) const;
     int            size() const;
     Map&           operator=(const Map& other);
-                   operator const T &() const;
+                   operator const T&() const;
     Map&           operator=(const MapType& val);
 
 public:
@@ -104,7 +104,7 @@ private:
     MapType m_value;
 };
 
-// ===========================================================================================================
+// =====================================================================================================================
 
 template <Type ValType>
 class ValueMap : public IValueMap
@@ -148,7 +148,7 @@ private:
     MapType m_value;
 };
 
-// ===========================================================================================================
+// =====================================================================================================================
 
 template <typename T>
 const typename Map<T>::MapType& Map<T>::value() const
@@ -208,7 +208,7 @@ Map<T>& Map<T>::operator=(const Map& other)
 }
 
 template <typename T>
-Map<T>::operator const T &() const
+Map<T>::operator const T&() const
 {
     return m_value;
 }
@@ -280,7 +280,7 @@ void Map<T>::clear()
     m_value.clear();
 }
 
-// ===========================================================================================================
+// =====================================================================================================================
 
 template <Type ValType>
 const typename ValueMap<ValType>::MapType& ValueMap<ValType>::value() const
@@ -415,6 +415,6 @@ void ValueMap<ValType>::append(const std::string& key, const CppType& val)
     m_value.emplace(key, val);
 }
 
-// ===========================================================================================================
+// =====================================================================================================================
 
 } // namespace pack

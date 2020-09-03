@@ -1,4 +1,4 @@
-/*  ========================================================================
+/*  ====================================================================================================================
     Copyright (C) 2020 Eaton
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -11,28 +11,23 @@
     You should have received a copy of the GNU General Public License along
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-    ========================================================================
+    ====================================================================================================================
 */
+
 #pragma once
 #include "pack/attribute.h"
 
 namespace pack {
 
-// ===========================================================================================================
+// =====================================================================================================================
 
 /// Node interface
 class INode : public Attribute
 {
 public:
-    INode()
-        : Attribute(NodeType::Node, nullptr)
-    {
-    }
-
-    INode(Attribute* parent, const std::string& key = {})
-        : Attribute(NodeType::Node, parent, key)
-    {
-    }
+    INode();
+    INode(Attribute* parent, const std::string& key = {});
+    ~INode() override;
 
     /// Dumps a class as yaml serialized string
     virtual std::string dump() const = 0;
@@ -94,6 +89,6 @@ public:
     void clear() override;
 };
 
-// ===========================================================================================================
+// =====================================================================================================================
 
 } // namespace pack

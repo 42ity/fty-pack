@@ -1,4 +1,4 @@
-/*  ========================================================================
+/*  ====================================================================================================================
     Copyright (C) 2020 Eaton
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -11,15 +11,16 @@
     You should have received a copy of the GNU General Public License along
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-    ========================================================================
+    ====================================================================================================================
 */
+
 #pragma once
 #include "pack/attribute.h"
 #include <sstream>
 
 namespace pack {
 
-// ===========================================================================================================
+// =====================================================================================================================
 
 /// Enum class interface
 class IEnum : public Attribute
@@ -33,8 +34,8 @@ public:
     }
 
 public:
-//    /// Returns a list of the enum values
-//    virtual ValuesType values() const = 0;
+    //    /// Returns a list of the enum values
+    //    virtual ValuesType values() const = 0;
 
     /// Returns a string representation of the enum value
     virtual std::string asString() const = 0;
@@ -49,7 +50,7 @@ public:
     virtual void fromInt(int value) = 0;
 };
 
-// ===========================================================================================================
+// =====================================================================================================================
 
 template <typename T>
 class Enum : public IEnum
@@ -75,7 +76,7 @@ private:
 public:
     bool        compare(const Attribute& other) const override;
     std::string typeName() const override;
-    //ValuesType  values() const override;
+    // ValuesType  values() const override;
     void        set(const Attribute& other) override;
     void        set(Attribute&& other) override;
     bool        hasValue() const override;
@@ -90,20 +91,20 @@ protected:
     T m_def   = {};
 };
 
-// ===========================================================================================================
+// =====================================================================================================================
 // Enum implementation
-// ===========================================================================================================
+// =====================================================================================================================
 
 template <typename T>
-Enum<T>::Enum(const Enum& other):
-    IEnum(other)
+Enum<T>::Enum(const Enum& other)
+    : IEnum(other)
 {
     setValue(other.value());
 }
 
 template <typename T>
-Enum<T>::Enum(Enum&& other):
-    IEnum(other)
+Enum<T>::Enum(Enum&& other)
+    : IEnum(other)
 {
     setValue(other.value());
 }
@@ -174,8 +175,8 @@ std::string Enum<T>::typeName() const
     return "Enum";
 }
 
-//template <typename T>
-//typename Enum<T>::ValuesType Enum<T>::values() const
+// template <typename T>
+// typename Enum<T>::ValuesType Enum<T>::values() const
 //{
 //    std::vector<std::pair<std::string, int>> map;
 //    for (const auto& it : magic_enum::enum_values<T>()) {
@@ -224,7 +225,7 @@ std::string Enum<T>::asString() const
 template <typename T>
 void Enum<T>::fromString(const std::string& value)
 {
-    T val;
+    T                 val;
     std::stringstream ss;
     ss << value;
     ss >> val;
@@ -249,6 +250,6 @@ void Enum<T>::clear()
     setValue(m_def);
 }
 
-// ===========================================================================================================
+// =====================================================================================================================
 
 } // namespace pack

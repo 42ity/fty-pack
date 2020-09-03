@@ -1,4 +1,4 @@
-/*  ========================================================================
+/*  ====================================================================================================================
     Copyright (C) 2020 Eaton
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -11,8 +11,9 @@
     You should have received a copy of the GNU General Public License along
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-    ========================================================================
+    ====================================================================================================================
 */
+
 #pragma once
 
 #include <optional>
@@ -21,87 +22,90 @@
 
 namespace pack {
 
-// ===========================================================================================================
+// =====================================================================================================================
 
-#define FIELD(key, ...)                                                                                      \
-    {                                                                                                        \
-        this, key, ##__VA_ARGS__                                                                             \
+// Add metainformation to the value
+#define FIELD(key, ...)                                                                                                \
+    {                                                                                                                  \
+        this, key, ##__VA_ARGS__                                                                                       \
     }
 
-#define _META_CTR(className, ...)                                                                            \
-    className(const className& other)                                                                        \
-    {                                                                                                        \
-        for (auto& it : fields()) {                                                                          \
-            it->set(*other.fieldByKey(it->key()));                                                           \
-        }                                                                                                    \
-    }                                                                                                        \
-    className(className&& other)                                                                             \
-    {                                                                                                        \
-        for (auto& it : fields()) {                                                                          \
-            it->set(std::move(*other.fieldByKey(it->key())));                                                \
-        }                                                                                                    \
-    }                                                                                                        \
-    className& operator=(const className& other)                                                             \
-    {                                                                                                        \
-        for (auto& it : fields()) {                                                                          \
-            it->set(*other.fieldByKey(it->key()));                                                           \
-        }                                                                                                    \
-        return *this;                                                                                        \
-    }                                                                                                        \
-    className& operator=(className&& other)                                                                  \
-    {                                                                                                        \
-        for (auto& it : fields()) {                                                                          \
-            it->set(std::move(*other.fieldByKey(it->key())));                                                \
-        }                                                                                                    \
-        return *this;                                                                                        \
+#define META(className, ...)                                                                                           \
+public:                                                                                                                \
+    META_CTR(className, __VA_ARGS__)                                                                                   \
+    META_FIELDS(className, __VA_ARGS__)
+
+#define META_WOC(className, ...)                                                                                       \
+public:                                                                                                                \
+    META_FIELDS(className, __VA_ARGS__)
+
+// =====================================================================================================================
+
+#define META_CTR(className, ...)                                                                                       \
+    className(const className& other)                                                                                  \
+    {                                                                                                                  \
+        for (auto& it : fields()) {                                                                                    \
+            it->set(*other.fieldByKey(it->key()));                                                                     \
+        }                                                                                                              \
+    }                                                                                                                  \
+    className(className&& other)                                                                                       \
+    {                                                                                                                  \
+        for (auto& it : fields()) {                                                                                    \
+            it->set(std::move(*other.fieldByKey(it->key())));                                                          \
+        }                                                                                                              \
+    }                                                                                                                  \
+    inline className& operator=(const className& other)                                                                \
+    {                                                                                                                  \
+        for (auto& it : fields()) {                                                                                    \
+            it->set(*other.fieldByKey(it->key()));                                                                     \
+        }                                                                                                              \
+        return *this;                                                                                                  \
+    }                                                                                                                  \
+    inline className& operator=(className&& other)                                                                     \
+    {                                                                                                                  \
+        for (auto& it : fields()) {                                                                                    \
+            it->set(std::move(*other.fieldByKey(it->key())));                                                          \
+        }                                                                                                              \
+        return *this;                                                                                                  \
     }
 
-#define _META_FIELDS(className, ...)                                                                         \
-public:                                                                                                      \
-    std::vector<const pack::Attribute*> fields() const override                                              \
-    {                                                                                                        \
-        return std::apply(                                                                                   \
-            [](const auto&... elems) {                                                                       \
-                return std::vector<const pack::Attribute*>{&elems...};                                       \
-            },                                                                                               \
-            std::forward_as_tuple(__VA_ARGS__));                                                             \
-    }                                                                                                        \
-    std::vector<pack::Attribute*> fields() override                                                          \
-    {                                                                                                        \
-        return std::apply(                                                                                   \
-            [](auto&... elems) {                                                                             \
-                return std::vector<pack::Attribute*>{&elems...};                                             \
-            },                                                                                               \
-            std::forward_as_tuple(__VA_ARGS__));                                                             \
-    }                                                                                                        \
-    std::vector<std::string> fieldNames() const override                                                     \
-    {                                                                                                        \
-        return pack::split(#__VA_ARGS__);                                                                    \
-    }                                                                                                        \
-    std::string typeName() const override                                                                    \
-    {                                                                                                        \
-        return m_className;                                                                                  \
-    }                                                                                                        \
-    static std::string typeInfo()                                                                            \
-    {                                                                                                        \
-        return m_className;                                                                                  \
-    }                                                                                                        \
+#define META_FIELDS(className, ...)                                                                                    \
+public:                                                                                                                \
+    inline std::vector<const pack::Attribute*> fields() const override                                                 \
+    {                                                                                                                  \
+        return std::apply(                                                                                             \
+            [](const auto&... elems) {                                                                                 \
+                return std::vector<const pack::Attribute*>{&elems...};                                                 \
+            },                                                                                                         \
+            std::forward_as_tuple(__VA_ARGS__));                                                                       \
+    }                                                                                                                  \
+    inline std::vector<pack::Attribute*> fields() override                                                             \
+    {                                                                                                                  \
+        return std::apply(                                                                                             \
+            [](auto&... elems) {                                                                                       \
+                return std::vector<pack::Attribute*>{&elems...};                                                       \
+            },                                                                                                         \
+            std::forward_as_tuple(__VA_ARGS__));                                                                       \
+    }                                                                                                                  \
+    inline std::vector<std::string> fieldNames() const override                                                        \
+    {                                                                                                                  \
+        return pack::split(#__VA_ARGS__);                                                                              \
+    }                                                                                                                  \
+    inline std::string typeName() const override                                                                       \
+    {                                                                                                                  \
+        return m_className;                                                                                            \
+    }                                                                                                                  \
+    static std::string typeInfo()                                                                                      \
+    {                                                                                                                  \
+        return m_className;                                                                                            \
+    }                                                                                                                  \
     static constexpr const char* m_className = #className
 
-#define META(className, ...)                                                                                 \
-public:                                                                                                      \
-    _META_CTR(className, __VA_ARGS__)                                                                        \
-    _META_FIELDS(className, __VA_ARGS__)
-
-#define META_WOC(className, ...)                                                                             \
-public:                                                                                                      \
-    _META_FIELDS(className, __VA_ARGS__)
-
-// ===========================================================================================================
+// =====================================================================================================================
 
 std::vector<std::string> split(const std::string& str);
 
-// ===========================================================================================================
+// =====================================================================================================================
 
 class Attribute
 {
@@ -116,9 +120,8 @@ public:
     };
 
 public:
-    // Attribute();
     Attribute(NodeType type, Attribute* parent, const std::string& key = {});
-    virtual ~Attribute() = default;
+    virtual ~Attribute();
 
     virtual bool        compare(const Attribute& other) const = 0;
     virtual std::string typeName() const                      = 0;
@@ -141,6 +144,6 @@ protected:
     NodeType    m_type;
 };
 
-// ===========================================================================================================
+// =====================================================================================================================
 
 } // namespace pack

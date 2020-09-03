@@ -1,4 +1,4 @@
-/*  ========================================================================
+/*  ====================================================================================================================
     Copyright (C) 2020 Eaton
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -11,8 +11,9 @@
     You should have received a copy of the GNU General Public License along
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-    ========================================================================
+    ====================================================================================================================
 */
+
 #include "pack/pack.h"
 #include "pack/serialization.h"
 #include "pack/visitor.h"
@@ -22,7 +23,7 @@
 
 namespace pack {
 
-// ===========================================================================================================
+// =====================================================================================================================
 
 template <Type ValType>
 struct Convert
@@ -37,10 +38,10 @@ struct Convert
     static void decode(ValueList<ValType>& node, const YAML::Node& yaml)
     {
         if constexpr (ValType == Type::UChar) {
-            YAML::Binary binary = yaml.as<YAML::Binary>();
-            const unsigned char * data = binary.data();
-            std::size_t size = binary.size();
-            node.setValue({data, data+size});
+            YAML::Binary         binary = yaml.as<YAML::Binary>();
+            const unsigned char* data   = binary.data();
+            std::size_t          size   = binary.size();
+            node.setValue({data, data + size});
         } else {
             for (const auto& it : yaml) {
                 node.append(it.as<CppType>());
@@ -83,7 +84,7 @@ struct Convert
     }
 };
 
-// ===========================================================================================================
+// =====================================================================================================================
 
 class YamlDeserializer : public Deserialize<YamlDeserializer>
 {
@@ -131,7 +132,7 @@ public:
     }
 };
 
-// ===========================================================================================================
+// =====================================================================================================================
 
 class YamlSerializer : public Serialize<YamlSerializer>
 {
@@ -182,17 +183,16 @@ public:
     }
 };
 
-fty::Expected<std::string> read(const std::string& filename)
+static fty::Expected<std::string> read(const std::string& filename)
 {
     std::ifstream st(filename);
     if (st.is_open()) {
-        return fty::Expected<std::string>(
-            {std::istreambuf_iterator<char>(st), std::istreambuf_iterator<char>()});
+        return fty::Expected<std::string>({std::istreambuf_iterator<char>(st), std::istreambuf_iterator<char>()});
     }
-    return fty::unexpected() << "Cannot read file" << filename;
+    return fty::unexpected("Cannot read file {}", filename);
 }
 
-// ===========================================================================================================
+// =====================================================================================================================
 
 namespace yaml {
     fty::Expected<std::string> serialize(const Attribute& node)
@@ -227,7 +227,7 @@ namespace yaml {
     }
 } // namespace yaml
 
-// ===========================================================================================================
+// =====================================================================================================================
 
 namespace json {
     fty::Expected<std::string> serialize(const Attribute& node)
@@ -268,6 +268,6 @@ namespace json {
 
 } // namespace json
 
-// ===========================================================================================================
+// =====================================================================================================================
 
 } // namespace pack

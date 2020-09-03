@@ -37,7 +37,7 @@ TEST_CASE("Simple serialization/deserialization")
     {
         std::string cnt = *pack::yaml::serialize(origin);
         REQUIRE(!cnt.empty());
-        INFO("yaml content:" << cnt);
+        INFO("yaml content:" << cnt)
 
         test::Person restored;
         pack::yaml::deserialize(cnt, restored);

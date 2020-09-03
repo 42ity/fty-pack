@@ -1,4 +1,4 @@
-/*  ========================================================================
+/*  ====================================================================================================================
     Copyright (C) 2020 Eaton
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -11,11 +11,28 @@
     You should have received a copy of the GNU General Public License along
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-    ========================================================================
+    ====================================================================================================================
 */
+
 #include "pack/node.h"
 #include "pack/serialization.h"
 #include <algorithm>
+
+// =====================================================================================================================
+
+pack::INode::INode()
+    : Attribute(NodeType::Node, nullptr)
+{
+}
+
+pack::INode::INode(Attribute* parent, const std::string& key)
+    : Attribute(NodeType::Node, parent, key)
+{
+}
+
+pack::INode::~INode() = default;
+
+// =====================================================================================================================
 
 std::string pack::Node::dump() const
 {

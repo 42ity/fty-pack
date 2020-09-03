@@ -1,4 +1,4 @@
-/*  ========================================================================
+/*  ====================================================================================================================
     Copyright (C) 2020 Eaton
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -11,8 +11,9 @@
     You should have received a copy of the GNU General Public License along
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-    ========================================================================
+    ====================================================================================================================
 */
+
 #include "pack/visitor.h"
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/descriptor.pb.h>
@@ -190,8 +191,7 @@ public:
         for (auto& it : node.fields()) {
             if (it->hasValue()) {
                 auto fdesc = std::get<0>(proto)->GetDescriptor()->FindFieldByName(it->key());
-                if (fdesc && fdesc->cpp_type() == pb::FieldDescriptor::CPPTYPE_MESSAGE &&
-                    !fdesc->is_repeated()) {
+                if (fdesc && fdesc->cpp_type() == pb::FieldDescriptor::CPPTYPE_MESSAGE && !fdesc->is_repeated()) {
                     auto refl  = std::get<0>(proto)->GetReflection();
                     auto child = WalkType(refl->MutableMessage(std::get<0>(proto), fdesc), fdesc);
                     visit(*it, child);

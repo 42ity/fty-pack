@@ -1,4 +1,4 @@
-/*  ========================================================================
+/*  ====================================================================================================================
     Copyright (C) 2020 Eaton
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -11,17 +11,20 @@
     You should have received a copy of the GNU General Public License along
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-    ========================================================================
+    ====================================================================================================================
 */
+
 #include "pack/pack.h"
 #include "pack/visitor.h"
 #include <czmq.h>
 #include <fty/convert.h>
 #include <memory>
-#include <zconfig.h>
 #include <yaml-cpp/yaml.h>
+#include <zconfig.h>
 
 namespace pack {
+
+// =====================================================================================================================
 
 template <Type ValType>
 struct Convert
@@ -47,8 +50,7 @@ struct Convert
     static void decode(ValueMap<ValType>& node, zconfig_t* zconf)
     {
         for (zconfig_t* item = zconfig_child(zconf); item; item = zconfig_next(item)) {
-            node.append(
-                fty::convert<std::string>(zconfig_name(item)), fty::convert<CppType>(zconfig_value(item)));
+            node.append(fty::convert<std::string>(zconfig_name(item)), fty::convert<CppType>(zconfig_value(item)));
         }
     }
 
@@ -95,6 +97,8 @@ static void copy(zconfig_t* dest, zconfig_t* src)
         }
     }
 }
+
+// =====================================================================================================================
 
 class ZSerializer : public Serialize<ZSerializer>
 {
@@ -154,6 +158,8 @@ public:
     }
 };
 
+// =====================================================================================================================
+
 class ZDeserializer : public Deserialize<ZDeserializer>
 {
 public:
@@ -212,6 +218,7 @@ public:
     }
 };
 
+// =====================================================================================================================
 
 namespace zconfig {
     fty::Expected<std::string> serialize(const Attribute& node)
@@ -222,7 +229,7 @@ namespace zconfig {
         std::string ret(zret);
         zstr_free(&zret);
         zconfig_destroy(&config);
-        return ret;
+        return std::move(ret);
     }
 
     fty::Expected<void> deserialize(const std::string& content, Attribute& node)
@@ -233,5 +240,7 @@ namespace zconfig {
         return {};
     }
 } // namespace zconfig
+
+// =====================================================================================================================
 
 } // namespace pack
