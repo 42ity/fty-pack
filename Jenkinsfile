@@ -42,14 +42,14 @@ pipeline {
             }
         }
 
-        /*stage('Tests') {
+        stage('Tests') {
             steps {
                 cmakeBuild buildType: 'Release',
                 cleanBuild: true,
                 installation: 'InSearchPath',
                 steps: [[args: 'test']]
             }
-        }*/
+        }
 
         /*stage('Memchecks') {
             when {
