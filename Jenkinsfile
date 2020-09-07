@@ -37,19 +37,20 @@ pipeline {
             steps {
                 cmakeBuild buildType: 'Release',
                 cleanBuild: true,
+                cmakeArgs: "-DBUILD_TESTING=OFF",
                 installation: 'InSearchPath',
                 steps: [[withCmake: true]]
             }
         }
 
-        stage('Tests') {
+        /*stage('Tests') {
             steps {
                 cmakeBuild buildType: 'Release',
                 cleanBuild: true,
                 installation: 'InSearchPath',
                 steps: [[args: 'test']]
             }
-        }
+        }*/
 
         /*stage('Memchecks') {
             when {
