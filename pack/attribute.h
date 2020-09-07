@@ -35,6 +35,11 @@ public:                                                                         
     META_CTR(className, __VA_ARGS__)                                                                                   \
     META_FIELDS(className, __VA_ARGS__)
 
+#define META_BASE(className, base, ...)                                                                                \
+public:                                                                                                                \
+    META_CTR_BASE(className, base, __VA_ARGS__)                                                                        \
+    META_FIELDS(className, __VA_ARGS__)
+
 #define META_WOC(className, ...)                                                                                       \
 public:                                                                                                                \
     META_FIELDS(className, __VA_ARGS__)
@@ -63,6 +68,38 @@ public:                                                                         
     }                                                                                                                  \
     inline className& operator=(className&& other)                                                                     \
     {                                                                                                                  \
+        for (auto& it : fields()) {                                                                                    \
+            it->set(std::move(*other.fieldByKey(it->key())));                                                          \
+        }                                                                                                              \
+        return *this;                                                                                                  \
+    }
+
+#define META_CTR_BASE(className, base, ...)                                                                            \
+    className(const className& other)                                                                                  \
+        : base(other)                                                                                                  \
+    {                                                                                                                  \
+        for (auto& it : fields()) {                                                                                    \
+            it->set(*other.fieldByKey(it->key()));                                                                     \
+        }                                                                                                              \
+    }                                                                                                                  \
+    className(className&& other)                                                                                       \
+        : base(other)                                                                                                  \
+    {                                                                                                                  \
+        for (auto& it : fields()) {                                                                                    \
+            it->set(std::move(*other.fieldByKey(it->key())));                                                          \
+        }                                                                                                              \
+    }                                                                                                                  \
+    inline className& operator=(const className& other)                                                                \
+    {                                                                                                                  \
+        base::operator=(other);                                                                                        \
+        for (auto& it : fields()) {                                                                                    \
+            it->set(*other.fieldByKey(it->key()));                                                                     \
+        }                                                                                                              \
+        return *this;                                                                                                  \
+    }                                                                                                                  \
+    inline className& operator=(className&& other)                                                                     \
+    {                                                                                                                  \
+        base::operator=(other);                                                                                        \
         for (auto& it : fields()) {                                                                                    \
             it->set(std::move(*other.fieldByKey(it->key())));                                                          \
         }                                                                                                              \
