@@ -158,6 +158,7 @@ public:
 
 public:
     Attribute(NodeType type, Attribute* parent, const std::string& key = {});
+    Attribute(const Attribute&) = default;
     virtual ~Attribute();
 
     virtual bool        compare(const Attribute& other) const = 0;

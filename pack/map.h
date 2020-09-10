@@ -27,6 +27,11 @@ namespace pack {
 class IMap : public Attribute
 {
 public:
+    IMap()
+        : Attribute(NodeType::Map, nullptr, "")
+    {
+    }
+
     IMap(Attribute* parent, const std::string& key = {})
         : Attribute(NodeType::Map, parent, key)
     {
@@ -119,6 +124,7 @@ public:
 
 public:
     using IValueMap::IValueMap;
+    ValueMap(const ValueMap&) = default;
 
 public:
     ConstIterator begin() const;
