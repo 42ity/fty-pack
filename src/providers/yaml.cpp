@@ -148,8 +148,8 @@ public:
     static void packValue(const IObjectList& val, YAML::Node& yaml)
     {
         for (int i = 0; i < val.size(); ++i) {
-            const INode& node = val.get(i);
-            YAML::Node   child;
+            const Attribute& node = val.get(i);
+            YAML::Node       child;
             visit(node, child);
             yaml.push_back(child);
         }
@@ -257,7 +257,7 @@ namespace json {
         }
     }
 
-    inline fty::Expected<void> deserializeFile(const std::string& fileName, Attribute& node)
+    fty::Expected<void> deserializeFile(const std::string& fileName, Attribute& node)
     {
         if (auto cnt = read(fileName)) {
             return deserialize(*cnt, node);

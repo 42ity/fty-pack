@@ -53,8 +53,8 @@ public:
 
 public:
     /// Returns INode interface by index
-    virtual const INode& get(int index) const = 0;
-    virtual INode&       create()             = 0;
+    virtual const Attribute& get(int index) const = 0;
+    virtual Attribute&       create()             = 0;
 };
 
 // =====================================================================================================================
@@ -116,15 +116,15 @@ public:
 
 
 public:
-    int          size() const override;
-    bool         compare(const Attribute& other) const override;
-    std::string  typeName() const override;
-    void         set(const Attribute& other) override;
-    void         set(Attribute&& other) override;
-    bool         hasValue() const override;
-    const INode& get(int index) const override;
-    INode&       create() override;
-    void         clear() override;
+    int              size() const override;
+    bool             compare(const Attribute& other) const override;
+    std::string      typeName() const override;
+    void             set(const Attribute& other) override;
+    void             set(Attribute&& other) override;
+    bool             hasValue() const override;
+    const Attribute& get(int index) const override;
+    Attribute&       create() override;
+    void             clear() override;
 
 private:
     ListType m_value;
@@ -353,13 +353,13 @@ bool ObjectList<T>::hasValue() const
 }
 
 template <typename T>
-const INode& ObjectList<T>::get(int index) const
+const Attribute& ObjectList<T>::get(int index) const
 {
     return m_value[index];
 }
 
 template <typename T>
-INode& ObjectList<T>::create()
+Attribute& ObjectList<T>::create()
 {
     return append();
 }

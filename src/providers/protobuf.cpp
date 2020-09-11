@@ -179,9 +179,9 @@ public:
     {
         auto refl = std::get<0>(proto)->GetReflection();
         for (int i = 0; i < val.size(); ++i) {
-            const INode& node       = val.get(i);
-            pb::Message* child      = refl->AddMessage(std::get<0>(proto), std::get<1>(proto));
-            auto         childProto = std::make_tuple(child, std::get<1>(proto));
+            const Attribute& node       = val.get(i);
+            pb::Message*     child      = refl->AddMessage(std::get<0>(proto), std::get<1>(proto));
+            auto             childProto = std::make_tuple(child, std::get<1>(proto));
             visit(node, childProto);
         }
     }

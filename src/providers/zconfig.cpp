@@ -114,8 +114,8 @@ public:
     static void packValue(const IObjectList& val, zconfig_t* zconf)
     {
         for (int i = 0; i < val.size(); ++i) {
-            const INode& node  = val.get(i);
-            auto         child = zconfig_new(fty::convert<std::string>(i + 1).c_str(), zconf);
+            const Attribute& node  = val.get(i);
+            auto             child = zconfig_new(fty::convert<std::string>(i + 1).c_str(), zconf);
             visit(node, child);
         }
     }

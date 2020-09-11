@@ -97,6 +97,8 @@ public:
                    operator const T&() const;
     Map&           operator=(const MapType& val);
 
+    static std::string typeInfo();
+
 public:
     bool        compare(const Attribute& other) const override;
     std::string typeName() const override;
@@ -140,6 +142,8 @@ public:
     ValueMap&      operator=(const ValueMap& other);
     ValueMap&      operator=(const MapType& val);
     void           append(const std::string& key, const CppType& val);
+
+    static std::string typeInfo();
 
 public:
     bool        compare(const Attribute& other) const override;
@@ -286,6 +290,12 @@ void Map<T>::clear()
     m_value.clear();
 }
 
+template <typename T>
+std::string Map<T>::typeInfo()
+{
+    return "Map<"+T::typeInfo()+">";
+}
+
 // =====================================================================================================================
 
 template <Type ValType>
@@ -419,6 +429,12 @@ template <Type ValType>
 void ValueMap<ValType>::append(const std::string& key, const CppType& val)
 {
     m_value.emplace(key, val);
+}
+
+template <Type ValType>
+std::string ValueMap<ValType>::typeInfo()
+{
+    return "ValueMap<"+valueTypeName(ValType)+">";
 }
 
 // =====================================================================================================================
