@@ -26,6 +26,13 @@ pipeline {
     }
 
     stages {
+         stage('check') {
+             steps{
+                 sh '''
+                    echo "Here is the branch ${GIT_BRANCH}"
+                    '''
+             }
+         }
         stage('Build & Analysis') {
             parallel {
                 stage('Release Build') {
