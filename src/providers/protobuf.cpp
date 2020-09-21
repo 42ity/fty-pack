@@ -342,13 +342,13 @@ namespace protobuf {
             } catch (google::protobuf::FatalException& ex) {
                 return fty::unexpected(ex.message());
             }
+
+            auto proto = ProtoDeserializer::WalkType(msg.get(), nullptr);
+            ProtoDeserializer::visit(node, proto);
+            return {};
         } catch (const std::exception& e) {
             return fty::unexpected(e.what());
         }
-
-        auto proto = ProtoDeserializer::WalkType(msg.get(), nullptr);
-        ProtoDeserializer::visit(node, proto);
-        return {};
     }
 
 } // namespace protobuf
