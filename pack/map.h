@@ -19,6 +19,7 @@
 #include "pack/types.h"
 #include <algorithm>
 #include <map>
+#include <regex>
 
 namespace pack {
 
@@ -144,6 +145,11 @@ public:
     void           append(const std::string& key, const CppType& val);
 
     static std::string typeInfo();
+
+    template<typename T>
+    Iterator find(const T& pred);
+    Iterator find(const std::string& key);
+    Iterator find(const std::regex& rex);
 
 public:
     bool        compare(const Attribute& other) const override;
@@ -435,6 +441,27 @@ template <Type ValType>
 std::string ValueMap<ValType>::typeInfo()
 {
     return "ValueMap<"+valueTypeName(ValType)+">";
+}
+
+template <Type ValType>
+template<typename T>
+typename ValueMap<ValType>::Iterator ValueMap<ValType>::find(const T& pred)
+{
+    return std::find_if(m_value.begin(), m_value.end(), pred);
+}
+
+template <Type ValType>
+typename ValueMap<ValType>::Iterator ValueMap<ValType>::find(const std::string& key)
+{
+    return m_value.find(key);
+}
+
+template <Type ValType>
+typename ValueMap<ValType>::Iterator ValueMap<ValType>::find(const std::regex& rex)
+{
+    return std::find_if(m_value.begin(), m_value.end(), [&](const auto& pair){
+        return std::regex_match(pair.fist, rex);
+    });
 }
 
 // =====================================================================================================================

@@ -391,7 +391,7 @@ template <Type ValType>
 ValueList<ValType>::ValueList(ValueList&& other)
     : IValueList(other)
 {
-    setValue(std::move(other.value()));
+    setValue(other.value());
 }
 
 template <Type ValType>

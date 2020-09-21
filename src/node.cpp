@@ -49,7 +49,7 @@ const pack::Attribute* pack::Node::fieldByKey(const std::string& key) const
     auto       it   = std::find_if(flds.begin(), flds.end(), [&](const auto* attr) {
         return attr->key() == key;
     });
-    return it != fields().end() ? *it : nullptr;
+    return it != flds.end() ? *it : nullptr;
 }
 
 const pack::Attribute* pack::Node::fieldByName(const std::string& name) const

@@ -335,11 +335,15 @@ namespace protobuf {
 
     fty::Expected<void> deserialize(const std::string& content, Attribute& node)
     {
-        std::unique_ptr<pb::Message> msg(getMessage(node));
         try {
-            msg->ParseFromString(content);
-        } catch (google::protobuf::FatalException& ex) {
-            return fty::unexpected(ex.message());
+            std::unique_ptr<pb::Message> msg(getMessage(node));
+            try {
+                msg->ParseFromString(content);
+            } catch (google::protobuf::FatalException& ex) {
+                return fty::unexpected(ex.message());
+            }
+        } catch (const std::exception& e) {
+            return fty::unexpected(e.what());
         }
 
         auto proto = ProtoDeserializer::WalkType(msg.get(), nullptr);

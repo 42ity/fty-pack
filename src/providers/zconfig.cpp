@@ -223,21 +223,29 @@ public:
 namespace zconfig {
     fty::Expected<std::string> serialize(const Attribute& node)
     {
-        zconfig_t* config = zconfig_new("root", nullptr);
-        ZSerializer::visit(node, config);
-        auto        zret = zconfig_str_save(config);
-        std::string ret(zret);
-        zstr_free(&zret);
-        zconfig_destroy(&config);
-        return std::move(ret);
+        try {
+            zconfig_t* config = zconfig_new("root", nullptr);
+            ZSerializer::visit(node, config);
+            auto        zret = zconfig_str_save(config);
+            std::string ret(zret);
+            zstr_free(&zret);
+            zconfig_destroy(&config);
+            return std::move(ret);
+        } catch (const std::exception& e) {
+            return fty::unexpected(e.what());
+        }
     }
 
     fty::Expected<void> deserialize(const std::string& content, Attribute& node)
     {
-        zconfig_t* config = zconfig_str_load(content.c_str());
-        ZDeserializer::visit(node, config);
-        zconfig_destroy(&config);
-        return {};
+        try {
+            zconfig_t* config = zconfig_str_load(content.c_str());
+            ZDeserializer::visit(node, config);
+            zconfig_destroy(&config);
+            return {};
+        } catch (const std::exception& e) {
+            return fty::unexpected(e.what());
+        }
     }
 } // namespace zconfig
 

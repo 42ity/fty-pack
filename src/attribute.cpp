@@ -55,12 +55,16 @@ pack::Attribute::NodeType pack::Attribute::type() const
 
 std::vector<std::string> pack::split(const std::string& str)
 {
-    static std::regex rgx("\\s+");
+    try {
+        static std::regex rgx("\\s+");
 
-    std::vector<std::string>   ret;
-    std::sregex_token_iterator iter(str.begin(), str.end(), rgx, -1);
-    std::sregex_token_iterator end;
-    for (; iter != end; ++iter)
-        ret.push_back(*iter);
-    return ret;
+        std::vector<std::string>   ret;
+        std::sregex_token_iterator iter(str.begin(), str.end(), rgx, -1);
+        std::sregex_token_iterator end;
+        for (; iter != end; ++iter)
+            ret.push_back(*iter);
+        return ret;
+    } catch (const std::regex_error&) {
+        return {str};
+    }
 }
