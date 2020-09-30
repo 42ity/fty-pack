@@ -17,30 +17,32 @@ macro(fty_protogen)
     if (FTY_PACK_BIN_DIR)
         set(plugin ${FTY_PACK_BIN_DIR}/protoc-gen-fty)
     else()
-        set(plugin ${CMAKE_CURRENT_BINARY_DIR}/protoc/protoc-gen-fty)
-    endif()
-
-    if (arg_WORKDIR)
-        get_filename_component(arg_WORKDIR ${arg_WORKDIR} ABSOLUTE)
+        if (EXISTS ${CMAKE_CURRENT_BINARY_DIR}/protoc/protoc-gen-fty)
+            set(plugin ${CMAKE_CURRENT_BINARY_DIR}/protoc/protoc-gen-fty)
+        elseif (EXISTS ${CMAKE_BINARY_DIR}/fty-pack/protoc/protoc-gen-fty)
+            set(plugin ${CMAKE_BINARY_DIR}/fty-pack/protoc/protoc-gen-fty)
+        endif()
     endif()
 
     foreach(proto ${arg_PROTO})
+        get_filename_component(outDir ${proto} DIRECTORY)
         get_filename_component(abs ${proto} ABSOLUTE)
         if (NOT arg_WORKDIR)
             get_filename_component(inc ${abs} DIRECTORY)
         else()
-            set(inc ${arg_WORKDIR})
+            get_filename_component(inc ${arg_WORKDIR} ABSOLUTE)
+            set(outDir ${arg_WORKDIR})
+            target_include_directories(${arg_TARGET} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/${arg_WORKDIR})
         endif()
 
-        file(RELATIVE_PATH relPath ${inc} ${abs})
-        get_filename_component(outDir ${relPath} DIRECTORY)
         get_filename_component(genName ${proto} NAME_WE)
+        get_filename_component(getPath ${proto} DIRECTORY)
 
-        set(result ${CMAKE_CURRENT_BINARY_DIR}/${outDir}/${genName}.h)
+        set(result ${CMAKE_CURRENT_BINARY_DIR}/${getPath}/${genName}.h)
 
         add_custom_command(
-            OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${outDir}/${genName}.h
-            COMMAND ${protoc} --plugin=${plugin} -I ${inc} --fty_out=${CMAKE_CURRENT_BINARY_DIR} ${abs}
+            OUTPUT  ${result}
+            COMMAND ${protoc} --plugin=${plugin} -I ${inc} --fty_out=${CMAKE_CURRENT_BINARY_DIR}/${outDir} ${abs}
             DEPENDS ${plugin} ${proto}
         )
         target_sources(${arg_TARGET} PRIVATE ${result})
