@@ -40,6 +40,8 @@ macro(fty_protogen)
 
         set(result ${CMAKE_CURRENT_BINARY_DIR}/${getPath}/${genName}.h)
 
+        file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${outDir})
+
         add_custom_command(
             OUTPUT  ${result}
             COMMAND ${protoc} --plugin=${plugin} -I ${inc} --fty_out=${CMAKE_CURRENT_BINARY_DIR}/${outDir} ${abs}
