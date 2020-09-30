@@ -96,6 +96,7 @@ pipeline {
                         stage('Compile') {
                             steps {
                                 sh '''
+                                    export CCACHE_DISABLE=1
                                     rm -rf build_coverity
                                     mkdir -p build_coverity
                                     cmake -DCMAKE_BUILD_TYPE=Release \
