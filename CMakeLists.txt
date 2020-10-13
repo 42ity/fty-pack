@@ -92,6 +92,9 @@ if (BUILD_TESTING AND WITH_PROTOBUF)
             tests/map.cpp
             tests/include.cpp
             #tests/oneof.cpp
+            tests/new-notation.cpp
+            tests/new-notation.h
+        #FLAGS --save-temps
         PREPROCESSOR -DCATCH_CONFIG_FAST_COMPILE
         USES
             ${PROJECT_NAME}

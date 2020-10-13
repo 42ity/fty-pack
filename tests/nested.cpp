@@ -19,15 +19,14 @@
 TEST_CASE("Nested serialization/deserialization")
 {
     test3::Item origin;
-    origin.name  = "Item";
+    origin.name       = "Item";
     origin.sub.exists = true;
-    origin.sub.name = "subname";
+    origin.sub.name   = "subname";
 
     auto check = [](const test3::Item& item) {
         REQUIRE("Item" == item.name);
         REQUIRE(true == item.sub.exists);
         REQUIRE("subname" == item.sub.name);
-
     };
 
     check(origin);

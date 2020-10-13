@@ -27,6 +27,9 @@ class INode : public Attribute
 public:
     INode();
     INode(Attribute* parent, const std::string& key = {});
+    INode(const INode&) = default;
+    INode(INode&&) = default;
+
     ~INode() override;
 
     /// Dumps a class as yaml serialized string
@@ -63,6 +66,7 @@ class Node : public INode
 {
 public:
     using INode::INode;
+    using Ctor = Node;
 
     /// Compares classes by content
     bool compare(const Attribute& other) const override;
