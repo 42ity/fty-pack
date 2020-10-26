@@ -337,7 +337,7 @@ typename ValueMap<ValType>::Iterator ValueMap<ValType>::end()
 template <Type ValType>
 int ValueMap<ValType>::size() const
 {
-    return m_value.size();
+    return int(m_value.size());
 }
 
 template <Type ValType>

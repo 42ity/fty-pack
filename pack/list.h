@@ -300,7 +300,7 @@ bool ObjectList<T>::remove(Func&& func)
 template <typename T>
 const T& ObjectList<T>::operator[](int index) const
 {
-    return m_value[index];
+    return m_value[size_t(index)];
 }
 
 template <typename T>
@@ -355,7 +355,7 @@ bool ObjectList<T>::hasValue() const
 template <typename T>
 const Attribute& ObjectList<T>::get(int index) const
 {
-    return m_value[index];
+    return m_value[size_t(index)];
 }
 
 template <typename T>
@@ -477,7 +477,7 @@ bool ValueList<ValType>::remove(const CppType& toRemove)
 template <Type ValType>
 const typename ValueList<ValType>::CppType& ValueList<ValType>::operator[](int index) const
 {
-    return m_value[index];
+    return m_value[size_t(index)];
 }
 
 template <Type ValType>

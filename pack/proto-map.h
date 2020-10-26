@@ -205,7 +205,7 @@ Node& ProtoMap<KeyValue>::create()
 template <typename KeyValue>
 const Node& ProtoMap<KeyValue>::get(int index) const
 {
-    return m_value[index];
+    return m_value[size_t(index)];
 }
 
 //======================================================================================================================

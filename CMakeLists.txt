@@ -111,6 +111,8 @@ if (BUILD_TESTING AND WITH_PROTOBUF)
             tests/examples/example7.proto
             tests/examples/example8.proto
     )
+
+    #etn_coverage(${PROJECT_NAME}-test SUBDIR tests)
 endif()
 
 ##############################################################################################################
