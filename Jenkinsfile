@@ -97,9 +97,11 @@ pipeline {
                             steps {
                                 sh '''
                                     export CCACHE_DISABLE=1
+                                    
                                     rm -rf build_coverity
                                     mkdir -p build_coverity
                                     cmake -DCMAKE_BUILD_TYPE=Release \
+                                        -DBUILD_TESTING=ON \
                                         -B $PWD/build_coverity
                                     coverity.sh --build $PWD/build_coverity
                                     '''
