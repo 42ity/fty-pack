@@ -51,8 +51,8 @@ public:
 
 public:
     /// Returns INode interface by index
-    virtual const INode& get(const std::string& key) const = 0;
-    virtual INode&       create()                          = 0;
+    virtual const Attribute& get(const std::string& key) const = 0;
+    virtual Attribute&       create(const std::string& key)    = 0;
 };
 
 // =====================================================================================================================
@@ -100,6 +100,10 @@ public:
 
     static std::string typeInfo();
 
+    T&               append(const std::string& key);
+    const Attribute& get(const std::string& key) const override;
+    Attribute&       create(const std::string& key) override;
+
 public:
     bool        compare(const Attribute& other) const override;
     std::string typeName() const override;
@@ -146,7 +150,7 @@ public:
 
     static std::string typeInfo();
 
-    template<typename T>
+    template <typename T>
     Iterator find(const T& pred);
     Iterator find(const std::string& key);
     Iterator find(const std::regex& rex);
@@ -209,7 +213,7 @@ const T& Map<T>::operator[](const std::string& key) const
         return pair.first == key;
     });
 
-    if (found) {
+    if (found != m_value.end()) {
         return found->second;
     }
 
@@ -299,7 +303,35 @@ void Map<T>::clear()
 template <typename T>
 std::string Map<T>::typeInfo()
 {
-    return "Map<"+T::typeInfo()+">";
+    return "Map<" + T::typeInfo() + ">";
+}
+
+template <typename T>
+T& Map<T>::append(const std::string& key)
+{
+    T it;
+    m_value.push_back(std::make_pair(key, it));
+    return m_value.back().second;
+}
+
+template <typename T>
+const Attribute& Map<T>::get(const std::string& key) const
+{
+    auto found = std::find_if(m_value.begin(), m_value.end(), [&](const auto& pair) {
+        return pair.first == key;
+    });
+
+    if (found != m_value.end()) {
+        return found->second;
+    }
+
+    throw std::out_of_range("Key " + key + " was not found");
+}
+
+template <typename T>
+Attribute& Map<T>::create(const std::string& key)
+{
+    return append(key);
 }
 
 // =====================================================================================================================
@@ -440,11 +472,11 @@ void ValueMap<ValType>::append(const std::string& key, const CppType& val)
 template <Type ValType>
 std::string ValueMap<ValType>::typeInfo()
 {
-    return "ValueMap<"+valueTypeName(ValType)+">";
+    return "ValueMap<" + valueTypeName(ValType) + ">";
 }
 
 template <Type ValType>
-template<typename T>
+template <typename T>
 typename ValueMap<ValType>::Iterator ValueMap<ValType>::find(const T& pred)
 {
     return std::find_if(m_value.begin(), m_value.end(), pred);
@@ -459,7 +491,7 @@ typename ValueMap<ValType>::Iterator ValueMap<ValType>::find(const std::string& 
 template <Type ValType>
 typename ValueMap<ValType>::Iterator ValueMap<ValType>::find(const std::regex& rex)
 {
-    return std::find_if(m_value.begin(), m_value.end(), [&](const auto& pair){
+    return std::find_if(m_value.begin(), m_value.end(), [&](const auto& pair) {
         return std::regex_match(pair.fist, rex);
     });
 }
