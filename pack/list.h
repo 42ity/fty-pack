@@ -114,6 +114,7 @@ public:
     const T& operator[](int index) const;
     bool     empty() const;
 
+    static std::string typeInfo();
 
 public:
     int              size() const override;
@@ -170,6 +171,8 @@ public:
 
     template <typename Func>
     void sort(Func&& func);
+
+    static std::string typeInfo();
 
 public:
     int         size() const override;
@@ -370,6 +373,12 @@ bool ObjectList<T>::empty() const
     return m_value.empty();
 }
 
+template <typename T>
+std::string ObjectList<T>::typeInfo()
+{
+    return "List<" + T::typeInfo() + ">";
+}
+
 // =====================================================================================================================
 // Values list implementation
 // =====================================================================================================================
@@ -539,6 +548,12 @@ template <Type ValType>
 bool ValueList<ValType>::empty() const
 {
     return m_value.empty();
+}
+
+template <Type ValType>
+std::string ValueList<ValType>::typeInfo()
+{
+    return "List<" + valueTypeName(ValType) + ">";
 }
 
 // =====================================================================================================================
