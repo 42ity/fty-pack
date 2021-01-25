@@ -192,6 +192,17 @@ static fty::Expected<std::string> read(const std::string& filename)
     return fty::unexpected("Cannot read file {}", filename);
 }
 
+static fty::Expected<void> write(const std::string& filename, const std::string& content)
+{
+    std::ofstream st(filename);
+    if (st.is_open()) {
+        st << content;
+        st.close();
+        return {};
+    }
+    return fty::unexpected("Cannot read file {}", filename);
+}
+
 // =====================================================================================================================
 
 namespace yaml {
@@ -223,6 +234,18 @@ namespace yaml {
             return deserialize(*cnt, node);
         } else {
             return fty::unexpected(cnt.error());
+        }
+    }
+
+    fty::Expected<void> serializeFile(const std::string& fileName, const Attribute& node)
+    {
+        if (auto ret = serialize(node)) {
+            if (auto res = write(fileName, *ret); !res) {
+                return fty::unexpected(res.error());
+            }
+            return {};
+        } else {
+            return fty::unexpected(ret.error());
         }
     }
 } // namespace yaml
@@ -266,6 +289,17 @@ namespace json {
         }
     }
 
+    fty::Expected<void> serializeFile(const std::string& fileName, const Attribute& node)
+    {
+        if (auto ret = serialize(node)) {
+            if (auto res = write(fileName, *ret); !res) {
+                return fty::unexpected(res.error());
+            }
+            return {};
+        } else {
+            return fty::unexpected(ret.error());
+        }
+    }
 } // namespace json
 
 // =====================================================================================================================
