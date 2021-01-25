@@ -293,7 +293,7 @@ template <typename T>
 template <typename Func>
 bool ObjectList<T>::remove(Func&& func)
 {
-    if (auto it = std::find_if(m_value.begin(), m_value.end(), func)) {
+    if (auto it = std::find_if(m_value.begin(), m_value.end(), func); it != m_value.end()) {
         m_value.erase(it);
         return true;
     }
