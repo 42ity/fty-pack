@@ -233,7 +233,7 @@ typename ObjectList<T>::ConstIterator ObjectList<T>::end() const
 template <typename T>
 typename ObjectList<T>::Iterator ObjectList<T>::begin()
 {
-    return m_value.end();
+    return m_value.begin();
 }
 
 template <typename T>
