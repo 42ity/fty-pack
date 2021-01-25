@@ -108,10 +108,13 @@ public:
     template <typename Func>
     std::optional<T> find(Func&& func);
     template <typename Func>
+    int findIndex(Func&& func);
+    template <typename Func>
     bool remove(Func&& func);
     template <typename Func>
     void     sort(Func&& func);
     const T& operator[](int index) const;
+    T& operator[](int index);
     bool     empty() const;
 
     static std::string typeInfo();
@@ -284,6 +287,16 @@ std::optional<T> ObjectList<T>::find(Func&& func)
 
 template <typename T>
 template <typename Func>
+int ObjectList<T>::findIndex(Func&& func)
+{
+    if (auto it = std::find_if(m_value.begin(), m_value.end(), func); it != m_value.end()) {
+        return std::distance(m_value.begin(), it);
+    }
+    return -1;
+}
+
+template <typename T>
+template <typename Func>
 void ObjectList<T>::sort(Func&& func)
 {
     std::sort(m_value.begin(), m_value.end(), std::forward<Func>(func));
@@ -302,6 +315,12 @@ bool ObjectList<T>::remove(Func&& func)
 
 template <typename T>
 const T& ObjectList<T>::operator[](int index) const
+{
+    return m_value[size_t(index)];
+}
+
+template <typename T>
+T& ObjectList<T>::operator[](int index)
 {
     return m_value[size_t(index)];
 }
