@@ -230,7 +230,7 @@ namespace zconfig {
             std::string ret(zret);
             zstr_free(&zret);
             zconfig_destroy(&config);
-            return ret;
+            return std::move(ret);
         } catch (const std::exception& e) {
             return fty::unexpected(e.what());
         }

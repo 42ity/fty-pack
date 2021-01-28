@@ -36,6 +36,12 @@ public:
     {
     }
 
+    IValue()
+        : Attribute(NodeType::Value, nullptr)
+    {
+    }
+
+
     virtual Type valueType() const = 0;
 };
 
@@ -52,6 +58,7 @@ public:
     Value(Attribute* parent, const std::string& key, const CppType& def = {});
     Value(const Value& other);
     Value(Value&& other);
+    Value();
 
 public:
     const CppType& value() const;
@@ -96,6 +103,12 @@ Value<ValType>::Value(Value&& other)
     : IValue(other)
 {
     m_val = std::move(other.m_val);
+}
+
+template <Type ValType>
+Value<ValType>::Value()
+    : IValue()
+{
 }
 
 template <Type ValType>
