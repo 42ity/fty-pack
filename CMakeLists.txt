@@ -57,6 +57,7 @@ etn_target(shared ${PROJECT_NAME}
         pack/serialization.h
         pack/proto-map.h
         pack/visitor.h
+        pack/variant.h
 
     SOURCES
         src/node.cpp
@@ -91,6 +92,8 @@ if (BUILD_TESTING AND WITH_PROTOBUF)
             tests/enums.cpp
             tests/map.cpp
             tests/include.cpp
+            tests/child.cpp
+            tests/variant.cpp
             #tests/oneof.cpp
         PREPROCESSOR -DCATCH_CONFIG_FAST_COMPILE
         USES

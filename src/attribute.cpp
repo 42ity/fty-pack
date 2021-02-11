@@ -56,7 +56,7 @@ pack::Attribute::NodeType pack::Attribute::type() const
 std::vector<std::string> pack::split(const std::string& str)
 {
     try {
-        static std::regex rgx("\\s+");
+        static std::regex rgx(",?\\s+");
 
         std::vector<std::string>   ret;
         std::sregex_token_iterator iter(str.begin(), str.end(), rgx, -1);

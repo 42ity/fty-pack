@@ -21,6 +21,7 @@
 #include <memory>
 #include <yaml-cpp/yaml.h>
 #include <zconfig.h>
+#include <cassert>
 
 namespace pack {
 
@@ -156,6 +157,12 @@ public:
             zconfig_destroy(&temp);
         }
     }
+
+    static void packValue(const IVariant& /*val*/, zconfig_t* /*zconf*/)
+    {
+        static_assert("Not implemented");
+    }
+
 };
 
 // =====================================================================================================================
@@ -215,6 +222,11 @@ public:
 
             zconfig_destroy(&temp);
         }
+    }
+
+    static void unpackValue(IVariant& /*var*/, zconfig_t* /*conf*/)
+    {
+        static_assert("Not implemented");
     }
 };
 

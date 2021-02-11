@@ -221,6 +221,11 @@ public:
             visit(node, childProto);
         }
     }
+
+    static void packValue(const IVariant& /*var*/, WalkType& /*proto*/)
+    {
+        static_assert("Not implemented");
+    }
 };
 
 class ProtoDeserializer : public Deserialize<ProtoDeserializer>
@@ -279,6 +284,11 @@ public:
             auto  child = WalkType(&msg, nullptr);
             visit(obj, child);
         }
+    }
+
+    static void unpackValue(IVariant& /*var*/, const WalkType& /*proto*/)
+    {
+        static_assert("Not implemented");
     }
 };
 

@@ -23,6 +23,7 @@
 #include "pack/proto-map.h"
 #include "pack/serialization.h"
 #include "pack/value.h"
+#include "pack/variant.h"
 
 namespace pack {
 
@@ -91,13 +92,13 @@ using StringMap = ValueMap<Type::String>;
 // Implementation
 //======================================================================================================================
 
-template <typename T>
+template <typename T, typename=std::enable_if_t<!std::is_same_v<T, std::decay_t<String>>>>
 inline bool operator==(const String& l, const T& r)
 {
     return l.value() == r;
 }
 
-template <typename T>
+template <typename T, typename=std::enable_if_t<!std::is_same_v<T, std::decay_t<String>>>>
 inline bool operator==(const T& l, const String& r)
 {
     return r.value() == l;

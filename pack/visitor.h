@@ -183,8 +183,18 @@ public:
             case Attribute::NodeType::Value:
                 visit(static_cast<IValue&>(node), res);
                 break;
+            case Attribute::NodeType::Variant:
+                visit(static_cast<IVariant&>(node), res);
+                break;
         }
     }
+
+    template <typename Resource>
+    static void visit(IVariant& var, const Resource& res)
+    {
+        Worker::unpackValue(var, res);
+    }
+
 };
 
 // =====================================================================================================================
@@ -351,7 +361,16 @@ public:
             case Attribute::NodeType::Value:
                 visit(static_cast<const IValue&>(node), res);
                 break;
+        case Attribute::NodeType::Variant:
+            visit(static_cast<const IVariant&>(node), res);
+            break;
         }
+    }
+
+    template <typename Resource>
+    static void visit(const IVariant& var, Resource& res)
+    {
+        Worker::packValue(var, res);
     }
 };
 
