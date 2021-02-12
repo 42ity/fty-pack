@@ -1,8 +1,8 @@
 #pragma once
 #include "pack/attribute.h"
-#include <variant>
-#include <stdexcept>
 #include <algorithm>
+#include <stdexcept>
+#include <variant>
 
 namespace pack {
 
@@ -16,8 +16,8 @@ public:
     {
     }
 
-    virtual const Attribute& get() const                                        = 0;
-    virtual Attribute&       get()                                              = 0;
+    virtual const Attribute* get() const                                        = 0;
+    virtual Attribute*       get()                                              = 0;
     virtual bool             findBetter(const std::vector<std::string>& fields) = 0;
 };
 
@@ -44,8 +44,8 @@ public:
     T& get();
 
 public:
-    const Attribute& get() const override;
-    Attribute&       get() override;
+    const Attribute* get() const override;
+    Attribute*       get() override;
     bool             findBetter(const std::vector<std::string>& fields) override;
 
 public:
@@ -98,41 +98,44 @@ T& Variant<Types...>::get()
 }
 
 template <typename... Types>
-const Attribute& Variant<Types...>::get() const
+const Attribute* Variant<Types...>::get() const
 {
     const Attribute* attr = nullptr;
-    std::visit(
-        [&](const auto& var) {
-            using T = std::decay_t<decltype(var)>;
-            if (std::is_base_of_v<Attribute, T>) {
-                attr = &var;
-            }
-        },
-        m_value);
-    if (attr) {
-        return *attr;
+    try {
+        std::visit(
+            [&](const auto& var) {
+                using T = std::decay_t<decltype(var)>;
+                if (std::is_base_of_v<Attribute, T>) {
+                    attr = &var;
+                }
+            },
+            m_value);
+    } catch (const std::bad_variant_access&) {
+        return nullptr;
     }
-    throw std::runtime_error("No attributes");
+
+    return attr;
 }
 
 template <typename... Types>
-Attribute& Variant<Types...>::get()
+Attribute* Variant<Types...>::get()
 {
     Attribute* attr = nullptr;
 
-    std::visit(
-        [&](auto& var) {
-            using T = std::decay_t<decltype(var)>;
-            if (std::is_base_of_v<Attribute, T>) {
-                attr = &var;
-            }
-        },
-        m_value);
-
-    if (attr) {
-        return *attr;
+    try {
+        std::visit(
+            [&](auto& var) {
+                using T = std::decay_t<decltype(var)>;
+                if (std::is_base_of_v<Attribute, T>) {
+                    attr = &var;
+                }
+            },
+            m_value);
+    } catch (const std::bad_variant_access&) {
+        return nullptr;
     }
-    throw std::runtime_error("No attributes");
+
+    return attr;
 }
 
 template <typename... Types>
@@ -141,6 +144,7 @@ bool Variant<Types...>::compare(const Attribute& other) const
     if (auto casted = dynamic_cast<const Variant<Types...>*>(&other)) {
         return m_value == casted->m_value;
     }
+    return false;
 }
 
 template <typename... Types>

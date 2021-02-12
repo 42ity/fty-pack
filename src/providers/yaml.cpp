@@ -18,7 +18,6 @@
 #include "pack/serialization.h"
 #include "pack/visitor.h"
 #include <fstream>
-#include <iostream>
 #include <yaml-cpp/yaml.h>
 
 namespace pack {
@@ -133,13 +132,14 @@ public:
 
     static void unpackValue(IVariant& var, const YAML::Node& yaml)
     {
-        std::cerr << "deserialize variant" << yaml.size() << "\n";
         std::vector<std::string> keys;
-        for(const auto& it: yaml) {
+        for (const auto& it : yaml) {
             keys.push_back(it.first.as<std::string>());
         }
         if (var.findBetter(keys)) {
-            unpackValue(static_cast<INode&>(var.get()), yaml);
+            if (auto ptr = var.get()) {
+                unpackValue(static_cast<INode&>(*ptr), yaml);
+            }
         }
     }
 };
@@ -196,7 +196,9 @@ public:
 
     static void packValue(const IVariant& var, YAML::Node& yaml)
     {
-        packValue(static_cast<const INode&>(var.get()), yaml);
+        if (auto ptr = var.get()) {
+            packValue(static_cast<const INode&>(*ptr), yaml);
+        }
     }
 };
 
