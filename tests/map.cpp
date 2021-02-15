@@ -26,12 +26,16 @@ TEST_CASE("Map serialization/deserialization")
     origin.intMap.append("key2", 66);
 
     auto check = [](const test5::Item& item) {
-        REQUIRE("some name" == item.name);
-        REQUIRE(2 == item.intMap.size());
-        CHECK(item.intMap.contains("key1"));
-        CHECK(item.intMap.contains("key2"));
-        CHECK(42 == item.intMap["key1"]);
-        CHECK(66 == item.intMap["key2"]);
+        try {
+            REQUIRE("some name" == item.name);
+            REQUIRE(2 == item.intMap.size());
+            CHECK(item.intMap.contains("key1"));
+            CHECK(item.intMap.contains("key2"));
+            CHECK(42 == item.intMap["key1"]);
+            CHECK(66 == item.intMap["key2"]);
+        } catch (const std::range_error& err) {
+            FAIL(err.what());
+        }
     };
 
     check(origin);

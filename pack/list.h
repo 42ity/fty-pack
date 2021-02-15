@@ -114,7 +114,7 @@ public:
     template <typename Func>
     void     sort(Func&& func);
     const T& operator[](int index) const;
-    T& operator[](int index);
+    T&       operator[](int index);
     bool     empty() const;
 
     static std::string typeInfo();

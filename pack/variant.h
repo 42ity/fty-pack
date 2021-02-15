@@ -30,9 +30,18 @@ public:
     using IVariant::IVariant;
 
     Variant();
+    Variant(const Variant& other);
+    Variant(Variant&& other);
 
-    template <typename T>
-    Variant(T&& val);
+    Variant& operator=(const Variant& other);
+    Variant& operator=(Variant&& other);
+
+    template <typename T, typename=std::enable_if_t<!std::is_same_v<std::decay_t<T>, Variant>>>
+    Variant(T&& val)
+        : IVariant(nullptr, {})
+        , m_value(val)
+    {
+    }
 
     template <typename T>
     bool is() const;
@@ -43,10 +52,14 @@ public:
     template <typename T>
     T& get();
 
+    template <typename T>
+    T& reset();
+
 public:
-    const Attribute* get() const override;
-    Attribute*       get() override;
-    bool             findBetter(const std::vector<std::string>& fields) override;
+    const Attribute*   get() const override;
+    Attribute*         get() override;
+    bool               findBetter(const std::vector<std::string>& fields) override;
+    static std::string typeInfo();
 
 public:
     bool        compare(const Attribute& other) const override;
@@ -69,11 +82,31 @@ Variant<Types...>::Variant()
 }
 
 template <typename... Types>
-template <typename T>
-Variant<Types...>::Variant(T&& val)
-    : IVariant(nullptr, {})
-    , m_value(val)
+Variant<Types...>::Variant(const Variant& other)
+    : IVariant(other)
+    , m_value(other.m_value)
 {
+}
+
+template <typename... Types>
+Variant<Types...>::Variant(Variant&& other)
+    : IVariant(other)
+    , m_value(std::move(other.m_value))
+{
+}
+
+template <typename... Types>
+Variant<Types...>& Variant<Types...>::operator=(const Variant& other)
+{
+    m_value = other.m_value;
+    return *this;
+}
+
+template <typename... Types>
+Variant<Types...>& Variant<Types...>::operator=(Variant&& other)
+{
+    m_value = std::move(other.m_value);
+    return *this;
 }
 
 template <typename... Types>
@@ -139,6 +172,14 @@ Attribute* Variant<Types...>::get()
 }
 
 template <typename... Types>
+template <typename T>
+T& Variant<Types...>::reset()
+{
+    m_value = T{};
+    return get<T>();
+}
+
+template <typename... Types>
 bool Variant<Types...>::compare(const Attribute& other) const
 {
     if (auto casted = dynamic_cast<const Variant<Types...>*>(&other)) {
@@ -150,8 +191,15 @@ bool Variant<Types...>::compare(const Attribute& other) const
 template <typename... Types>
 std::string Variant<Types...>::typeName() const
 {
+    return typeInfo();
+}
+
+template <typename... Types>
+std::string Variant<Types...>::typeInfo()
+{
     return "Variant";
 }
+
 
 template <typename... Types>
 void Variant<Types...>::set(const Attribute& other)
