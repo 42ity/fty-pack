@@ -36,7 +36,7 @@ public:
     Variant& operator=(const Variant& other);
     Variant& operator=(Variant&& other);
 
-    template <typename T, typename=std::enable_if_t<!std::is_same_v<std::decay_t<T>, Variant>>>
+    template <typename T, typename = std::enable_if_t<!std::is_same_v<std::decay_t<T>, Variant>>>
     Variant(T&& val)
         : IVariant(nullptr, {})
         , m_value(val)
@@ -246,31 +246,35 @@ void foreachType(TF&& f)
 template <typename... Types>
 bool Variant<Types...>::findBetter(const std::vector<std::string>& fields)
 {
-    size_t typeHash;
-    float  betterRating = 0.f;
+    try {
+        size_t typeHash;
+        float  betterRating = 0.f;
 
-    foreachType<Types...>([&](auto t) {
-        using ImplType = typename decltype(t)::Type;
+        foreachType<Types...>([&](auto t) {
+            using ImplType = typename decltype(t)::Type;
 
-        int count = 0;
-        for (const auto& fld : ImplType::staticFieldNames()) {
-            count += std::find(fields.begin(), fields.end(), fld) == fields.end() ? 0 : 1;
-        }
-        float rating = count * 1.f / ImplType::staticFieldNames().size();
-        if (rating >= betterRating) {
-            betterRating = rating;
-            typeHash     = typeid(ImplType).hash_code();
-        }
-    });
+            int count = 0;
+            for (const auto& fld : ImplType::staticFieldNames()) {
+                count += std::find(fields.begin(), fields.end(), fld) == fields.end() ? 0 : 1;
+            }
+            float rating = count * 1.f / ImplType::staticFieldNames().size();
+            if (rating >= betterRating) {
+                betterRating = rating;
+                typeHash     = typeid(ImplType).hash_code();
+            }
+        });
 
-    foreachType<Types...>([&](auto t) {
-        using ImplType = typename decltype(t)::Type;
-        if (typeid(ImplType).hash_code() == typeHash) {
-            m_value = ImplType{};
-        }
-    });
+        foreachType<Types...>([&](auto t) {
+            using ImplType = typename decltype(t)::Type;
+            if (typeid(ImplType).hash_code() == typeHash) {
+                m_value = ImplType{};
+            }
+        });
 
-    return m_value.index() != std::variant_npos;
+        return m_value.index() != std::variant_npos;
+    } catch (const std::bad_variant_access&) {
+        return false;
+    }
 }
 
 } // namespace pack

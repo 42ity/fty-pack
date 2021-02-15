@@ -33,7 +33,7 @@ TEST_CASE("Map serialization/deserialization")
             CHECK(item.intMap.contains("key2"));
             CHECK(42 == item.intMap["key1"]);
             CHECK(66 == item.intMap["key2"]);
-        } catch (const std::range_error& err) {
+        } catch (const std::exception& err) {
             FAIL(err.what());
         }
     };
@@ -100,12 +100,16 @@ TEST_CASE("Map of structs serialization/deserialization")
     origin.intMap.append("key2", s2);
 
     auto check = [](const test5::Item1& item) {
-        REQUIRE("some name" == item.name);
-        REQUIRE(2 == item.intMap.size());
-        CHECK(item.intMap.contains("key1"));
-        CHECK(item.intMap.contains("key2"));
-        CHECK("value 1" == item.intMap["key1"].value);
-        CHECK("value 2" == item.intMap["key2"].value);
+        try {
+            REQUIRE("some name" == item.name);
+            REQUIRE(2 == item.intMap.size());
+            CHECK(item.intMap.contains("key1"));
+            CHECK(item.intMap.contains("key2"));
+            CHECK("value 1" == item.intMap["key1"].value);
+            CHECK("value 2" == item.intMap["key2"].value);
+        } catch (const std::exception& err) {
+            FAIL(err.what());
+        }
     };
 
     check(origin);
@@ -186,7 +190,7 @@ TEST_CASE("Simple map serialization/deserialization")
             CHECK("some name2" == item.strs["key2"]);
             CHECK(12 == item.ints["key1"]);
             CHECK(13 == item.ints["key2"]);
-        } catch (const std::range_error& err) {
+        } catch (const std::exception& err) {
             FAIL(err.what());
         }
     };
