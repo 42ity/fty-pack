@@ -120,6 +120,7 @@ template <typename... Types>
 template <typename T>
 const T& Variant<Types...>::get() const
 {
+    assert(is<T>());
     return std::get<T>(m_value);
 }
 
@@ -127,6 +128,7 @@ template <typename... Types>
 template <typename T>
 T& Variant<Types...>::get()
 {
+    assert(is<T>());
     return std::get<T>(m_value);
 }
 

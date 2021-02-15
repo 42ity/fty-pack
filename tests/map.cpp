@@ -175,16 +175,20 @@ TEST_CASE("Simple map serialization/deserialization")
     origin.ints.append("key2", 13);
 
     auto check = [](const TestMap& item) {
-        REQUIRE(2 == item.strs.size());
-        REQUIRE(2 == item.ints.size());
-        CHECK(item.strs.contains("key1"));
-        CHECK(item.strs.contains("key2"));
-        CHECK(item.ints.contains("key1"));
-        CHECK(item.ints.contains("key2"));
-        CHECK("some name1" == item.strs["key1"]);
-        CHECK("some name2" == item.strs["key2"]);
-        CHECK(12 == item.ints["key1"]);
-        CHECK(13 == item.ints["key2"]);
+        try {
+            REQUIRE(2 == item.strs.size());
+            REQUIRE(2 == item.ints.size());
+            CHECK(item.strs.contains("key1"));
+            CHECK(item.strs.contains("key2"));
+            CHECK(item.ints.contains("key1"));
+            CHECK(item.ints.contains("key2"));
+            CHECK("some name1" == item.strs["key1"]);
+            CHECK("some name2" == item.strs["key2"]);
+            CHECK(12 == item.ints["key1"]);
+            CHECK(13 == item.ints["key2"]);
+        } catch (const std::range_error& err) {
+            FAIL(err.what());
+        }
     };
 
     check(origin);
@@ -222,4 +226,3 @@ TEST_CASE("Simple map serialization/deserialization")
         check(restored);
     }
 }
-
