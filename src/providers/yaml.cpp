@@ -281,8 +281,23 @@ namespace json {
             YAML::Emitter out;
             out.SetIndent(4);
 
-            out << YAML::DoubleQuoted << YAML::Flow << yaml;
-            return std::string(out.c_str());
+            if (!yaml.IsNull()) {
+                out << YAML::DoubleQuoted << YAML::Flow << yaml;
+                return std::string(out.c_str());
+            } else {
+                switch (node.type()) {
+                case Attribute::NodeType::List:
+                    return std::string("[]");
+                case Attribute::NodeType::Node:
+                case Attribute::NodeType::Variant:
+                case Attribute::NodeType::Map:
+                    return std::string("{}");
+                case Attribute::NodeType::Enum:
+                case Attribute::NodeType::Value:
+                    return std::string("null");
+                }
+                return std::string("null");
+            }
         } catch (const std::exception& e) {
             return fty::unexpected(e.what());
         }
