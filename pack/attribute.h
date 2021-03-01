@@ -192,7 +192,7 @@ protected:                                                                      
         return baseFields;                                                                                             \
     }
 
-#define META_INFO(className, ...)                                                                                      \
+#define META_INFO(className)                                                                                           \
 public:                                                                                                                \
     inline std::string typeName() const override                                                                       \
     {                                                                                                                  \
