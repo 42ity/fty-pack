@@ -94,6 +94,7 @@ if (BUILD_TESTING AND WITH_PROTOBUF)
             tests/include.cpp
             tests/child.cpp
             tests/variant.cpp
+            tests/json.cpp
             #tests/oneof.cpp
         PREPROCESSOR -DCATCH_CONFIG_FAST_COMPILE
         USES
