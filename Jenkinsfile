@@ -6,6 +6,6 @@
 //We disabled debug build with tests
 import params.CmakePipelineParams
 CmakePipelineParams parameters = new CmakePipelineParams()
-parameters.enableDebugBuild = false
+parameters.enableDebugBuild = true
 
 etn_ipm2_build_and_tests_pipeline_cmake(parameters)
