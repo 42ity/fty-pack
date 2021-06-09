@@ -102,19 +102,21 @@ if (WITH_PROTOBUF)
             tests
     )
 
-    fty_protogen(
-        TARGET ${PROJECT_NAME}-test
-        WORKDIR tests
-        PROTO
-            tests/examples/example1.proto
-            tests/examples/example2.proto
-            tests/examples/example3.proto
-            tests/examples/example4.proto
-            tests/examples/example5.proto
-            tests/examples/example6.proto
-            tests/examples/example7.proto
-            tests/examples/example8.proto
-    )
+    if (TARGET ${PROJECT_NAME}-test)
+        fty_protogen(
+            TARGET ${PROJECT_NAME}-test
+            WORKDIR tests
+            PROTO
+                tests/examples/example1.proto
+                tests/examples/example2.proto
+                tests/examples/example3.proto
+                tests/examples/example4.proto
+                tests/examples/example5.proto
+                tests/examples/example6.proto
+                tests/examples/example7.proto
+                tests/examples/example8.proto
+        )
+    endif()
 endif()
 
 ##############################################################################################################
