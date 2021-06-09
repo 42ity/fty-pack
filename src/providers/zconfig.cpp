@@ -105,44 +105,44 @@ class ZSerializer : public Serialize<ZSerializer>
 {
 public:
     template <typename T>
-    static void packValue(const T& val, zconfig_t* zconf)
+    static void packValue(const T& val, zconfig_t* zconf, Option opt)
     {
-        if (val.hasValue()) {
+        if (val.hasValue() || fty::isSet(opt, Option::WithDefaults)) {
             Convert<T::ThisType>::encode(val, zconf);
         }
     }
 
-    static void packValue(const IObjectList& val, zconfig_t* zconf)
+    static void packValue(const IObjectList& val, zconfig_t* zconf, Option opt)
     {
         for (int i = 0; i < val.size(); ++i) {
             const Attribute& node  = val.get(i);
             auto             child = zconfig_new(fty::convert<std::string>(i + 1).c_str(), zconf);
-            visit(node, child);
+            visit(node, child, opt);
         }
     }
 
-    static void packValue(const INode& node, zconfig_t* zconf)
+    static void packValue(const INode& node, zconfig_t* zconf, Option opt)
     {
         for (auto& it : node.fields()) {
-            if (it->hasValue()) {
+            if (it->hasValue() || fty::isSet(opt, Option::WithDefaults)) {
                 auto child = zconfig_new(it->key().c_str(), zconf);
-                visit(*it, child);
+                visit(*it, child, opt);
             }
         }
     }
 
-    static void packValue(const IEnum& en, zconfig_t* zconf)
+    static void packValue(const IEnum& en, zconfig_t* zconf, Option /*opt*/)
     {
         zconfig_set_value(zconf, "%s", en.asString().c_str());
     }
 
-    static void packValue(const IProtoMap& map, zconfig_t* zconf)
+    static void packValue(const IProtoMap& map, zconfig_t* zconf, Option opt)
     {
         for (int i = 0; i < map.size(); ++i) {
             const INode& node = map.get(i);
 
             auto temp = zconfig_new("", nullptr);
-            packValue(node, temp);
+            packValue(node, temp, opt);
 
             auto zkey = zconfig_locate(temp, "key");
             auto zval = zconfig_locate(temp, "value");
@@ -158,9 +158,8 @@ public:
         }
     }
 
-    static void packValue(const IVariant& /*val*/, zconfig_t* /*zconf*/)
+    static void packValue(const IVariant& /*val*/, zconfig_t* /*zconf*/, Option /*opt*/)
     {
-        static_assert("Not implemented");
     }
 
 };
@@ -226,18 +225,17 @@ public:
 
     static void unpackValue(IVariant& /*var*/, zconfig_t* /*conf*/)
     {
-        static_assert("Not implemented");
     }
 };
 
 // =====================================================================================================================
 
 namespace zconfig {
-    fty::Expected<std::string> serialize(const Attribute& node)
+    fty::Expected<std::string> serialize(const Attribute& node, Option opt)
     {
         try {
             zconfig_t* config = zconfig_new("root", nullptr);
-            ZSerializer::visit(node, config);
+            ZSerializer::visit(node, config, opt);
             auto        zret = zconfig_str_save(config);
             std::string ret(zret);
             zstr_free(&zret);

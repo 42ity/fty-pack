@@ -82,8 +82,8 @@ endif()
 
 ##############################################################################################################
 
-if (BUILD_TESTING AND WITH_PROTOBUF)
-    etn_test(${PROJECT_NAME}-test
+if (WITH_PROTOBUF)
+    etn_test_target(${PROJECT_NAME}
         SOURCES
             tests/main.cpp
             tests/simple.cpp
@@ -95,11 +95,11 @@ if (BUILD_TESTING AND WITH_PROTOBUF)
             tests/child.cpp
             tests/variant.cpp
             tests/json.cpp
-            #tests/oneof.cpp
-        PREPROCESSOR -DCATCH_CONFIG_FAST_COMPILE
-        USES
-            ${PROJECT_NAME}
-            Catch2::Catch2
+            tests/options.cpp
+        PREPROCESSOR
+            -DCATCH_CONFIG_FAST_COMPILE
+        SUBDIR
+            tests
     )
 
     fty_protogen(
@@ -115,8 +115,6 @@ if (BUILD_TESTING AND WITH_PROTOBUF)
             tests/examples/example7.proto
             tests/examples/example8.proto
     )
-
-    #etn_coverage(${PROJECT_NAME}-test SUBDIR tests)
 endif()
 
 ##############################################################################################################

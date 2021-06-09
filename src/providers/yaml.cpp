@@ -19,6 +19,7 @@
 #include "pack/visitor.h"
 #include <fstream>
 #include <yaml-cpp/yaml.h>
+#include <fty/flags.h>
 
 namespace pack {
 
@@ -150,54 +151,54 @@ class YamlSerializer : public Serialize<YamlSerializer>
 {
 public:
     template <typename T>
-    static void packValue(const T& val, YAML::Node& yaml)
+    static void packValue(const T& val, YAML::Node& yaml, Option opt)
     {
-        if (val.hasValue()) {
+        if (val.hasValue() || fty::isSet(opt, Option::WithDefaults)) {
             Convert<T::ThisType>::encode(val, yaml);
         }
     }
 
-    static void packValue(const IObjectList& val, YAML::Node& yaml)
+    static void packValue(const IObjectList& val, YAML::Node& yaml, Option opt)
     {
         for (int i = 0; i < val.size(); ++i) {
             const Attribute& node = val.get(i);
             YAML::Node       child;
-            visit(node, child);
+            visit(node, child, opt);
             yaml.push_back(child);
         }
     }
 
-    static void packValue(const INode& node, YAML::Node& yaml)
+    static void packValue(const INode& node, YAML::Node& yaml, Option opt)
     {
         for (auto& it : node.fields()) {
-            if (node.hasValue()) {
+            if (node.hasValue() || fty::isSet(opt, Option::WithDefaults)) {
                 YAML::Node child = yaml[it->key()];
-                visit(*it, child);
+                visit(*it, child, opt);
             }
         }
     }
 
-    static void packValue(const IEnum& en, YAML::Node& yaml)
+    static void packValue(const IEnum& en, YAML::Node& yaml, Option /*opt*/)
     {
         yaml = YAML::convert<std::string>::encode(en.asString());
     }
 
-    static void packValue(const IProtoMap& map, YAML::Node& yaml)
+    static void packValue(const IProtoMap& map, YAML::Node& yaml, Option opt)
     {
         for (int i = 0; i < map.size(); ++i) {
             const INode& node = map.get(i);
 
             YAML::Node temp;
-            packValue(node, temp);
+            packValue(node, temp, opt);
 
             yaml[temp["key"]] = temp["value"];
         }
     }
 
-    static void packValue(const IVariant& var, YAML::Node& yaml)
+    static void packValue(const IVariant& var, YAML::Node& yaml, Option opt)
     {
         if (auto ptr = var.get()) {
-            packValue(static_cast<const INode&>(*ptr), yaml);
+            packValue(static_cast<const INode&>(*ptr), yaml, opt);
         }
     }
 };
@@ -225,11 +226,11 @@ static fty::Expected<void> write(const std::string& filename, const std::string&
 // =====================================================================================================================
 
 namespace yaml {
-    fty::Expected<std::string> serialize(const Attribute& node)
+    fty::Expected<std::string> serialize(const Attribute& node, Option opt)
     {
         try {
             YAML::Node yaml;
-            YamlSerializer::visit(node, yaml);
+            YamlSerializer::visit(node, yaml, opt);
             return YAML::Dump(yaml);
         } catch (const std::exception& e) {
             return fty::unexpected(e.what());
@@ -256,9 +257,9 @@ namespace yaml {
         }
     }
 
-    fty::Expected<void> serializeFile(const std::string& fileName, const Attribute& node)
+    fty::Expected<void> serializeFile(const std::string& fileName, const Attribute& node, Option opt)
     {
-        if (auto ret = serialize(node)) {
+        if (auto ret = serialize(node, opt)) {
             if (auto res = write(fileName, *ret); !res) {
                 return fty::unexpected(res.error());
             }
@@ -272,11 +273,11 @@ namespace yaml {
 // =====================================================================================================================
 
 namespace json {
-    fty::Expected<std::string> serialize(const Attribute& node)
+    fty::Expected<std::string> serialize(const Attribute& node, Option opt)
     {
         try {
             YAML::Node yaml;
-            YamlSerializer::visit(node, yaml);
+            YamlSerializer::visit(node, yaml, opt);
 
             YAML::Emitter out;
             out.SetIndent(4);
@@ -323,9 +324,9 @@ namespace json {
         }
     }
 
-    fty::Expected<void> serializeFile(const std::string& fileName, const Attribute& node)
+    fty::Expected<void> serializeFile(const std::string& fileName, const Attribute& node, Option opt)
     {
-        if (auto ret = serialize(node)) {
+        if (auto ret = serialize(node, opt)) {
             if (auto res = write(fileName, *ret); !res) {
                 return fty::unexpected(res.error());
             }
