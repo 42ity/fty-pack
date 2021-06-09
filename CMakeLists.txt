@@ -117,6 +117,22 @@ if (WITH_PROTOBUF)
                 tests/examples/example8.proto
         )
     endif()
+
+    if (TARGET ${PROJECT_NAME}-coverage)
+        fty_protogen(
+            TARGET ${PROJECT_NAME}-coverage
+            WORKDIR tests
+            PROTO
+                tests/examples/example1.proto
+                tests/examples/example2.proto
+                tests/examples/example3.proto
+                tests/examples/example4.proto
+                tests/examples/example5.proto
+                tests/examples/example6.proto
+                tests/examples/example7.proto
+                tests/examples/example8.proto
+        )
+    endif()
 endif()
 
 ##############################################################################################################
