@@ -77,8 +77,8 @@ public:
     void        clear() override;
 
 private:
-    CppType m_val;
-    CppType m_def;
+    CppType m_val = {};
+    CppType m_def = {};
 };
 
 // =====================================================================================================================

@@ -18,29 +18,39 @@
 
 #include "pack/node.h"
 #include <fty/expected.h>
+#include <fty/flags.h>
 #include <string>
 
 namespace pack {
 
+enum class Option
+{
+    No           = 1 << 0,
+    WithDefaults = 1 << 1
+};
+
+ENABLE_FLAGS(Option)
+
+
 class INode;
 
 namespace json {
-    fty::Expected<std::string> serialize(const Attribute& node);
+    fty::Expected<std::string> serialize(const Attribute& node, Option opt = Option::No);
     fty::Expected<void>        deserialize(const std::string& content, Attribute& node);
     fty::Expected<void>        deserializeFile(const std::string& fileName, Attribute& node);
-    fty::Expected<void>        serializeFile(const std::string& fileName, const Attribute& node);
+    fty::Expected<void> serializeFile(const std::string& fileName, const Attribute& node, Option opt = Option::No);
 } // namespace json
 
 namespace yaml {
-    fty::Expected<std::string> serialize(const Attribute& node);
+    fty::Expected<std::string> serialize(const Attribute& node, Option opt = Option::No);
     fty::Expected<void>        deserialize(const std::string& content, Attribute& node);
     fty::Expected<void>        deserializeFile(const std::string& fileName, Attribute& node);
-    fty::Expected<void>        serializeFile(const std::string& fileName, const Attribute& node);
+    fty::Expected<void> serializeFile(const std::string& fileName, const Attribute& node, Option opt = Option::No);
 } // namespace yaml
 
 #ifdef WITH_ZCONFIG
 namespace zconfig {
-    fty::Expected<std::string> serialize(const Attribute& node);
+    fty::Expected<std::string> serialize(const Attribute& node, Option opt = Option::No);
     fty::Expected<void>        deserialize(const std::string& content, Attribute& node);
     fty::Expected<void>        deserializeFile(const std::string& fileName, Attribute& node);
 } // namespace zconfig
@@ -48,7 +58,7 @@ namespace zconfig {
 
 #ifdef WITH_PROTOBUF
 namespace protobuf {
-    fty::Expected<std::string> serialize(const Attribute& node);
+    fty::Expected<std::string> serialize(const Attribute& node, Option opt = Option::No);
     fty::Expected<void>        deserialize(const std::string& content, Attribute& node);
     fty::Expected<void>        deserializeFile(const std::string& fileName, Attribute& node);
 } // namespace protobuf

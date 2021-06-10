@@ -82,6 +82,59 @@ endif()
 
 ##############################################################################################################
 
+#if (WITH_PROTOBUF)
+#    etn_test_target(${PROJECT_NAME}
+#        SOURCES
+#            tests/main.cpp
+#            tests/simple.cpp
+#            tests/list.cpp
+#            tests/nested.cpp
+#            tests/enums.cpp
+#            tests/map.cpp
+#            tests/include.cpp
+#            tests/child.cpp
+#            tests/variant.cpp
+#            tests/json.cpp
+#            tests/options.cpp
+#        PREPROCESSOR
+#            -DCATCH_CONFIG_FAST_COMPILE
+#        SUBDIR
+#            tests
+#    )
+
+#    if (TARGET ${PROJECT_NAME}-test)
+#        fty_protogen(
+#            TARGET ${PROJECT_NAME}-test
+#            WORKDIR tests
+#            PROTO
+#                tests/examples/example1.proto
+#                tests/examples/example2.proto
+#                tests/examples/example3.proto
+#                tests/examples/example4.proto
+#                tests/examples/example5.proto
+#                tests/examples/example6.proto
+#                tests/examples/example7.proto
+#                tests/examples/example8.proto
+#        )
+#    endif()
+
+#    if (TARGET ${PROJECT_NAME}-coverage)
+#        fty_protogen(
+#            TARGET ${PROJECT_NAME}-coverage
+#            WORKDIR tests
+#            PROTO
+#                tests/examples/example1.proto
+#                tests/examples/example2.proto
+#                tests/examples/example3.proto
+#                tests/examples/example4.proto
+#                tests/examples/example5.proto
+#                tests/examples/example6.proto
+#                tests/examples/example7.proto
+#                tests/examples/example8.proto
+#        )
+#    endif()
+#endif()
+
 if (BUILD_TESTING AND WITH_PROTOBUF)
     etn_test(${PROJECT_NAME}-test
         SOURCES
@@ -95,7 +148,7 @@ if (BUILD_TESTING AND WITH_PROTOBUF)
             tests/child.cpp
             tests/variant.cpp
             tests/json.cpp
-            #tests/oneof.cpp
+            tests/options.cpp
         PREPROCESSOR -DCATCH_CONFIG_FAST_COMPILE
         USES
             ${PROJECT_NAME}
@@ -116,8 +169,9 @@ if (BUILD_TESTING AND WITH_PROTOBUF)
             tests/examples/example8.proto
     )
 
-    #etn_coverage(${PROJECT_NAME}-test SUBDIR tests)
+    etn_coverage(${PROJECT_NAME}-test SUBDIR tests)
 endif()
+
 
 ##############################################################################################################
 
