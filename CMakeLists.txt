@@ -172,7 +172,7 @@ if (BUILD_TESTING AND WITH_PROTOBUF)
     etn_coverage(${PROJECT_NAME}-test SUBDIR tests)
 
     fty_protogen(
-        TARGET ${PROJECT_NAME}-coverage
+        TARGET ${PROJECT_NAME}-test-coverage
         WORKDIR tests
         PROTO
             tests/examples/example1.proto
