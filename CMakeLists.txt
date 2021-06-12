@@ -170,6 +170,20 @@ if (BUILD_TESTING AND WITH_PROTOBUF)
     )
 
     etn_coverage(${PROJECT_NAME}-test SUBDIR tests)
+
+    fty_protogen(
+        TARGET ${PROJECT_NAME}-coverage
+        WORKDIR tests
+        PROTO
+            tests/examples/example1.proto
+            tests/examples/example2.proto
+            tests/examples/example3.proto
+            tests/examples/example4.proto
+            tests/examples/example5.proto
+            tests/examples/example6.proto
+            tests/examples/example7.proto
+            tests/examples/example8.proto
+    )
 endif()
 
 
