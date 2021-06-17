@@ -257,7 +257,7 @@ bool Variant<Types...>::findBetter(const std::vector<std::string>& fields)
             for (const auto& fld : ImplType::staticFieldNames()) {
                 count += std::find(fields.begin(), fields.end(), fld) == fields.end() ? 0 : 1;
             }
-            float rating = count * 1.f / ImplType::staticFieldNames().size();
+            float rating = float(count) / float(ImplType::staticFieldNames().size());
             if (rating >= betterRating) {
                 betterRating = rating;
                 typeHash     = typeid(ImplType).hash_code();
