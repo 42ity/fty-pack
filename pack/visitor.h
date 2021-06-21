@@ -204,58 +204,58 @@ class Serialize
 {
 public:
     template <typename Resource>
-    static void visit(const INode& node, Resource& res)
+    static void visit(const INode& node, Resource& res, Option opt)
     {
-        Worker::packValue(node, res);
+        Worker::packValue(node, res, opt);
     }
 
     template <typename Resource>
-    static void visit(const IEnum& en, Resource& res)
+    static void visit(const IEnum& en, Resource& res, Option opt)
     {
-        Worker::packValue(en, res);
+        Worker::packValue(en, res, opt);
     }
 
     template <typename Resource>
-    static void visit(const IProtoMap& map, Resource& res)
+    static void visit(const IProtoMap& map, Resource& res, Option opt)
     {
-        Worker::packValue(map, res);
+        Worker::packValue(map, res, opt);
     }
 
     template <typename Resource>
-    static void visit(const IList& list, Resource& res)
+    static void visit(const IList& list, Resource& res, Option opt)
     {
         if (auto casted = dynamic_cast<const IObjectList*>(&list)) {
-            Worker::packValue(*casted, res);
+            Worker::packValue(*casted, res, opt);
         }
 
         if (auto casted = dynamic_cast<const IValueList*>(&list)) {
             switch (casted->valueType()) {
                 case Type::Bool:
-                    Worker::packValue(static_cast<const ValueList<Type::Bool>&>(list), res);
+                    Worker::packValue(static_cast<const ValueList<Type::Bool>&>(list), res, opt);
                     break;
                 case Type::Double:
-                    Worker::packValue(static_cast<const ValueList<Type::Double>&>(list), res);
+                    Worker::packValue(static_cast<const ValueList<Type::Double>&>(list), res, opt);
                     break;
                 case Type::Float:
-                    Worker::packValue(static_cast<const ValueList<Type::Float>&>(list), res);
+                    Worker::packValue(static_cast<const ValueList<Type::Float>&>(list), res, opt);
                     break;
                 case Type::String:
-                    Worker::packValue(static_cast<const ValueList<Type::String>&>(list), res);
+                    Worker::packValue(static_cast<const ValueList<Type::String>&>(list), res, opt);
                     break;
                 case Type::Int32:
-                    Worker::packValue(static_cast<const ValueList<Type::Int32>&>(list), res);
+                    Worker::packValue(static_cast<const ValueList<Type::Int32>&>(list), res, opt);
                     break;
                 case Type::UInt32:
-                    Worker::packValue(static_cast<const ValueList<Type::UInt32>&>(list), res);
+                    Worker::packValue(static_cast<const ValueList<Type::UInt32>&>(list), res, opt);
                     break;
                 case Type::Int64:
-                    Worker::packValue(static_cast<const ValueList<Type::Int64>&>(list), res);
+                    Worker::packValue(static_cast<const ValueList<Type::Int64>&>(list), res, opt);
                     break;
                 case Type::UInt64:
-                    Worker::packValue(static_cast<const ValueList<Type::UInt64>&>(list), res);
+                    Worker::packValue(static_cast<const ValueList<Type::UInt64>&>(list), res, opt);
                     break;
                 case Type::UChar:
-                    Worker::packValue(static_cast<const ValueList<Type::UChar>&>(list), res);
+                    Worker::packValue(static_cast<const ValueList<Type::UChar>&>(list), res, opt);
                     break;
                 case Type::Unknown:
                     throw std::runtime_error("Unsupported type to unpack");
@@ -264,36 +264,36 @@ public:
     }
 
     template <typename Resource>
-    static void visit(const IMap& map, Resource& res)
+    static void visit(const IMap& map, Resource& res, Option opt)
     {
         if (auto casted = dynamic_cast<const IValueMap*>(&map)) {
             switch (casted->valueType()) {
                 case Type::Bool:
-                    Worker::packValue(static_cast<const ValueMap<Type::Bool>&>(map), res);
+                    Worker::packValue(static_cast<const ValueMap<Type::Bool>&>(map), res, opt);
                     break;
                 case Type::Double:
-                    Worker::packValue(static_cast<const ValueMap<Type::Double>&>(map), res);
+                    Worker::packValue(static_cast<const ValueMap<Type::Double>&>(map), res, opt);
                     break;
                 case Type::Float:
-                    Worker::packValue(static_cast<const ValueMap<Type::Float>&>(map), res);
+                    Worker::packValue(static_cast<const ValueMap<Type::Float>&>(map), res, opt);
                     break;
                 case Type::String:
-                    Worker::packValue(static_cast<const ValueMap<Type::String>&>(map), res);
+                    Worker::packValue(static_cast<const ValueMap<Type::String>&>(map), res, opt);
                     break;
                 case Type::Int32:
-                    Worker::packValue(static_cast<const ValueMap<Type::Int32>&>(map), res);
+                    Worker::packValue(static_cast<const ValueMap<Type::Int32>&>(map), res, opt);
                     break;
                 case Type::UInt32:
-                    Worker::packValue(static_cast<const ValueMap<Type::UInt32>&>(map), res);
+                    Worker::packValue(static_cast<const ValueMap<Type::UInt32>&>(map), res, opt);
                     break;
                 case Type::Int64:
-                    Worker::packValue(static_cast<const ValueMap<Type::Int64>&>(map), res);
+                    Worker::packValue(static_cast<const ValueMap<Type::Int64>&>(map), res, opt);
                     break;
                 case Type::UInt64:
-                    Worker::packValue(static_cast<const ValueMap<Type::UInt64>&>(map), res);
+                    Worker::packValue(static_cast<const ValueMap<Type::UInt64>&>(map), res, opt);
                     break;
                 case Type::UChar:
-                    Worker::packValue(static_cast<const ValueMap<Type::UChar>&>(map), res);
+                    Worker::packValue(static_cast<const ValueMap<Type::UChar>&>(map), res, opt);
                     break;
                 case Type::Unknown:
                     throw std::runtime_error("Unsupported type to unpack");
@@ -302,35 +302,35 @@ public:
     }
 
     template <typename Resource>
-    static void visit(const IValue& value, Resource& res)
+    static void visit(const IValue& value, Resource& res, Option opt)
     {
         switch (value.valueType()) {
             case Type::Bool:
-                Worker::packValue(static_cast<const Bool&>(value), res);
+                Worker::packValue(static_cast<const Bool&>(value), res, opt);
                 break;
             case Type::Double:
-                Worker::packValue(static_cast<const Double&>(value), res);
+                Worker::packValue(static_cast<const Double&>(value), res, opt);
                 break;
             case Type::Float:
-                Worker::packValue(static_cast<const Float&>(value), res);
+                Worker::packValue(static_cast<const Float&>(value), res, opt);
                 break;
             case Type::String:
-                Worker::packValue(static_cast<const String&>(value), res);
+                Worker::packValue(static_cast<const String&>(value), res, opt);
                 break;
             case Type::Int32:
-                Worker::packValue(static_cast<const Int32&>(value), res);
+                Worker::packValue(static_cast<const Int32&>(value), res, opt);
                 break;
             case Type::UInt32:
-                Worker::packValue(static_cast<const UInt32&>(value), res);
+                Worker::packValue(static_cast<const UInt32&>(value), res, opt);
                 break;
             case Type::Int64:
-                Worker::packValue(static_cast<const Int64&>(value), res);
+                Worker::packValue(static_cast<const Int64&>(value), res, opt);
                 break;
             case Type::UInt64:
-                Worker::packValue(static_cast<const UInt64&>(value), res);
+                Worker::packValue(static_cast<const UInt64&>(value), res, opt);
                 break;
             case Type::UChar:
-                Worker::packValue(static_cast<const UChar&>(value), res);
+                Worker::packValue(static_cast<const UChar&>(value), res, opt);
                 break;
             case Type::Unknown:
                 throw std::runtime_error("Unsupported type to unpack");
@@ -338,39 +338,39 @@ public:
     }
 
     template <typename Resource>
-    static void visit(const Attribute& node, Resource& res)
+    static void visit(const Attribute& node, Resource& res, Option opt)
     {
         switch (node.type()) {
             case Attribute::NodeType::Enum:
-                visit(static_cast<const IEnum&>(node), res);
+                visit(static_cast<const IEnum&>(node), res, opt);
                 break;
             case Attribute::NodeType::List:
-                visit(static_cast<const IList&>(node), res);
+                visit(static_cast<const IList&>(node), res, opt);
                 break;
             case Attribute::NodeType::Map:
                 if (auto casted = dynamic_cast<const IProtoMap*>(&node)) {
-                    visit(*casted, res);
+                    visit(*casted, res, opt);
                 }
                 if (auto casted = dynamic_cast<const IMap*>(&node)) {
-                    visit(*casted, res);
+                    visit(*casted, res, opt);
                 }
                 break;
             case Attribute::NodeType::Node:
-                visit(static_cast<const INode&>(node), res);
+                visit(static_cast<const INode&>(node), res, opt);
                 break;
             case Attribute::NodeType::Value:
-                visit(static_cast<const IValue&>(node), res);
+                visit(static_cast<const IValue&>(node), res, opt);
                 break;
         case Attribute::NodeType::Variant:
-            visit(static_cast<const IVariant&>(node), res);
+            visit(static_cast<const IVariant&>(node), res, opt);
             break;
         }
     }
 
     template <typename Resource>
-    static void visit(const IVariant& var, Resource& res)
+    static void visit(const IVariant& var, Resource& res, Option opt)
     {
-        Worker::packValue(var, res);
+        Worker::packValue(var, res, opt);
     }
 };
 

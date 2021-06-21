@@ -168,25 +168,25 @@ public:
     using WalkType = std::tuple<pb::Message*, const pb::FieldDescriptor*>;
 
     template <typename T>
-    static void packValue(const T& val, WalkType& proto)
+    static void packValue(const T& val, WalkType& proto, Option opt)
     {
-        if (val.hasValue()) {
+        if (val.hasValue() || fty::isSet(opt, Option::WithDefaults)) {
             Convert<T::ThisType>::encode(val, proto);
         }
     }
 
-    static void packValue(const IObjectList& val, WalkType& proto)
+    static void packValue(const IObjectList& val, WalkType& proto, Option opt)
     {
         auto refl = std::get<0>(proto)->GetReflection();
         for (int i = 0; i < val.size(); ++i) {
             const Attribute& node       = val.get(i);
             pb::Message*     child      = refl->AddMessage(std::get<0>(proto), std::get<1>(proto));
             auto             childProto = std::make_tuple(child, std::get<1>(proto));
-            visit(node, childProto);
+            visit(node, childProto, opt);
         }
     }
 
-    static void packValue(const INode& node, WalkType& proto)
+    static void packValue(const INode& node, WalkType& proto, Option opt)
     {
         for (auto& it : node.fields()) {
             if (it->hasValue()) {
@@ -194,10 +194,10 @@ public:
                 if (fdesc && fdesc->cpp_type() == pb::FieldDescriptor::CPPTYPE_MESSAGE && !fdesc->is_repeated()) {
                     auto refl  = std::get<0>(proto)->GetReflection();
                     auto child = WalkType(refl->MutableMessage(std::get<0>(proto), fdesc), fdesc);
-                    visit(*it, child);
+                    visit(*it, child, opt);
                 } else if (fdesc) {
                     auto child = WalkType(std::get<0>(proto), fdesc);
-                    visit(*it, child);
+                    visit(*it, child, opt);
                 } else {
                     throw std::runtime_error("Cannot find " + it->key());
                 }
@@ -205,26 +205,25 @@ public:
         }
     }
 
-    static void packValue(const IEnum& en, WalkType& proto)
+    static void packValue(const IEnum& en, WalkType& proto, Option /*opt*/)
     {
         auto refl = std::get<0>(proto)->GetReflection();
         refl->SetEnumValue(std::get<0>(proto), std::get<1>(proto), en.asInt());
     }
 
-    static void packValue(const IProtoMap& map, WalkType& proto)
+    static void packValue(const IProtoMap& map, WalkType& proto, Option opt)
     {
         auto refl = std::get<0>(proto)->GetReflection();
         for (int i = 0; i < map.size(); ++i) {
             const INode& node       = map.get(i);
             pb::Message* child      = refl->AddMessage(std::get<0>(proto), std::get<1>(proto));
             auto         childProto = std::make_tuple(child, std::get<1>(proto));
-            visit(node, childProto);
+            visit(node, childProto, opt);
         }
     }
 
-    static void packValue(const IVariant& /*var*/, WalkType& /*proto*/)
+    static void packValue(const IVariant& /*var*/, WalkType& /*proto*/, Option /*opt*/)
     {
-        static_assert("Not implemented");
     }
 };
 
@@ -288,7 +287,6 @@ public:
 
     static void unpackValue(IVariant& /*var*/, const WalkType& /*proto*/)
     {
-        static_assert("Not implemented");
     }
 };
 
@@ -324,13 +322,13 @@ namespace protobuf {
         return nullptr;
     }
 
-    fty::Expected<std::string> serialize(const Attribute& node)
+    fty::Expected<std::string> serialize(const Attribute& node, Option opt)
     {
         try {
             std::unique_ptr<pb::Message> msg(getMessage(node));
 
             auto proto = ProtoSerializer::WalkType(msg.get(), nullptr);
-            ProtoSerializer::visit(node, proto);
+            ProtoSerializer::visit(node, proto, opt);
 
             //        std::cerr << "--------------" << std::endl;
             //        std::cerr << msg->DebugString() << std::endl;
