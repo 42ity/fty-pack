@@ -106,9 +106,9 @@ public:
     T&              append();
 
     template <typename Func>
-    std::optional<T> find(Func&& func);
+    std::optional<T> find(Func&& func) const;
     template <typename Func>
-    int findIndex(Func&& func);
+    int findIndex(Func&& func) const;
     template <typename Func>
     bool remove(Func&& func);
     template <typename Func>
@@ -277,7 +277,7 @@ T& ObjectList<T>::append()
 
 template <typename T>
 template <typename Func>
-std::optional<T> ObjectList<T>::find(Func&& func)
+std::optional<T> ObjectList<T>::find(Func&& func) const
 {
     if (auto it = std::find_if(m_value.begin(), m_value.end(), func); it != m_value.end()) {
         return *it;
@@ -287,7 +287,7 @@ std::optional<T> ObjectList<T>::find(Func&& func)
 
 template <typename T>
 template <typename Func>
-int ObjectList<T>::findIndex(Func&& func)
+int ObjectList<T>::findIndex(Func&& func) const
 {
     if (auto it = std::find_if(m_value.begin(), m_value.end(), func); it != m_value.end()) {
         return std::distance(m_value.begin(), it);
