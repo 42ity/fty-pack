@@ -16,8 +16,13 @@
 
 #pragma once
 #include "pack/attribute.h"
-#include "pack/magic-enum.h"
 #include <sstream>
+
+#undef  MAGIC_ENUM_RANGE_MIN
+#define MAGIC_ENUM_RANGE_MIN 0
+#undef  MAGIC_ENUM_RANGE_MAX
+#define MAGIC_ENUM_RANGE_MAX 255
+#include "pack/magic-enum.h"
 
 namespace pack {
 
