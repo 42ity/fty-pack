@@ -52,12 +52,12 @@ etn_target(shared ${PROJECT_NAME}
         pack/value.h
         pack/enum.h
         pack/node.h
-        pack/magic_enum.h
         pack/types.h
         pack/serialization.h
         pack/proto-map.h
         pack/visitor.h
         pack/variant.h
+        pack/magic-enum.h
 
     SOURCES
         src/node.cpp
