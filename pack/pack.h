@@ -1,4 +1,4 @@
-/*  ====================================================================================================================
+/*  ========================================================================================================================================
     Copyright (C) 2020 Eaton
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -11,7 +11,7 @@
     You should have received a copy of the GNU General Public License along
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-    ====================================================================================================================
+    ========================================================================================================================================
 */
 
 #pragma once
@@ -36,20 +36,23 @@ using Double = Value<Type::Double>;
 using Bool   = Value<Type::Bool>;
 using UChar  = Value<Type::UChar>;
 
-//======================================================================================================================
+// =========================================================================================================================================
 
 class String : public Value<Type::String>
 {
 public:
     using pack::Value<Type::String>::Value;
-    using pack::Value<Type::String>::operator=;
+    inline String& operator=(const String&);
+    inline String& operator=(String&&);
+    inline String& operator=(const std::string&);
+    inline String& operator=(std::string&&);
 
     inline bool empty() const;
     inline int  size() const;
 };
 
 
-//======================================================================================================================
+// =========================================================================================================================================
 
 class Binary : public ValueList<Type::UChar>
 {
@@ -68,7 +71,7 @@ public:
     fty::Expected<T> decode() const;
 };
 
-//======================================================================================================================
+// =========================================================================================================================================
 
 using Int32List  = ValueList<Type::Int32>;
 using Int64List  = ValueList<Type::Int64>;
@@ -88,9 +91,9 @@ using DoubleMap = ValueMap<Type::Double>;
 using BoolMap   = ValueMap<Type::Bool>;
 using StringMap = ValueMap<Type::String>;
 
-//======================================================================================================================
+// =========================================================================================================================================
 // Implementation
-//======================================================================================================================
+// =========================================================================================================================================
 
 template <typename T, typename=std::enable_if_t<!std::is_same_v<T, std::decay_t<String>>>>
 inline bool operator==(const String& l, const T& r)
@@ -104,17 +107,41 @@ inline bool operator==(const T& l, const String& r)
     return r.value() == l;
 }
 
-bool String::empty() const
+inline bool String::empty() const
 {
     return value().empty();
 }
 
-int String::size() const
+inline int String::size() const
 {
     return int(value().size());
 }
 
-//======================================================================================================================
+inline String& String::operator=(const String& other)
+{
+    Value::operator=(other);
+    return *this;
+}
+
+inline String& String::operator=(String&& other)
+{
+    Value::operator=(std::move(other));
+    return *this;
+}
+
+inline String& String::operator=(const std::string& val)
+{
+    setValue(val);
+    return *this;
+}
+
+inline String& String::operator=(std::string&& val)
+{
+    setValue(std::move(val));
+    return *this;
+}
+
+// =========================================================================================================================================
 
 bool Binary::empty() const
 {
@@ -151,6 +178,6 @@ fty::Expected<T> Binary::decode() const
     }
 }
 
-//======================================================================================================================
+// =========================================================================================================================================
 
 } // namespace pack

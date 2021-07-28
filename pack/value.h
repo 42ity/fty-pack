@@ -1,4 +1,4 @@
-/*  ====================================================================================================================
+/*  ========================================================================================================================================
     Copyright (C) 2020 Eaton
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -11,7 +11,7 @@
     You should have received a copy of the GNU General Public License along
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-    ====================================================================================================================
+    ========================================================================================================================================
 */
 
 #pragma once
@@ -23,7 +23,7 @@
 
 namespace pack {
 
-// =====================================================================================================================
+// =========================================================================================================================================
 
 template <Type>
 class Value;
@@ -45,7 +45,7 @@ public:
     virtual Type valueType() const = 0;
 };
 
-// =====================================================================================================================
+// =========================================================================================================================================
 
 template <Type ValType>
 class Value : public IValue
@@ -57,14 +57,16 @@ public:
 public:
     Value(Attribute* parent, const std::string& key, const CppType& def = {});
     Value(const Value& other);
-    Value(Value&& other);
+    Value(Value&& other) noexcept;
     Value();
+    ~Value() override = default;
 
 public:
     const CppType& value() const;
     void           setValue(const CppType& val);
     Value&         operator=(const CppType& val);
     Value&         operator=(const Value& other);
+    Value&         operator=(Value&& other) noexcept;
                    operator CppType() const;
 
 public:
@@ -81,7 +83,7 @@ private:
     CppType m_def = {};
 };
 
-// =====================================================================================================================
+// =========================================================================================================================================
 
 template <Type ValType>
 Value<ValType>::Value(Attribute* parent, const std::string& key, const CppType& def)
@@ -94,15 +96,15 @@ Value<ValType>::Value(Attribute* parent, const std::string& key, const CppType& 
 template <Type ValType>
 Value<ValType>::Value(const Value& other)
     : IValue(other)
+    , m_val(other.m_val)
 {
-    m_val = other.m_val;
 }
 
 template <Type ValType>
-Value<ValType>::Value(Value&& other)
+Value<ValType>::Value(Value&& other) noexcept
     : IValue(other)
+    , m_val(std::move(other.m_val))
 {
-    m_val = std::move(other.m_val);
 }
 
 template <Type ValType>
@@ -148,6 +150,13 @@ template <Type ValType>
 Value<ValType>& Value<ValType>::operator=(const Value& other)
 {
     m_val = other.m_val;
+    return *this;
+}
+
+template <Type ValType>
+Value<ValType>& Value<ValType>::operator=(Value&& other) noexcept
+{
+    m_val = std::move(other.m_val);
     return *this;
 }
 
@@ -212,6 +221,6 @@ void Value<ValType>::clear()
     setValue(m_def);
 }
 
-// =====================================================================================================================
+// =========================================================================================================================================
 
 } // namespace pack

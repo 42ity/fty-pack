@@ -1,4 +1,4 @@
-/*  ====================================================================================================================
+/*  ========================================================================================================================================
     Copyright (C) 2020 Eaton
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -11,16 +11,20 @@
     You should have received a copy of the GNU General Public License along
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-    ====================================================================================================================
+    ========================================================================================================================================
 */
 
 #pragma once
 #include "pack/attribute.h"
 #include <sstream>
 
+#if defined(__clang__) && __clang_major__ >= 5 || defined(__GNUC__) && __GNUC__ >= 9
+#include "pack/magic-enum.h"
+#endif
+
 namespace pack {
 
-// =====================================================================================================================
+// =========================================================================================================================================
 
 /// Enum class interface
 class IEnum : public Attribute
@@ -28,15 +32,17 @@ class IEnum : public Attribute
 public:
     using ValuesType = std::vector<std::pair<std::string, int>>;
 
+    IEnum()
+        : Attribute(NodeType::Enum, nullptr, {})
+    {
+    }
+
     IEnum(Attribute* parent, const std::string& key = {})
         : Attribute(NodeType::Enum, parent, key)
     {
     }
 
 public:
-    //    /// Returns a list of the enum values
-    //    virtual ValuesType values() const = 0;
-
     /// Returns a string representation of the enum value
     virtual std::string asString() const = 0;
 
@@ -50,7 +56,7 @@ public:
     virtual void fromInt(int value) = 0;
 };
 
-// =====================================================================================================================
+// =========================================================================================================================================
 
 template <typename T>
 class Enum : public IEnum
@@ -59,6 +65,8 @@ public:
     using IEnum::IEnum;
 
 public:
+    Enum();
+    Enum(T value);
     Enum(const Enum& other);
     Enum(Enum&& other);
 
@@ -91,9 +99,54 @@ protected:
     T m_def   = {};
 };
 
-// =====================================================================================================================
+// =========================================================================================================================================
+// Traits helpers
+// =========================================================================================================================================
+
+namespace datails {
+
+    template <typename StreamT, typename EnumT>
+    struct canToStream
+    {
+        template <typename S, typename T>
+        static auto test(int) -> decltype(std::declval<S&>() << std::declval<T>(), std::true_type());
+
+        template <typename, typename>
+        static auto test(...) -> std::false_type;
+
+        static const bool value = decltype(test<StreamT, EnumT>(0))::value;
+    };
+
+    template <typename StreamT, typename EnumT>
+    struct canFromStream
+    {
+        template <typename S, typename T>
+        static auto test(int) -> decltype(std::declval<S&>() >> std::declval<T&>(), std::true_type());
+
+        template <typename, typename>
+        static auto test(...) -> std::false_type;
+
+        static const bool value = decltype(test<StreamT, EnumT>(0))::value;
+    };
+
+} // namespace datails
+
+// =========================================================================================================================================
 // Enum implementation
-// =====================================================================================================================
+// =========================================================================================================================================
+
+template <typename T>
+Enum<T>::Enum()
+    : IEnum()
+{
+}
+
+template <typename T>
+Enum<T>::Enum(T value)
+    : IEnum()
+{
+    setValue(value);
+}
 
 template <typename T>
 Enum<T>::Enum(const Enum& other)
@@ -175,23 +228,21 @@ std::string Enum<T>::typeName() const
     return "Enum";
 }
 
-// template <typename T>
-// typename Enum<T>::ValuesType Enum<T>::values() const
-//{
-//    std::vector<std::pair<std::string, int>> map;
-//    for (const auto& it : magic_enum::enum_values<T>()) {
-//        map.emplace_back(asString(it), int(it));
-//    }
-
-//    return map;
-//}
-
 template <typename T>
 std::string Enum<T>::asString(const T& value)
 {
-    std::stringstream ss;
-    ss << value;
-    return ss.str();
+    if constexpr (datails::canToStream<std::stringstream, T>::value) {
+        std::stringstream ss;
+        ss << value;
+        return ss.str();
+    } else if constexpr (!datails::canToStream<std::stringstream, T>::value) {
+#if defined(__clang__) && __clang_major__ >= 5 || defined(__GNUC__) && __GNUC__ >= 9
+        return std::string(magic_enum::enum_name(value));
+#else
+        //static_assert (false, "Cannot serialize enum, lacked stream oprator <<");
+        return {};
+#endif
+    }
 }
 
 template <typename T>
@@ -225,10 +276,20 @@ std::string Enum<T>::asString() const
 template <typename T>
 void Enum<T>::fromString(const std::string& value)
 {
-    T                 val;
-    std::stringstream ss;
-    ss << value;
-    ss >> val;
+    T val;
+    if constexpr (datails::canFromStream<std::stringstream, T>::value) {
+        std::stringstream ss;
+        ss << value;
+        ss >> val;
+    } else if constexpr (!datails::canFromStream<std::stringstream, T>::value) {
+#if defined(__clang__) && __clang_major__ >= 5 || defined(__GNUC__) && __GNUC__ >= 9
+        if (auto re = magic_enum::enum_cast<T>(value); re.has_value()) {
+            val = re.value();
+        }
+#else
+        //static_assert (false, "Cannot deserialize enum, lacked stream oprator >>");
+#endif
+    }
     setValue(val);
 }
 
@@ -250,6 +311,6 @@ void Enum<T>::clear()
     setValue(m_def);
 }
 
-// =====================================================================================================================
+// =========================================================================================================================================
 
 } // namespace pack
