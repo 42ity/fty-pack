@@ -57,14 +57,16 @@ public:
 public:
     Value(Attribute* parent, const std::string& key, const CppType& def = {});
     Value(const Value& other);
-    Value(Value&& other);
+    Value(Value&& other) noexcept;
     Value();
+    ~Value() override = default;
 
 public:
     const CppType& value() const;
     void           setValue(const CppType& val);
     Value&         operator=(const CppType& val);
     Value&         operator=(const Value& other);
+    Value&         operator=(Value&& other) noexcept;
                    operator CppType() const;
 
 public:
@@ -94,15 +96,15 @@ Value<ValType>::Value(Attribute* parent, const std::string& key, const CppType& 
 template <Type ValType>
 Value<ValType>::Value(const Value& other)
     : IValue(other)
+    , m_val(other.m_val)
 {
-    m_val = other.m_val;
 }
 
 template <Type ValType>
-Value<ValType>::Value(Value&& other)
+Value<ValType>::Value(Value&& other) noexcept
     : IValue(other)
+    , m_val(std::move(other.m_val))
 {
-    m_val = std::move(other.m_val);
 }
 
 template <Type ValType>
@@ -148,6 +150,13 @@ template <Type ValType>
 Value<ValType>& Value<ValType>::operator=(const Value& other)
 {
     m_val = other.m_val;
+    return *this;
+}
+
+template <Type ValType>
+Value<ValType>& Value<ValType>::operator=(Value&& other) noexcept
+{
+    m_val = std::move(other.m_val);
     return *this;
 }
 

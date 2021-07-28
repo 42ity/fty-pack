@@ -74,6 +74,7 @@ TEST_CASE("Enum serialization/deserialization")
 
 TEST_CASE("Magic enum serialization")
 {
+#if defined(__clang__) && __clang_major__ >= 5 || defined(__GNUC__) && __GNUC__ >= 9
     enum class Magic
     {
         Dead,
@@ -89,5 +90,8 @@ TEST_CASE("Magic enum serialization")
     pack::Enum<Magic> ren;
     CHECK(pack::yaml::deserialize(cnt, ren));
     CHECK(ren == Magic::Dance);
+#else
+    CHECK(true);
+#endif
 }
 

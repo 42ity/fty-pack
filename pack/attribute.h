@@ -226,6 +226,7 @@ public:
 public:
     Attribute(NodeType type, Attribute* parent, const std::string& key = {});
     Attribute(const Attribute&) = default;
+    Attribute(Attribute&&) = default;
     virtual ~Attribute();
 
     virtual bool        compare(const Attribute& other) const = 0;
@@ -239,6 +240,9 @@ public:
 
     bool operator==(const Attribute& other) const;
     bool operator!=(const Attribute& other) const;
+
+    Attribute& operator=(const Attribute&) = default;
+    Attribute& operator=(Attribute&&) = default;
 
     const Attribute* parent() const;
     NodeType         type() const;

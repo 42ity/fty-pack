@@ -18,11 +18,9 @@
 #include "pack/attribute.h"
 #include <sstream>
 
-#undef  MAGIC_ENUM_RANGE_MIN
-#define MAGIC_ENUM_RANGE_MIN 0
-#undef  MAGIC_ENUM_RANGE_MAX
-#define MAGIC_ENUM_RANGE_MAX 255
+#if defined(__clang__) && __clang_major__ >= 5 || defined(__GNUC__) && __GNUC__ >= 9
 #include "pack/magic-enum.h"
+#endif
 
 namespace pack {
 
@@ -238,7 +236,11 @@ std::string Enum<T>::asString(const T& value)
         ss << value;
         return ss.str();
     } else {
+#if defined(__clang__) && __clang_major__ >= 5 || defined(__GNUC__) && __GNUC__ >= 9
         return std::string(magic_enum::enum_name(value));
+#else
+        static_assert (false, "Cannot serialize enum, lacked stream oprator <<");
+#endif
     }
 }
 
@@ -279,9 +281,13 @@ void Enum<T>::fromString(const std::string& value)
         ss << value;
         ss >> val;
     } else {
+#if defined(__clang__) && __clang_major__ >= 5 || defined(__GNUC__) && __GNUC__ >= 9
         if (auto re = magic_enum::enum_cast<T>(value); re.has_value()) {
             val = re.value();
         }
+#else
+        static_assert (false, "Cannot deserialize enum, lacked stream oprator >>");
+#endif
     }
     setValue(val);
 }
