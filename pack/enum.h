@@ -240,6 +240,7 @@ std::string Enum<T>::asString(const T& value)
         return std::string(magic_enum::enum_name(value));
 #else
         //static_assert (false, "Cannot serialize enum, lacked stream oprator <<");
+        return {};
 #endif
     }
 }
