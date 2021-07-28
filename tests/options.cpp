@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 /*  ========================================================================================================================================
     Copyright (C) 2020 Eaton
     This program is free software; you can redistribute it and/or modify
@@ -15,7 +13,6 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
     ========================================================================================================================================
 */
->>>>>>> master
 #include <pack/pack.h>
 #include <catch2/catch.hpp>
 #include <iostream>
