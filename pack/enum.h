@@ -235,11 +235,11 @@ std::string Enum<T>::asString(const T& value)
         std::stringstream ss;
         ss << value;
         return ss.str();
-    } else {
+    } else if constexpr (!datails::canToStream<std::stringstream, T>::value) {
 #if defined(__clang__) && __clang_major__ >= 5 || defined(__GNUC__) && __GNUC__ >= 9
         return std::string(magic_enum::enum_name(value));
 #else
-        static_assert (false, "Cannot serialize enum, lacked stream oprator <<");
+        //static_assert (false, "Cannot serialize enum, lacked stream oprator <<");
 #endif
     }
 }
@@ -280,13 +280,13 @@ void Enum<T>::fromString(const std::string& value)
         std::stringstream ss;
         ss << value;
         ss >> val;
-    } else {
+    } else if constexpr (!datails::canFromStream<std::stringstream, T>::value) {
 #if defined(__clang__) && __clang_major__ >= 5 || defined(__GNUC__) && __GNUC__ >= 9
         if (auto re = magic_enum::enum_cast<T>(value); re.has_value()) {
             val = re.value();
         }
 #else
-        static_assert (false, "Cannot deserialize enum, lacked stream oprator >>");
+        //static_assert (false, "Cannot deserialize enum, lacked stream oprator >>");
 #endif
     }
     setValue(val);
