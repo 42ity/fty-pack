@@ -20,6 +20,7 @@
 #include <fstream>
 #include <fty/flags.h>
 #include <yaml-cpp/yaml.h>
+#include <fty/flags.h>
 
 namespace pack {
 
