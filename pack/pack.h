@@ -42,7 +42,10 @@ class String : public Value<Type::String>
 {
 public:
     using pack::Value<Type::String>::Value;
-    using pack::Value<Type::String>::operator=;
+    inline String& operator=(const String&);
+    inline String& operator=(String&&);
+    inline String& operator=(const std::string&);
+    inline String& operator=(std::string&&);
 
     inline bool empty() const;
     inline int  size() const;
@@ -104,14 +107,38 @@ inline bool operator==(const T& l, const String& r)
     return r.value() == l;
 }
 
-bool String::empty() const
+inline bool String::empty() const
 {
     return value().empty();
 }
 
-int String::size() const
+inline int String::size() const
 {
     return int(value().size());
+}
+
+inline String& String::operator=(const String& other)
+{
+    Value::operator=(other);
+    return *this;
+}
+
+inline String& String::operator=(String&& other)
+{
+    Value::operator=(std::move(other));
+    return *this;
+}
+
+inline String& String::operator=(const std::string& val)
+{
+    setValue(val);
+    return *this;
+}
+
+inline String& String::operator=(std::string&& val)
+{
+    setValue(std::move(val));
+    return *this;
 }
 
 // =========================================================================================================================================
