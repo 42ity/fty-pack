@@ -20,7 +20,7 @@
 
 #include "classgenerator.h"
 #include "formatter.h"
-#include <fty/split.h>
+#include <fty/string-utils.h>
 #include <google/protobuf/descriptor.pb.h>
 #include <google/protobuf/extension_set.h>
 #include <iostream>

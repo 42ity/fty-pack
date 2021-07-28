@@ -52,12 +52,12 @@ etn_target(shared ${PROJECT_NAME}
         pack/value.h
         pack/enum.h
         pack/node.h
-        pack/magic_enum.h
         pack/types.h
         pack/serialization.h
         pack/proto-map.h
         pack/visitor.h
         pack/variant.h
+        pack/magic-enum.h
 
     SOURCES
         src/node.cpp
@@ -170,6 +170,20 @@ if (BUILD_TESTING AND WITH_PROTOBUF)
     )
 
     etn_coverage(${PROJECT_NAME}-test SUBDIR tests)
+
+    fty_protogen(
+        TARGET ${PROJECT_NAME}-test-coverage
+        WORKDIR tests
+        PROTO
+            tests/examples/example1.proto
+            tests/examples/example2.proto
+            tests/examples/example3.proto
+            tests/examples/example4.proto
+            tests/examples/example5.proto
+            tests/examples/example6.proto
+            tests/examples/example7.proto
+            tests/examples/example8.proto
+    )
 endif()
 
 

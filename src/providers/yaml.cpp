@@ -1,4 +1,4 @@
-/*  ====================================================================================================================
+/*  ========================================================================================================================================
     Copyright (C) 2020 Eaton
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -11,19 +11,20 @@
     You should have received a copy of the GNU General Public License along
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-    ====================================================================================================================
+    ========================================================================================================================================
 */
 
 #include "pack/pack.h"
 #include "pack/serialization.h"
 #include "pack/visitor.h"
 #include <fstream>
+#include <fty/flags.h>
 #include <yaml-cpp/yaml.h>
 #include <fty/flags.h>
 
 namespace pack {
 
-// =====================================================================================================================
+// =========================================================================================================================================
 
 template <Type ValType>
 struct Convert
@@ -84,7 +85,7 @@ struct Convert
     }
 };
 
-// =====================================================================================================================
+// =========================================================================================================================================
 
 class YamlDeserializer : public Deserialize<YamlDeserializer>
 {
@@ -145,7 +146,7 @@ public:
     }
 };
 
-// =====================================================================================================================
+// =========================================================================================================================================
 
 class YamlSerializer : public Serialize<YamlSerializer>
 {
@@ -223,7 +224,7 @@ static fty::Expected<void> write(const std::string& filename, const std::string&
     return fty::unexpected("Cannot read file {}", filename);
 }
 
-// =====================================================================================================================
+// =========================================================================================================================================
 
 namespace yaml {
     fty::Expected<std::string> serialize(const Attribute& node, Option opt)
@@ -270,7 +271,7 @@ namespace yaml {
     }
 } // namespace yaml
 
-// =====================================================================================================================
+// =========================================================================================================================================
 
 namespace json {
     fty::Expected<std::string> serialize(const Attribute& node, Option opt)
@@ -287,15 +288,15 @@ namespace json {
                 return std::string(out.c_str());
             } else {
                 switch (node.type()) {
-                case Attribute::NodeType::List:
-                    return std::string("[]");
-                case Attribute::NodeType::Node:
-                case Attribute::NodeType::Variant:
-                case Attribute::NodeType::Map:
-                    return std::string("{}");
-                case Attribute::NodeType::Enum:
-                case Attribute::NodeType::Value:
-                    return std::string("null");
+                    case Attribute::NodeType::List:
+                        return std::string("[]");
+                    case Attribute::NodeType::Node:
+                    case Attribute::NodeType::Variant:
+                    case Attribute::NodeType::Map:
+                        return std::string("{}");
+                    case Attribute::NodeType::Enum:
+                    case Attribute::NodeType::Value:
+                        return std::string("null");
                 }
                 return std::string("null");
             }
@@ -337,6 +338,6 @@ namespace json {
     }
 } // namespace json
 
-// =====================================================================================================================
+// =========================================================================================================================================
 
 } // namespace pack

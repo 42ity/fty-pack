@@ -1,4 +1,4 @@
-/*  ====================================================================================================================
+/*  ========================================================================================================================================
     Copyright (C) 2020 Eaton
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -11,7 +11,7 @@
     You should have received a copy of the GNU General Public License along
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-    ====================================================================================================================
+    ========================================================================================================================================
 */
 
 #pragma once
@@ -38,14 +38,14 @@ namespace json {
     fty::Expected<std::string> serialize(const Attribute& node, Option opt = Option::No);
     fty::Expected<void>        deserialize(const std::string& content, Attribute& node);
     fty::Expected<void>        deserializeFile(const std::string& fileName, Attribute& node);
-    fty::Expected<void> serializeFile(const std::string& fileName, const Attribute& node, Option opt = Option::No);
+    fty::Expected<void>        serializeFile(const std::string& fileName, const Attribute& node, Option opt = Option::No);
 } // namespace json
 
 namespace yaml {
     fty::Expected<std::string> serialize(const Attribute& node, Option opt = Option::No);
     fty::Expected<void>        deserialize(const std::string& content, Attribute& node);
     fty::Expected<void>        deserializeFile(const std::string& fileName, Attribute& node);
-    fty::Expected<void> serializeFile(const std::string& fileName, const Attribute& node, Option opt = Option::No);
+    fty::Expected<void>        serializeFile(const std::string& fileName, const Attribute& node, Option opt = Option::No);
 } // namespace yaml
 
 #ifdef WITH_ZCONFIG
