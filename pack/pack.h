@@ -41,7 +41,10 @@ using UChar  = Value<Type::UChar>;
 class String : public Value<Type::String>
 {
 public:
-    using pack::Value<Type::String>::Value;
+    using Value<Type::String>::Value;
+
+    inline String(const String&);
+    inline String(String&&);
     inline String& operator=(const String&);
     inline String& operator=(String&&);
     inline String& operator=(const std::string&);
@@ -95,16 +98,26 @@ using StringMap = ValueMap<Type::String>;
 // Implementation
 // =========================================================================================================================================
 
-template <typename T, typename=std::enable_if_t<!std::is_same_v<T, std::decay_t<String>>>>
+template <typename T, typename = std::enable_if_t<!std::is_same_v<T, std::decay_t<String>>>>
 inline bool operator==(const String& l, const T& r)
 {
     return l.value() == r;
 }
 
-template <typename T, typename=std::enable_if_t<!std::is_same_v<T, std::decay_t<String>>>>
+template <typename T, typename = std::enable_if_t<!std::is_same_v<T, std::decay_t<String>>>>
 inline bool operator==(const T& l, const String& r)
 {
     return r.value() == l;
+}
+
+inline String::String(const String& other)
+    : Value<Type::String>(other)
+{
+}
+
+inline String::String(String&& other)
+    : Value<Type::String>(std::move(other))
+{
 }
 
 inline bool String::empty() const
