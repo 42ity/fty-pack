@@ -16,3 +16,23 @@
 #define CATCH_CONFIG_MAIN
 #define CATCH_CONFIG_DISABLE_EXCEPTIONS
 #include <catch2/catch.hpp>
+#include <pack/pack.h>
+
+struct Val: public pack::Node
+{
+    pack::String strVal = FIELD("str-val");
+    pack::Int32 intVal = FIELD("int-val");
+
+    using pack::Node::Node;
+    META(Val, strVal, intVal);
+};
+
+TEST_CASE("Formating")
+{
+    Val val;
+    val.strVal = "Answer is";
+    val.intVal = 42;
+
+    std::string ret = fmt::format("value = {}", val);
+    CHECK(ret == R"(value = {"str-val": "Answer is", "int-val": "42"})");
+}

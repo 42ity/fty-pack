@@ -194,3 +194,28 @@ fty::Expected<T> Binary::decode() const
 // =========================================================================================================================================
 
 } // namespace pack
+
+// =====================================================================================================================
+
+/// Helper to format pack enity to fmt
+template <typename T>
+struct fmt::formatter<T, std::enable_if_t<std::is_base_of<pack::Attribute, T>::value, char>>
+{
+    template <typename ParseContext>
+    constexpr auto parse(ParseContext& ctx)
+    {
+        return ctx.begin();
+    }
+
+    template <typename FormatContext>
+    auto format(const T& attr, FormatContext& ctx)
+    {
+        if (auto ret = pack::json::serialize(attr)) {
+            return fmt::format_to(ctx.out(), "{}", *ret);
+        } else {
+            return fmt::format_to(ctx.out(), "#Error: {}", ret.error());
+        }
+    }
+};
+
+// =====================================================================================================================
