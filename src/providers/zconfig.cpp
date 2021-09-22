@@ -112,6 +112,10 @@ public:
         }
     }
 
+    static void packValue(const IObjectMap& /*val*/, zconfig_t* /*zconf*/, Option /*opt*/)
+    {
+    }
+
     static void packValue(const IObjectList& val, zconfig_t* zconf, Option opt)
     {
         for (int i = 0; i < val.size(); ++i) {
@@ -177,6 +181,10 @@ public:
     static void unpackValue(IEnum& en, zconfig_t* conf)
     {
         en.fromString(zconfig_value(conf));
+    }
+
+    static void unpackValue(IObjectMap& /*list*/, zconfig_t* /*conf*/)
+    {
     }
 
     static void unpackValue(IObjectList& list, zconfig_t* conf)

@@ -15,7 +15,6 @@
 */
 #include "examples/example5.h"
 #include <catch2/catch.hpp>
-#include <iostream>
 
 TEST_CASE("Map serialization/deserialization")
 {
@@ -228,5 +227,52 @@ TEST_CASE("Simple map serialization/deserialization")
         pack::zconfig::deserialize(cnt, restored);
 
         check(restored);
+    }
+}
+
+struct MapObj: public pack::Node
+{
+    pack::String value = FIELD("value");
+
+    using pack::Node::Node;
+    META(MapObj, value);
+};
+
+TEST_CASE("Object map serialization/deserialization")
+{
+    pack::Map<MapObj> origin;
+    auto& it = origin.append("key1");
+    it.value = "Some string";
+
+    MapObj ins;
+    ins.value = "Some other value";
+    origin.append("key2", ins);
+
+    auto check = [](const pack::Map<MapObj>& item) {
+        try {
+            REQUIRE(2 == item.size());
+            CHECK(item.contains("key1"));
+            CHECK(item.contains("key2"));
+            CHECK("Some string" == item["key1"].value);
+            CHECK("Some other value" == item["key2"].value);
+        } catch (const std::exception& err) {
+            FAIL(err.what());
+        }
+    };
+
+    check(origin);
+
+    {
+        std::string cnt = *pack::yaml::serialize(origin);
+        pack::Map<MapObj> checked;
+        pack::yaml::deserialize(cnt, checked);
+        check(checked);
+    }
+
+    {
+        std::string cnt = *pack::json::serialize(origin);
+        pack::Map<MapObj> checked;
+        pack::json::deserialize(cnt, checked);
+        check(checked);
     }
 }
