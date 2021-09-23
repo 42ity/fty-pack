@@ -20,7 +20,6 @@
 #include <fstream>
 #include <fty/flags.h>
 #include <yaml-cpp/yaml.h>
-#include <fty/flags.h>
 
 namespace pack {
 
@@ -101,6 +100,15 @@ public:
         en.fromString(yaml.as<std::string>());
     }
 
+    static void unpackValue(IObjectMap& map, const YAML::Node& yaml)
+    {
+        for (const auto& child : yaml) {
+            std::string key = child.first.as<std::string>();
+            auto& obj = map.create(key);
+            visit(obj, child.second);
+        }
+    }
+
     static void unpackValue(IObjectList& list, const YAML::Node& yaml)
     {
         for (const auto& child : yaml) {
@@ -156,6 +164,18 @@ public:
     {
         if (val.hasValue() || fty::isSet(opt, Option::WithDefaults)) {
             Convert<T::ThisType>::encode(val, yaml);
+        }
+    }
+
+    static void packValue(const IObjectMap& val, YAML::Node& yaml, Option opt)
+    {
+        for (int i = 0; i < val.size(); ++i) {
+            const auto&      key  = val.keyByIndex(i);
+            const Attribute& node = val.get(key);
+            YAML::Node       child;
+
+            visit(node, child, opt);
+            yaml[key] = child;
         }
     }
 

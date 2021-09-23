@@ -88,6 +88,10 @@ public:
     template <typename Resource>
     static void visit(IMap& map, const Resource& res)
     {
+        if (auto casted = dynamic_cast<IObjectMap*>(&map)) {
+            Worker::unpackValue(*casted, res);
+        }
+
         if (auto casted = dynamic_cast<IValueMap*>(&map)) {
             switch (casted->valueType()) {
                 case Type::Bool:
@@ -266,6 +270,10 @@ public:
     template <typename Resource>
     static void visit(const IMap& map, Resource& res, Option opt)
     {
+        if (auto objCasted = dynamic_cast<const IObjectMap*>(&map)) {
+            Worker::packValue(*objCasted, res, opt);
+        }
+
         if (auto casted = dynamic_cast<const IValueMap*>(&map)) {
             switch (casted->valueType()) {
                 case Type::Bool:

@@ -175,6 +175,10 @@ public:
         }
     }
 
+    static void packValue(const IObjectMap& /*val*/, WalkType& /*proto*/, Option /*opt*/)
+    {
+    }
+
     static void packValue(const IObjectList& val, WalkType& proto, Option opt)
     {
         auto refl = std::get<0>(proto)->GetReflection();
@@ -243,6 +247,10 @@ public:
         auto refl = std::get<0>(proto)->GetReflection();
         int  val  = refl->GetEnumValue(*std::get<0>(proto), std::get<1>(proto));
         en.fromInt(val);
+    }
+
+    static void unpackValue(IObjectMap& /*list*/, const WalkType& /*proto*/)
+    {
     }
 
     static void unpackValue(IObjectList& list, const WalkType& proto)

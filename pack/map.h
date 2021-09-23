@@ -51,8 +51,10 @@ public:
 
 public:
     /// Returns INode interface by index
-    virtual const Attribute& get(const std::string& key) const = 0;
-    virtual Attribute&       create(const std::string& key)    = 0;
+    virtual const Attribute&   get(const std::string& key) const = 0;
+    virtual Attribute&         create(const std::string& key)    = 0;
+    virtual int                size() const                      = 0;
+    virtual const std::string& keyByIndex(int index) const       = 0;
 };
 
 // =========================================================================================================================================
@@ -93,16 +95,18 @@ public:
     void           setValue(const MapType& val);
     bool           contains(const std::string& key) const;
     const T&       operator[](const std::string& key) const;
-    int            size() const;
+    int            size() const override;
     Map&           operator=(const Map& other);
                    operator const T&() const;
     Map&           operator=(const MapType& val);
 
     static std::string typeInfo();
 
-    T&               append(const std::string& key);
-    const Attribute& get(const std::string& key) const override;
-    Attribute&       create(const std::string& key) override;
+    T&                 append(const std::string& key);
+    void               append(const std::string& key, const T& val);
+    const Attribute&   get(const std::string& key) const override;
+    Attribute&         create(const std::string& key) override;
+    const std::string& keyByIndex(int index) const override;
 
 public:
     bool        compare(const Attribute& other) const override;
@@ -315,6 +319,13 @@ T& Map<T>::append(const std::string& key)
 }
 
 template <typename T>
+void Map<T>::append(const std::string& key, const T& val)
+{
+    m_value.push_back(std::make_pair(key, val));
+}
+
+
+template <typename T>
 const Attribute& Map<T>::get(const std::string& key) const
 {
     auto found = std::find_if(m_value.begin(), m_value.end(), [&](const auto& pair) {
@@ -333,6 +344,13 @@ Attribute& Map<T>::create(const std::string& key)
 {
     return append(key);
 }
+
+template <typename T>
+const std::string& Map<T>::keyByIndex(int index) const
+{
+    return m_value.at(index).first;
+}
+
 
 // =========================================================================================================================================
 
