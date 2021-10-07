@@ -4,7 +4,7 @@ DTO Tools library
 
 ##  short description
 
-fty-pack is a small library for converting data between `json`, `yaml`, `zconfig`, `protobuf` respresentation and C++ structs.
+fty-pack is a data transfer object (DTO) library for converting data between json, yaml, zconfig, protobuf representations and C++ structs.
 Typical C++ struct looks like:
 ```
 struct MyData: public pack::Node
