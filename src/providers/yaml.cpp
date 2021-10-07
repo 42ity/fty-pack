@@ -56,30 +56,38 @@ struct Convert
         }
     }
 
-    static void encode(const Value<ValType>& node, YAML::Node& yaml)
+    static void encode(const Value<ValType>& node, YAML::Node& yaml, Option /*opt*/)
     {
         yaml = YAML::convert<CppType>::encode(node.value());
     }
 
-    static void encode(const ValueList<ValType>& node, YAML::Node& yaml)
+    static void encode(const ValueList<ValType>& node, YAML::Node& yaml, Option opt)
     {
-        if constexpr (ValType == Type::Bool) {
-            for (auto it : node) {
-                yaml.push_back(YAML::convert<CppType>::encode(it));
+        if (node.size()) {
+            if constexpr (ValType == Type::Bool) {
+                for (auto it : node) {
+                    yaml.push_back(YAML::convert<CppType>::encode(it));
+                }
+            } else if constexpr (ValType == Type::UChar) {
+                yaml = YAML::Binary(&node.value()[0], size_t(node.size()));
+            } else {
+                for (const auto& it : node) {
+                    yaml.push_back(YAML::convert<CppType>::encode(it));
+                }
             }
-        } else if constexpr (ValType == Type::UChar) {
-            yaml = YAML::Binary(&node.value()[0], size_t(node.size()));
-        } else {
-            for (const auto& it : node) {
-                yaml.push_back(YAML::convert<CppType>::encode(it));
-            }
+        } else if (fty::isSet(opt, Option::WithDefaults)){
+            yaml = YAML::Node(YAML::NodeType::Sequence);
         }
     }
 
-    static void encode(const ValueMap<ValType>& node, YAML::Node& yaml)
+    static void encode(const ValueMap<ValType>& node, YAML::Node& yaml, Option opt)
     {
-        for (const auto& it : node) {
-            yaml[it.first] = YAML::convert<CppType>::encode(it.second);
+        if (node.size()) {
+            for (const auto& it : node) {
+                yaml[it.first] = YAML::convert<CppType>::encode(it.second);
+            }
+        } else if (fty::isSet(opt, Option::WithDefaults)){
+            yaml = YAML::Node(YAML::NodeType::Map);
         }
     }
 };
@@ -163,29 +171,37 @@ public:
     static void packValue(const T& val, YAML::Node& yaml, Option opt)
     {
         if (val.hasValue() || fty::isSet(opt, Option::WithDefaults)) {
-            Convert<T::ThisType>::encode(val, yaml);
+            Convert<T::ThisType>::encode(val, yaml, opt);
         }
     }
 
     static void packValue(const IObjectMap& val, YAML::Node& yaml, Option opt)
     {
-        for (int i = 0; i < val.size(); ++i) {
-            const auto&      key  = val.keyByIndex(i);
-            const Attribute& node = val.get(key);
-            YAML::Node       child;
+        if (val.size()) {
+            for (int i = 0; i < val.size(); ++i) {
+                const auto&      key  = val.keyByIndex(i);
+                const Attribute& node = val.get(key);
+                YAML::Node       child;
 
-            visit(node, child, opt);
-            yaml[key] = child;
+                visit(node, child, opt);
+                yaml[key] = child;
+            }
+        } else if (fty::isSet(opt, Option::WithDefaults)){
+            yaml = YAML::Node(YAML::NodeType::Map);
         }
     }
 
     static void packValue(const IObjectList& val, YAML::Node& yaml, Option opt)
     {
-        for (int i = 0; i < val.size(); ++i) {
-            const Attribute& node = val.get(i);
-            YAML::Node       child;
-            visit(node, child, opt);
-            yaml.push_back(child);
+        if (val.size()) {
+            for (int i = 0; i < val.size(); ++i) {
+                const Attribute& node = val.get(i);
+                YAML::Node       child;
+                visit(node, child, opt);
+                yaml.push_back(child);
+            }
+        } else if (fty::isSet(opt, Option::WithDefaults)){
+            yaml = YAML::Node(YAML::NodeType::Sequence);
         }
     }
 
@@ -206,13 +222,17 @@ public:
 
     static void packValue(const IProtoMap& map, YAML::Node& yaml, Option opt)
     {
-        for (int i = 0; i < map.size(); ++i) {
-            const INode& node = map.get(i);
+        if (map.size()) {
+            for (int i = 0; i < map.size(); ++i) {
+                const INode& node = map.get(i);
 
-            YAML::Node temp;
-            packValue(node, temp, opt);
+                YAML::Node temp;
+                packValue(node, temp, opt);
 
-            yaml[temp["key"]] = temp["value"];
+                yaml[temp["key"]] = temp["value"];
+            }
+        } else if (fty::isSet(opt, Option::WithDefaults)){
+            yaml = YAML::Node(YAML::NodeType::Map);
         }
     }
 
