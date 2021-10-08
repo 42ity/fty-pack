@@ -13,18 +13,30 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
     ========================================================================================================================================
 */
-#include <pack/pack.h>
 #include <catch2/catch.hpp>
 #include <iostream>
+#include <pack/pack.h>
 
-struct Test: public pack::Node
+struct Test : public pack::Node
 {
-    pack::String value = FIELD("value", "val");
-    pack::Int32  intVal = FIELD("intVal");
-    pack::Bool   boolVal = FIELD("boolVal");
+    struct Inner : public Node
+    {
+        pack::String val = FIELD("val");
+
+        using pack::Node::Node;
+        META(Inner, val);
+    };
+
+    pack::String            value   = FIELD("value", "val");
+    pack::Int32             intVal  = FIELD("intVal");
+    pack::Bool              boolVal = FIELD("boolVal");
+    pack::StringList        strList = FIELD("strList");
+    pack::ObjectList<Inner> objList = FIELD("objList");
+    pack::Map<Inner>        objMap  = FIELD("objMap");
+    pack::StringMap         strMap  = FIELD("strMap");
 
     using pack::Node::Node;
-    META(Test, value, intVal, boolVal);
+    META(Test, value, intVal, boolVal, strList, objList, objMap, strMap);
 };
 
 TEST_CASE("Serialization options")
@@ -33,5 +45,5 @@ TEST_CASE("Serialization options")
     auto out1 = *pack::json::serialize(tst);
     CHECK(out1 == "{}");
     auto out2 = *pack::json::serialize(tst, pack::Option::WithDefaults);
-    CHECK(out2 == R"({"value": "val", "intVal": "0", "boolVal": "false"})");
+    CHECK(out2 == R"({"value": "val", "intVal": "0", "boolVal": "false", "strList": [], "objList": [], "objMap": {}, "strMap": {}})");
 }
