@@ -9,7 +9,8 @@ Build-Depends:
     libczmq-dev,
     libprotobuf-dev,
     protobuf-compiler,
-    libprotoc-dev
+    libprotoc-dev,
+    nlohmann-json3-dev
 Standards-Version: 1.0.0
 Section: devel
 Priority: extra

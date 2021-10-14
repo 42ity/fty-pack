@@ -63,12 +63,16 @@ etn_target(shared ${PROJECT_NAME}
         src/node.cpp
         src/attribute.cpp
         src/providers/yaml.cpp
+        src/providers/json.cpp
+        src/providers/utils.h
+        src/providers/utils.cpp
         ${sources}
     PREPROCESSOR ${defs}
     USES_PUBLIC
         fty-utils
     USES
         yaml-cpp
+        nlohmann_json::nlohmann_json
         ${libs}
 )
 

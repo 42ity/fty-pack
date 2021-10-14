@@ -15,7 +15,6 @@
 */
 #include "pack/pack.h"
 #include <catch2/catch.hpp>
-#include <iostream>
 
 struct A : public pack::Node
 {
@@ -45,9 +44,6 @@ TEST_CASE("Variant")
 
         pack::Variant<A, B> var(a);
         std::string         yaml = *pack::yaml::serialize(var);
-        std::cerr << "-------------------" << std::endl;
-        std::cerr << yaml << std::endl;
-        std::cerr << "-------------------" << std::endl;
 
         pack::Variant<A, B> res;
         pack::yaml::deserialize(yaml, res);
@@ -66,9 +62,6 @@ TEST_CASE("Variant")
         pack::Variant<A, B> var1(b);
 
         std::string yaml1 = *pack::yaml::serialize(var1);
-        std::cerr << "-------------------" << std::endl;
-        std::cerr << yaml1 << std::endl;
-        std::cerr << "-------------------" << std::endl;
 
         pack::Variant<A, B> res1;
         pack::yaml::deserialize(yaml1, res1);
@@ -92,9 +85,6 @@ TEST_CASE("Variant")
         bl.c     = "bc1";
 
         std::string yaml2 = *pack::yaml::serialize(list);
-        std::cerr << "-------------------" << std::endl;
-        std::cerr << yaml2 << std::endl;
-        std::cerr << "-------------------" << std::endl;
 
         pack::ObjectList<pack::Variant<A, B>> lcheck;
         REQUIRE(pack::yaml::deserialize(yaml2, lcheck));

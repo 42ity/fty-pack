@@ -15,7 +15,6 @@
 */
 #include <catch2/catch.hpp>
 #include "examples/example1.h"
-#include <iostream>
 
 TEST_CASE("Simple serialization/deserialization")
 {
@@ -138,4 +137,22 @@ TEST_CASE("UTF-8 test")
 
         check(restored);
     }
+}
+
+struct Data: public pack::Node
+{
+    pack::Bool value = FIELD("value");
+    pack::Int32 ivalue = FIELD("ivalue");
+
+    using pack::Node::Node;
+    META(Data, value, ivalue);
+};
+
+TEST_CASE("Old format")
+{
+    Data data;
+    auto ret = pack::json::deserialize(R"({"value":"true", "ivalue":"42"})", data);
+    REQUIRE(ret);
+    CHECK(data.value == true);
+    CHECK(data.ivalue == 42);
 }

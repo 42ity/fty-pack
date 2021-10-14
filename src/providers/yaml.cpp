@@ -17,11 +17,11 @@
 #include "pack/pack.h"
 #include "pack/serialization.h"
 #include "pack/visitor.h"
-#include <fstream>
+#include "utils.h"
 #include <fty/flags.h>
 #include <yaml-cpp/yaml.h>
 
-namespace pack {
+namespace pack::yaml {
 
 // =========================================================================================================================================
 
@@ -75,7 +75,7 @@ struct Convert
                     yaml.push_back(YAML::convert<CppType>::encode(it));
                 }
             }
-        } else if (fty::isSet(opt, Option::WithDefaults)){
+        } else if (fty::isSet(opt, Option::WithDefaults)) {
             yaml = YAML::Node(YAML::NodeType::Sequence);
         }
     }
@@ -86,7 +86,7 @@ struct Convert
             for (const auto& it : node) {
                 yaml[it.first] = YAML::convert<CppType>::encode(it.second);
             }
-        } else if (fty::isSet(opt, Option::WithDefaults)){
+        } else if (fty::isSet(opt, Option::WithDefaults)) {
             yaml = YAML::Node(YAML::NodeType::Map);
         }
     }
@@ -112,7 +112,7 @@ public:
     {
         for (const auto& child : yaml) {
             std::string key = child.first.as<std::string>();
-            auto& obj = map.create(key);
+            auto&       obj = map.create(key);
             visit(obj, child.second);
         }
     }
@@ -186,7 +186,7 @@ public:
                 visit(node, child, opt);
                 yaml[key] = child;
             }
-        } else if (fty::isSet(opt, Option::WithDefaults)){
+        } else if (fty::isSet(opt, Option::WithDefaults)) {
             yaml = YAML::Node(YAML::NodeType::Map);
         }
     }
@@ -200,7 +200,7 @@ public:
                 visit(node, child, opt);
                 yaml.push_back(child);
             }
-        } else if (fty::isSet(opt, Option::WithDefaults)){
+        } else if (fty::isSet(opt, Option::WithDefaults)) {
             yaml = YAML::Node(YAML::NodeType::Sequence);
         }
     }
@@ -231,7 +231,7 @@ public:
 
                 yaml[temp["key"]] = temp["value"];
             }
-        } else if (fty::isSet(opt, Option::WithDefaults)){
+        } else if (fty::isSet(opt, Option::WithDefaults)) {
             yaml = YAML::Node(YAML::NodeType::Map);
         }
     }
@@ -244,140 +244,51 @@ public:
     }
 };
 
-static fty::Expected<std::string> read(const std::string& filename)
+// =========================================================================================================================================
+
+fty::Expected<std::string> serialize(const Attribute& node, Option opt)
 {
-    std::ifstream st(filename);
-    if (st.is_open()) {
-        return fty::Expected<std::string>({std::istreambuf_iterator<char>(st), std::istreambuf_iterator<char>()});
+    try {
+        YAML::Node yaml;
+        YamlSerializer::visit(node, yaml, opt);
+        return YAML::Dump(yaml);
+    } catch (const std::exception& e) {
+        return fty::unexpected(e.what());
     }
-    return fty::unexpected("Cannot read file {}", filename);
 }
 
-static fty::Expected<void> write(const std::string& filename, const std::string& content)
+fty::Expected<void> deserialize(const std::string& content, Attribute& node)
 {
-    std::ofstream st(filename);
-    if (st.is_open()) {
-        st << content;
-        st.close();
+    try {
+        YAML::Node yaml = YAML::Load(content);
+        YamlDeserializer::visit(node, yaml);
         return {};
+    } catch (const std::exception& e) {
+        return fty::unexpected(e.what());
     }
-    return fty::unexpected("Cannot read file {}", filename);
+}
+
+fty::Expected<void> deserializeFile(const std::string& fileName, Attribute& node)
+{
+    if (auto cnt = read(fileName)) {
+        return deserialize(*cnt, node);
+    } else {
+        return fty::unexpected(cnt.error());
+    }
+}
+
+fty::Expected<void> serializeFile(const std::string& fileName, const Attribute& node, Option opt)
+{
+    if (auto ret = serialize(node, opt)) {
+        if (auto res = write(fileName, *ret); !res) {
+            return fty::unexpected(res.error());
+        }
+        return {};
+    } else {
+        return fty::unexpected(ret.error());
+    }
 }
 
 // =========================================================================================================================================
 
-namespace yaml {
-    fty::Expected<std::string> serialize(const Attribute& node, Option opt)
-    {
-        try {
-            YAML::Node yaml;
-            YamlSerializer::visit(node, yaml, opt);
-            return YAML::Dump(yaml);
-        } catch (const std::exception& e) {
-            return fty::unexpected(e.what());
-        }
-    }
-
-    fty::Expected<void> deserialize(const std::string& content, Attribute& node)
-    {
-        try {
-            YAML::Node yaml = YAML::Load(content);
-            YamlDeserializer::visit(node, yaml);
-            return {};
-        } catch (const std::exception& e) {
-            return fty::unexpected(e.what());
-        }
-    }
-
-    fty::Expected<void> deserializeFile(const std::string& fileName, Attribute& node)
-    {
-        if (auto cnt = read(fileName)) {
-            return deserialize(*cnt, node);
-        } else {
-            return fty::unexpected(cnt.error());
-        }
-    }
-
-    fty::Expected<void> serializeFile(const std::string& fileName, const Attribute& node, Option opt)
-    {
-        if (auto ret = serialize(node, opt)) {
-            if (auto res = write(fileName, *ret); !res) {
-                return fty::unexpected(res.error());
-            }
-            return {};
-        } else {
-            return fty::unexpected(ret.error());
-        }
-    }
-} // namespace yaml
-
-// =========================================================================================================================================
-
-namespace json {
-    fty::Expected<std::string> serialize(const Attribute& node, Option opt)
-    {
-        try {
-            YAML::Node yaml;
-            YamlSerializer::visit(node, yaml, opt);
-
-            YAML::Emitter out;
-            out.SetIndent(4);
-
-            if (!yaml.IsNull()) {
-                out << YAML::DoubleQuoted << YAML::Flow << yaml;
-                return std::string(out.c_str());
-            } else {
-                switch (node.type()) {
-                    case Attribute::NodeType::List:
-                        return std::string("[]");
-                    case Attribute::NodeType::Node:
-                    case Attribute::NodeType::Variant:
-                    case Attribute::NodeType::Map:
-                        return std::string("{}");
-                    case Attribute::NodeType::Enum:
-                    case Attribute::NodeType::Value:
-                        return std::string("null");
-                }
-                return std::string("null");
-            }
-        } catch (const std::exception& e) {
-            return fty::unexpected(e.what());
-        }
-    }
-
-    fty::Expected<void> deserialize(const std::string& content, Attribute& node)
-    {
-        try {
-            YAML::Node yaml = YAML::Load(content);
-            YamlDeserializer::visit(node, yaml);
-            return {};
-        } catch (const std::exception& e) {
-            return fty::unexpected(e.what());
-        }
-    }
-
-    fty::Expected<void> deserializeFile(const std::string& fileName, Attribute& node)
-    {
-        if (auto cnt = read(fileName)) {
-            return deserialize(*cnt, node);
-        } else {
-            return fty::unexpected(cnt.error());
-        }
-    }
-
-    fty::Expected<void> serializeFile(const std::string& fileName, const Attribute& node, Option opt)
-    {
-        if (auto ret = serialize(node, opt)) {
-            if (auto res = write(fileName, *ret); !res) {
-                return fty::unexpected(res.error());
-            }
-            return {};
-        } else {
-            return fty::unexpected(ret.error());
-        }
-    }
-} // namespace json
-
-// =========================================================================================================================================
-
-} // namespace pack
+} // namespace pack::yaml
