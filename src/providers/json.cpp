@@ -16,14 +16,20 @@ struct Convert
 
     static void decode(Value<ValType>& node, const nlohmann::ordered_json& json)
     {
-        node = json.get<CppType>();
+        try {
+            node = json.get<CppType>();
+        } catch (const nlohmann::json::type_error& err) {
+            node = fty::convert<CppType>(json.get<std::string>());
+        }
     }
 
     static void decode(ValueList<ValType>& node, const nlohmann::ordered_json& json)
     {
         if constexpr (ValType == Type::UChar) {
-            auto it = json.get<typename ValueList<ValType>::ListType>();
-            node.setValue(it);
+            if (!json.is_null()) {
+                auto it = json.get<typename ValueList<ValType>::ListType>();
+                node.setValue(it);
+            }
         } else {
             for (const auto& it : json) {
                 node.append(it.get<CppType>());
@@ -99,7 +105,7 @@ public:
                 visit(node, child, opt);
                 json[key] = child;
             }
-        } else if (fty::isSet(opt, Option::WithDefaults)){
+        } else if (fty::isSet(opt, Option::WithDefaults)) {
             json = nlohmann::json::object();
         }
     }
@@ -113,7 +119,7 @@ public:
                 visit(node, child, opt);
                 json.push_back(child);
             }
-        } else if (fty::isSet(opt, Option::WithDefaults)){
+        } else if (fty::isSet(opt, Option::WithDefaults)) {
             json = nlohmann::json::array();
         }
     }
