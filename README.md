@@ -2,37 +2,52 @@
 
 DTO Tools library
 
-##  short description
+fty-pack is a data transfer object (DTO) library for converting data between `json`, `yaml`, `zconfig`, `protobuf` representations and C++ structs.
 
-fty-pack is a data transfer object (DTO) library for converting data between json, yaml, zconfig, protobuf representations and C++ structs.
+##  Short description
 Typical C++ struct looks like:
-```
+
+```cpp
 struct MyData: public pack::Node
 {
+    pack::String     str  = FIELD("str-value");
+    pack::Float      fl   = FIELD("float-value", 10.f);
+    pack::StringList list = FIELD("mylist");
+
     using pack::Node::Node;
-
-    pack::String str      = FIELD("str-value");
-    pack::Float  fl       = FIELD("float-value", 10.f);
-    pack::StringList list = FIELD("mylist")
-
-    META_FIELDS(MyData, str, fl, list)
+    META(MyData, str, fl, list);
 };
-
 ```
-Supported basic types are: Int32, Int64, UInt32, UInt64, Float, Double, Bool, String.
-
-
 For example, to convert `MyData` to `yaml` just use:
-```
+
+```cpp
 MyData data;
 data.str = "string";
 data.list = {"one", "two"};
 
-std::string cnt = pack::yaml::serialize(data);
+if (auto ret = pack::yaml::serialize(data)) {
+    std::cout << "Yaml content: " << *ret << std::endl;
+} else {
+    std::cerr << "Serialization error: " << ret.error() << std::endl;
+}
+```
+or from `json` to `MyData`:
+```cpp
+MyData data;
+if (auto ret = pack::json::deserialize(jsonContent, data)) {
+    // Use data
+} else {
+    std::cerr << "Deserialization error: " << ret.error() << std::endl;
+}
 ```
 
-or from `json` to `MyData`:
-```
-MyData data;
-pack::json::deserialize(jsonContent, data);
-```
+## More information
+* [Basic types](./doc/Basic-types)
+* [Complex types](./doc/Complex-types)
+  * [pack::Enum](./doc/Enum-type)  
+  * [pack::ObjectList](./doc/ObjectList-type)  
+  * [pack::ValueList](./doc/ValueList-type)
+  * [pack::Map](./doc/Map-type)
+  * [pack::ValueMap](./doc/ValueMap-type)
+  * [pack::Node](./doc/Node)
+  * [pack::Variant](./doc/Variant)
