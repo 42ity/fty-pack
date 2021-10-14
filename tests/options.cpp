@@ -45,5 +45,5 @@ TEST_CASE("Serialization options")
     auto out1 = *pack::json::serialize(tst);
     CHECK(out1 == "{}");
     auto out2 = *pack::json::serialize(tst, pack::Option::WithDefaults);
-    CHECK(out2 == R"({"value": "val", "intVal": "0", "boolVal": "false", "strList": [], "objList": [], "objMap": {}, "strMap": {}})");
+    CHECK(out2 == R"({"value":"val","intVal":0,"boolVal":false,"strList":[],"objList":[],"objMap":{},"strMap":{}})");
 }

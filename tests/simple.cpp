@@ -15,7 +15,6 @@
 */
 #include <catch2/catch.hpp>
 #include "examples/example1.h"
-#include <iostream>
 
 TEST_CASE("Simple serialization/deserialization")
 {

@@ -28,8 +28,8 @@ TEST_CASE("Empty json")
 {
     {
         pack::String str;
-        auto json = *pack::json::serialize(str);
-        CHECK(json == "null");
+        auto json = *pack::json::serialize(str, pack::Option::WithDefaults);
+        CHECK(json == "\"\"");
     }
     {
         Empty val;
@@ -38,17 +38,17 @@ TEST_CASE("Empty json")
     }
     {
         pack::ObjectList<Empty> val;
-        auto json = *pack::json::serialize(val);
+        auto json = *pack::json::serialize(val, pack::Option::WithDefaults);
         CHECK(json == "[]");
     }
     {
         pack::StringList val;
-        auto json = *pack::json::serialize(val);
+        auto json = *pack::json::serialize(val, pack::Option::WithDefaults);
         CHECK(json == "[]");
     }
     {
         pack::StringMap val;
-        auto json = *pack::json::serialize(val);
+        auto json = *pack::json::serialize(val, pack::Option::WithDefaults);
         CHECK(json == "{}");
     }
 }

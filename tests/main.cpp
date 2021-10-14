@@ -34,5 +34,5 @@ TEST_CASE("Formating")
     val.intVal = 42;
 
     std::string ret = fmt::format("value = {}", val);
-    CHECK(ret == R"(value = {"str-val": "Answer is", "int-val": "42"})");
+    CHECK(ret == R"(value = {"str-val":"Answer is","int-val":42})");
 }
