@@ -106,22 +106,22 @@ TEST_CASE("Serialization options pretty print 2")
     auto out1 = *pack::json::serialize(tst);
     CHECK(out1 == R"({"intVal":24,"boolVal":true,"doubleVal":58.74,"objList":[{"val":254}],"objMap":{"key":{"val":47}}})");
 
-    auto out2 = *pack::json::serialize(tst, pack::Option::PrettyPrint2);
+    auto out2 = *pack::json::serialize(tst, pack::Option::PrettyPrint);
     CHECK(out2 == 
 R"({
-  "intVal": 24,
-  "boolVal": true,
-  "doubleVal": 58.74,
-  "objList": [
-    {
-      "val": 254
+    "intVal": 24,
+    "boolVal": true,
+    "doubleVal": 58.74,
+    "objList": [
+        {
+            "val": 254
+        }
+    ],
+    "objMap": {
+        "key": {
+            "val": 47
+        }
     }
-  ],
-  "objMap": {
-    "key": {
-      "val": 47
-    }
-  }
 })");
 }
 

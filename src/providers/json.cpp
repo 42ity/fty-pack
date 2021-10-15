@@ -253,8 +253,8 @@ fty::Expected<std::string> serialize(const Attribute& node, Option opt)
     try {
         nlohmann::ordered_json json;
         JsonSerializer::visit(node, json, opt);
-        if(fty::isSet(opt, Option::PrettyPrint2)) {
-            return json.dump(2);
+        if(fty::isSet(opt, Option::PrettyPrint)) {
+            return json.dump(4);
         } else {
             return json.dump();
         }
