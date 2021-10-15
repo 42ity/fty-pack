@@ -1,6 +1,6 @@
-### pack::ValueList\<[BasicType](Basic-types)\>
+### pack::ValueList\<[BasicType](Basic-types.md)\>
 
-ValueList is container specialized to hold [BasicType](Basic-types). Exist slight difference between this type and [ObjectList](ObjectList-type). 
+ValueList is container specialized to hold [BasicType](Basic-types.md). Exist slight difference between this type and [ObjectList](ObjectList-type.md). 
 
 Pack defines some useful ValuesList\<BasicType\> as types:
 ```cpp
@@ -14,7 +14,7 @@ using BoolList   = ValueList<Type::Bool>;
 using StringList = ValueList<Type::String>;
 ```
 
-Some useful methods (for BasicType::CppType see mapping in [BasicType](Basic-types)):
+Some useful methods (for BasicType::CppType see mapping in [BasicType](Basic-types.md)):
 * Returns std::vector\<BasicType::CppType\>
   ```cpp
     const ListType& value() const;
