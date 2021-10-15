@@ -42,12 +42,12 @@ if (auto ret = pack::json::deserialize(jsonContent, data)) {
 ```
 
 ## More information
-* [Basic types](./doc/Basic-types)
-* [Complex types](./doc/Complex-types)
-  * [pack::Enum](./doc/Enum-type)  
-  * [pack::ObjectList](./doc/ObjectList-type)  
-  * [pack::ValueList](./doc/ValueList-type)
-  * [pack::Map](./doc/Map-type)
-  * [pack::ValueMap](./doc/ValueMap-type)
-  * [pack::Node](./doc/Node)
-  * [pack::Variant](./doc/Variant)
+* [Basic types](./doc/Basic-types.md)
+* [Complex types](./doc/Complex-types.md)
+  * [pack::Enum](./doc/Enum-type.md)  
+  * [pack::ObjectList](./doc/ObjectList-type.md)  
+  * [pack::ValueList](./doc/ValueList-type.md)
+  * [pack::Map](./doc/Map-type.md)
+  * [pack::ValueMap](./doc/ValueMap-type.md)
+  * [pack::Node](./doc/Node.md)
+  * [pack::Variant](./doc/Variant.md)
