@@ -89,6 +89,43 @@ TEST_CASE("Serialization options value as string")
     CHECK(out2 == R"({"intVal":"12","boolVal":"true","doubleVal":"8.569","objList":[{"val":"155"}],"objMap":{"key":{"val":"68"}}})");
 }
 
+TEST_CASE("Serialization options pretty print 2")
+{
+    Test1 tst;
+    tst.intVal    = 24;
+    tst.boolVal   = true;
+    tst.doubleVal = 58.74;
+
+    auto& v = tst.objList.append();
+    v.val   = 254;
+
+    Test1::Inner1 kv;
+    kv.val = 47;
+    tst.objMap.append("key", kv);
+
+    auto out1 = *pack::json::serialize(tst);
+    CHECK(out1 == R"({"intVal":24,"boolVal":true,"doubleVal":58.74,"objList":[{"val":254}],"objMap":{"key":{"val":47}}})");
+
+    auto out2 = *pack::json::serialize(tst, pack::Option::PrettyPrint2);
+    CHECK(out2 == 
+R"({
+  "intVal": 24,
+  "boolVal": true,
+  "doubleVal": 58.74,
+  "objList": [
+    {
+      "val": 254
+    }
+  ],
+  "objMap": {
+    "key": {
+      "val": 47
+    }
+  }
+})");
+}
+
+
 TEST_CASE("Serialization options value as string and with default")
 {
     Test1 tst;
