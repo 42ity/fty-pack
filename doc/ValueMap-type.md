@@ -1,6 +1,6 @@
 ### pack::ValueMap\<T\>
 
-pack::ValueMap is a unsorted associative container that contains key-value pairs. T is specialized to use [Basic types](Basic-types).
+pack::ValueMap is a unsorted associative container that contains key-value pairs. T is specialized to use [Basic types](Basic-types.md).
 Some useful types are already predifined:
 ```cpp
 using Int32Map  = ValueMap<Type::Int32>;
@@ -13,7 +13,7 @@ using BoolMap   = ValueMap<Type::Bool>;
 using StringMap = ValueMap<Type::String>;
 ```
 
-Methods mostly the same as in [Map](Map-type)
+Methods mostly the same as in [Map](Map-type.md)
 
 ### Example
 ```cpp

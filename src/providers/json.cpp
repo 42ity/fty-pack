@@ -45,23 +45,35 @@ struct Convert
         }
     }
 
-    static void encode(const Value<ValType>& node, nlohmann::ordered_json& json)
+    static void encode(const Value<ValType>& node, nlohmann::ordered_json& json, Option opt)
     {
-        json = node.value();
+        if (fty::isSet(opt, Option::ValueAsString)) {
+            json = fty::convert<std::string>(node.value());
+        } else {
+            json = node.value();
+        }
     }
 
-    static void encode(const ValueList<ValType>& node, nlohmann::ordered_json& json)
+    static void encode(const ValueList<ValType>& node, nlohmann::ordered_json& json, Option opt)
     {
         if (node.size()) {
             if constexpr (ValType == Type::Bool) {
                 for (auto it : node) {
-                    json.push_back(it);
+                    if (fty::isSet(opt, Option::ValueAsString)) {
+                        json.push_back(fty::convert<std::string>(it));
+                    } else {
+                        json.push_back(it);
+                    }
                 }
             } else if constexpr (ValType == Type::UChar) {
                 json = node.value();
             } else {
                 for (const auto& it : node) {
-                    json.push_back(it);
+                    if (fty::isSet(opt, Option::ValueAsString)) {
+                        json.push_back(fty::convert<std::string>(it));
+                    } else {
+                        json.push_back(it);
+                    }
                 }
             }
         } else {
@@ -69,11 +81,15 @@ struct Convert
         }
     }
 
-    static void encode(const ValueMap<ValType>& node, nlohmann::ordered_json& json)
+    static void encode(const ValueMap<ValType>& node, nlohmann::ordered_json& json, Option opt)
     {
         if (node.size()) {
             for (const auto& [key, value] : node) {
-                json[key] = value;
+                if (fty::isSet(opt, Option::ValueAsString)) {
+                    json[key] = fty::convert<std::string>(value);
+                } else {
+                    json[key] = value;
+                }
             }
         } else {
             json = nlohmann::json::object();
@@ -90,7 +106,7 @@ public:
     static void packValue(const T& val, nlohmann::ordered_json& json, Option opt)
     {
         if (val.hasValue() || fty::isSet(opt, Option::WithDefaults)) {
-            Convert<T::ThisType>::encode(val, json);
+            Convert<T::ThisType>::encode(val, json, opt);
         }
     }
 
@@ -237,7 +253,12 @@ fty::Expected<std::string> serialize(const Attribute& node, Option opt)
     try {
         nlohmann::ordered_json json;
         JsonSerializer::visit(node, json, opt);
-        return json.dump();
+        if(fty::isSet(opt, Option::PrettyPrint)) {
+            return json.dump(4);
+        } else {
+            return json.dump();
+        }
+        
     } catch (const std::exception& e) {
         return fty::unexpected(e.what());
     }

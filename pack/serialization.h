@@ -25,8 +25,10 @@ namespace pack {
 
 enum class Option
 {
-    No           = 1 << 0,
-    WithDefaults = 1 << 1
+    No            = 1 << 0,
+    WithDefaults  = 1 << 1,
+    ValueAsString = 1 << 2,
+    PrettyPrint   = 1 << 3
 };
 
 ENABLE_FLAGS(Option)
