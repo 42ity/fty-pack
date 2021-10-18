@@ -151,7 +151,7 @@ public:
     {
         json = nlohmann::json::object();
         for (auto& it : node.fields()) {
-            if (node.hasValue() || fty::isSet(opt, Option::WithDefaults)) {
+            if (it->hasValue() || fty::isSet(opt, Option::WithDefaults)) {
                 nlohmann::ordered_json& child = json[it->key()];
                 visit(*it, child, opt);
             }
