@@ -156,3 +156,12 @@ TEST_CASE("Old format")
     CHECK(data.value == true);
     CHECK(data.ivalue == 42);
 }
+
+TEST_CASE("Null values")
+{
+    Data data;
+    auto ret = pack::json::deserialize(R"({"value":null, "ivalue":null})", data);
+    REQUIRE(ret);
+    CHECK(data.value == false);
+    CHECK(data.ivalue == 0);
+}

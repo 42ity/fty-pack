@@ -16,10 +16,12 @@ struct Convert
 
     static void decode(Value<ValType>& node, const nlohmann::ordered_json& json)
     {
-        try {
-            node = json.get<CppType>();
-        } catch (const nlohmann::json::type_error& err) {
-            node = fty::convert<CppType>(json.get<std::string>());
+        if (!json.is_null()) {
+            try {
+                node = json.get<CppType>();
+            } catch (const nlohmann::json::type_error& err) {
+                node = fty::convert<CppType>(json.get<std::string>());
+            }
         }
     }
 
@@ -32,7 +34,7 @@ struct Convert
             }
         } else {
             for (const auto& it : json) {
-                node.append(it.get<CppType>());
+                node.append(it.is_null() ? CppType{} : it.get<CppType>());
             }
         }
     }
@@ -40,8 +42,13 @@ struct Convert
     static void decode(ValueMap<ValType>& node, const nlohmann::ordered_json& json)
     {
         for (const auto& it : json.items()) {
-            auto val = it.value().get<CppType>();
-            node.append(it.key(), val);
+            if (it.value().is_null()) {
+                CppType val;
+                node.append(it.key(), val);
+            } else {
+                auto val = it.value().get<CppType>();
+                node.append(it.key(), val);
+            }
         }
     }
 
@@ -144,7 +151,7 @@ public:
     {
         json = nlohmann::json::object();
         for (auto& it : node.fields()) {
-            if (node.hasValue() || fty::isSet(opt, Option::WithDefaults)) {
+            if (it->hasValue() || fty::isSet(opt, Option::WithDefaults)) {
                 nlohmann::ordered_json& child = json[it->key()];
                 visit(*it, child, opt);
             }
