@@ -43,6 +43,7 @@ if (auto ret = pack::json::deserialize(jsonContent, data)) {
 
 ## More information
 * [Basic types](./doc/Basic-types.md)
+* [Serializer and deserializer](./doc/Serializer.md)
 * [Complex types](./doc/Complex-types.md)
   * [pack::Enum](./doc/Enum-type.md)  
   * [pack::ObjectList](./doc/ObjectList-type.md)  
