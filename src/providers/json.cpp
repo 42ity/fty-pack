@@ -19,7 +19,7 @@ struct Convert
         if (!json.is_null()) {
             try {
                 node = json.get<CppType>();
-            } catch (const nlohmann::json::type_error& err) {
+            } catch (const nlohmann::json::type_error& /*err*/) {
                 node = fty::convert<CppType>(json.get<std::string>());
             }
         }
@@ -43,7 +43,7 @@ struct Convert
     {
         for (const auto& it : json.items()) {
             if (it.value().is_null()) {
-                CppType val;
+                CppType val = {};
                 node.append(it.key(), val);
             } else {
                 auto val = it.value().get<CppType>();
