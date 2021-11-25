@@ -366,8 +366,7 @@ void Map<T>::set(const std::string& key, T& val)
 
     if (found != m_value.end()) {
         found->second = val;
-    }
-    else {
+    } else {
         throw std::out_of_range("Key " + key + " was not found");
     }
 }
@@ -537,8 +536,7 @@ void ValueMap<ValType>::set(const std::string& key, CppType& val)
     auto found = m_value.find(key);
     if (found != m_value.end()) {
         found->second = val;
-    }
-    else {
+    } else {
         throw std::out_of_range("Key " + key + " was not found");
     }
 }

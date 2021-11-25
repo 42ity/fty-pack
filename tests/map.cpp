@@ -230,7 +230,7 @@ TEST_CASE("Simple map serialization/deserialization")
     }
 }
 
-struct MapObj: public pack::Node
+struct MapObj : public pack::Node
 {
     pack::String value = FIELD("value");
 
@@ -241,10 +241,10 @@ struct MapObj: public pack::Node
 TEST_CASE("Object map serialization/deserialization")
 {
     pack::Map<MapObj> origin;
-    auto& it = origin.append("key1");
-    it.value = "Some string";
+    auto&             it = origin.append("key1");
+    it.value             = "Some string";
 
-    auto sav = origin["key1"];
+    auto sav             = origin["key1"];
     origin["key1"].value = "Some string modified";
     CHECK(origin["key1"].value == "Some string modified");
     origin.set("key1", sav);
@@ -269,14 +269,14 @@ TEST_CASE("Object map serialization/deserialization")
     check(origin);
 
     {
-        std::string cnt = *pack::yaml::serialize(origin);
+        std::string       cnt = *pack::yaml::serialize(origin);
         pack::Map<MapObj> checked;
         pack::yaml::deserialize(cnt, checked);
         check(checked);
     }
 
     {
-        std::string cnt = *pack::json::serialize(origin);
+        std::string       cnt = *pack::json::serialize(origin);
         pack::Map<MapObj> checked;
         pack::json::deserialize(cnt, checked);
         check(checked);
@@ -288,7 +288,7 @@ TEST_CASE("Value map serialization/deserialization")
     pack::StringMap origin;
     origin.append("key1", "Some string");
 
-    auto sav = origin["key1"];
+    auto sav       = origin["key1"];
     origin["key1"] = "Some string modified";
     CHECK(origin["key1"] == "Some string modified");
     origin.set("key1", sav);
@@ -311,14 +311,14 @@ TEST_CASE("Value map serialization/deserialization")
     check(origin);
 
     {
-        std::string cnt = *pack::yaml::serialize(origin);
+        std::string     cnt = *pack::yaml::serialize(origin);
         pack::StringMap checked;
         pack::yaml::deserialize(cnt, checked);
         check(checked);
     }
 
     {
-        std::string cnt = *pack::json::serialize(origin);
+        std::string     cnt = *pack::json::serialize(origin);
         pack::StringMap checked;
         pack::json::deserialize(cnt, checked);
         check(checked);
