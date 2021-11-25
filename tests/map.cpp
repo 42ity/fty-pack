@@ -177,7 +177,7 @@ TEST_CASE("Simple map serialization/deserialization")
     origin.ints.append("key1", 12);
     origin.ints.append("key2", 13);
 
-    auto check = [](const TestMap& item) {
+    auto check = [](TestMap& item) {
         try {
             REQUIRE(2 == item.strs.size());
             REQUIRE(2 == item.ints.size());
@@ -245,9 +245,7 @@ TEST_CASE("Object map serialization/deserialization")
     it.value = "Some string";
 
     auto sav = origin["key1"];
-    MapObj newVal;
-    newVal.value = "Some string modified";
-    origin.set("key1", newVal);
+    origin["key1"].value = "Some string modified";
     CHECK(origin["key1"].value == "Some string modified");
     origin.set("key1", sav);
     CHECK(origin["key1"].value == "Some string");
@@ -256,7 +254,7 @@ TEST_CASE("Object map serialization/deserialization")
     ins.value = "Some other value";
     origin.append("key2", ins);
 
-    auto check = [](const pack::Map<MapObj>& item) {
+    auto check = [](pack::Map<MapObj>& item) {
         try {
             REQUIRE(2 == item.size());
             CHECK(item.contains("key1"));
@@ -280,6 +278,48 @@ TEST_CASE("Object map serialization/deserialization")
     {
         std::string cnt = *pack::json::serialize(origin);
         pack::Map<MapObj> checked;
+        pack::json::deserialize(cnt, checked);
+        check(checked);
+    }
+}
+
+TEST_CASE("Value map serialization/deserialization")
+{
+    pack::StringMap origin;
+    origin.append("key1", "Some string");
+
+    auto sav = origin["key1"];
+    origin["key1"] = "Some string modified";
+    CHECK(origin["key1"] == "Some string modified");
+    origin.set("key1", sav);
+    CHECK(origin["key1"] == "Some string");
+
+    origin.append("key2", "Some other value");
+
+    auto check = [](pack::StringMap& item) {
+        try {
+            REQUIRE(2 == item.size());
+            CHECK(item.contains("key1"));
+            CHECK(item.contains("key2"));
+            CHECK("Some string" == item["key1"]);
+            CHECK("Some other value" == item["key2"]);
+        } catch (const std::exception& err) {
+            FAIL(err.what());
+        }
+    };
+
+    check(origin);
+
+    {
+        std::string cnt = *pack::yaml::serialize(origin);
+        pack::StringMap checked;
+        pack::yaml::deserialize(cnt, checked);
+        check(checked);
+    }
+
+    {
+        std::string cnt = *pack::json::serialize(origin);
+        pack::StringMap checked;
         pack::json::deserialize(cnt, checked);
         check(checked);
     }

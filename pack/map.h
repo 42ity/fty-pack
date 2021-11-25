@@ -94,7 +94,7 @@ public:
     const MapType& value() const;
     void           setValue(const MapType& val);
     bool           contains(const std::string& key) const;
-    const T&       operator[](const std::string& key) const;
+    T&             operator[](const std::string& key);
     int            size() const override;
     Map&           operator=(const Map& other);
                    operator const T&() const;
@@ -147,11 +147,12 @@ public:
     const MapType& value() const;
     void           setValue(const MapType& val);
     bool           contains(const std::string& key) const;
-    const CppType& operator[](const std::string& key) const;
+    CppType& operator[](const std::string& key);
     int            size() const;
     ValueMap&      operator=(const ValueMap& other);
     ValueMap&      operator=(const MapType& val);
     void           append(const std::string& key, const CppType& val);
+    void           set(const std::string& key, CppType& val);
 
     static std::string typeInfo();
 
@@ -212,9 +213,9 @@ int Map<T>::size() const
 }
 
 template <typename T>
-const T& Map<T>::operator[](const std::string& key) const
+T& Map<T>::operator[](const std::string& key)
 {
-    auto found = std::find_if(m_value.begin(), m_value.end(), [&](const auto& pair) {
+    auto found = std::find_if(m_value.begin(), m_value.end(), [&](auto& pair) {
         return pair.first == key;
     });
 
@@ -407,7 +408,7 @@ int ValueMap<ValType>::size() const
 }
 
 template <Type ValType>
-const typename ValueMap<ValType>::CppType& ValueMap<ValType>::operator[](const std::string& key) const
+typename ValueMap<ValType>::CppType& ValueMap<ValType>::operator[](const std::string& key)
 {
     auto found = m_value.find(key);
     if (found != m_value.end()) {
@@ -501,6 +502,18 @@ template <Type ValType>
 void ValueMap<ValType>::append(const std::string& key, const CppType& val)
 {
     m_value.emplace(key, val);
+}
+
+template <Type ValType>
+void ValueMap<ValType>::set(const std::string& key, CppType& val)
+{
+    auto found = m_value.find(key);
+    if (found != m_value.end()) {
+        found->second = val;
+    }
+    else {
+        throw std::out_of_range("Key " + key + " was not found");
+    }
 }
 
 template <Type ValType>
