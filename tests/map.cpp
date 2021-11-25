@@ -244,6 +244,14 @@ TEST_CASE("Object map serialization/deserialization")
     auto& it = origin.append("key1");
     it.value = "Some string";
 
+    auto sav = origin["key1"];
+    MapObj newVal;
+    newVal.value = "Some string modified";
+    origin.set("key1", newVal);
+    CHECK(origin["key1"].value == "Some string modified");
+    origin.set("key1", sav);
+    CHECK(origin["key1"].value == "Some string");
+
     MapObj ins;
     ins.value = "Some other value";
     origin.append("key2", ins);

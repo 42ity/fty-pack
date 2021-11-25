@@ -105,6 +105,7 @@ public:
     T&                 append(const std::string& key);
     void               append(const std::string& key, const T& val);
     const Attribute&   get(const std::string& key) const override;
+    void               set(const std::string& key, T& val);
     Attribute&         create(const std::string& key) override;
     const std::string& keyByIndex(int index) const override;
 
@@ -337,6 +338,21 @@ const Attribute& Map<T>::get(const std::string& key) const
     }
 
     throw std::out_of_range("Key " + key + " was not found");
+}
+
+template <typename T>
+void Map<T>::set(const std::string& key, T& val)
+{
+    auto found = std::find_if(m_value.begin(), m_value.end(), [&](const auto& pair) {
+        return pair.first == key;
+    });
+
+    if (found != m_value.end()) {
+        found->second = val;
+    }
+    else {
+        throw std::out_of_range("Key " + key + " was not found");
+    }
 }
 
 template <typename T>
