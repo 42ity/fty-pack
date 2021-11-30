@@ -169,8 +169,7 @@ inline String& String::operator=(std::string&& val)
 
 inline std::ostream& operator<<(std::ostream& ss, const String& s)
 {
-    std::string val(s);
-    ss << val;
+    ss << s.value();
     return ss;
 }
 
