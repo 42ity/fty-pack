@@ -45,10 +45,13 @@ public:
 
     inline String(const String&);
     inline String(String&&);
-    inline String& operator=(const String&);
-    inline String& operator=(String&&);
-    inline String& operator=(const std::string&);
-    inline String& operator=(std::string&&);
+    inline String(const std::string&);
+    inline String(std::string&&);
+    inline String&              operator=(const String&);
+    inline String&              operator=(String&&);
+    inline String&              operator=(const std::string&);
+    inline String&              operator=(std::string&&);
+    inline friend std::ostream& operator<<(std::ostream& ss, const String& s);
 
     inline bool empty() const;
     inline int  size() const;
@@ -120,6 +123,16 @@ inline String::String(String&& other)
 {
 }
 
+inline String::String(const std::string& val)
+{
+    setValue(val);
+}
+
+inline String::String(std::string&& val)
+{
+    setValue(std::move(val));
+}
+
 inline bool String::empty() const
 {
     return value().empty();
@@ -152,6 +165,12 @@ inline String& String::operator=(std::string&& val)
 {
     setValue(std::move(val));
     return *this;
+}
+
+inline std::ostream& operator<<(std::ostream& ss, const String& s)
+{
+    ss << s.value();
+    return ss;
 }
 
 // =========================================================================================================================================
