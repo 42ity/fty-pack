@@ -179,7 +179,7 @@ TEST_CASE("Simple map serialization/deserialization")
     origin.ints.append("key1", 12);
     origin.ints.append("key2", 13);
 
-    auto check = [](TestMap& item) {
+    auto check = [](const TestMap& item) {
         try {
             REQUIRE(2 == item.strs.size());
             REQUIRE(2 == item.ints.size());
@@ -399,7 +399,7 @@ TEST_CASE("Value map serialization/deserialization")
 
     origin.append("key2", "Some other value");
 
-    auto check = [](pack::StringMap& item) {
+    auto check = [](const pack::StringMap& item) {
         try {
             REQUIRE(2 == item.size());
             CHECK(item.contains("key1"));
