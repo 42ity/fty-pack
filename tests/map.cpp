@@ -14,6 +14,8 @@
     ========================================================================================================================================
 */
 #include "examples/example5.h"
+#include <iostream>
+#include <string>
 #include <catch2/catch.hpp>
 
 TEST_CASE("Map serialization/deserialization")
@@ -238,6 +240,48 @@ struct MapObj : public pack::Node
     META(MapObj, value);
 };
 
+TEST_CASE("Object map get/set")
+{
+    pack::Map<MapObj> map;
+
+    // key not exist during get
+    auto newElt = map["key0"];
+    CHECK(newElt.value.value().empty());
+    CHECK(map.contains("key0"));
+    CHECK(map.size() == 1);
+    map.clear();
+    CHECK(!map.contains("key0"));
+    CHECK(map.size() == 0);
+
+    // add new element
+    MapObj elt;
+    elt.value = "Some string";
+    map.append("key1", elt);
+    CHECK(map["key1"].value == "Some string");
+    CHECK(map.contains("key1"));
+    CHECK(map.size() == 1);
+    // add another element
+    elt.value = "Another string";
+    map.append("key2", elt);
+    CHECK(map["key1"].value == "Some string");
+    CHECK(map["key2"].value == "Another string");
+    CHECK(map.contains("key2"));
+    CHECK(map.size() == 2);
+
+    // save initial first value
+    auto savElt = map["key1"];
+    // change current value
+    map["key1"].value = "Some string modified";
+    // restore initial value
+    map.set("key1", savElt);
+    CHECK(map["key1"].value == "Some string");
+    // key not exist during set
+    map.set("key3", savElt);
+    CHECK(map["key3"].value == "Some string");
+    CHECK(map.contains("key3"));
+    CHECK(map.size() == 3);
+}
+
 TEST_CASE("Object map serialization/deserialization")
 {
     pack::Map<MapObj> origin;
@@ -281,6 +325,48 @@ TEST_CASE("Object map serialization/deserialization")
         pack::json::deserialize(cnt, checked);
         check(checked);
     }
+}
+
+TEST_CASE("Value map get/set")
+{
+    pack::StringMap map;
+
+    // key not exist during get
+    auto newElt = map["key0"];
+    CHECK(newElt.empty());
+    CHECK(map.contains("key0"));
+    CHECK(map.size() == 1);
+    map.clear();
+    CHECK(!map.contains("key0"));
+    CHECK(map.size() == 0);
+
+    // add new element
+    //pack::String elt(std::string("Some string"));
+    std::string elt{"Some string"};
+    map.append("key1", elt);
+    CHECK(map["key1"] == "Some string");
+    CHECK(map.contains("key1"));
+    CHECK(map.size() == 1);
+    // add another element
+    elt = "Another string";
+    map.append("key2", elt);
+    CHECK(map["key1"] == "Some string");
+    CHECK(map["key2"] == "Another string");
+    CHECK(map.contains("key2"));
+    CHECK(map.size() == 2);
+
+    // save initial first value
+    auto savElt = map["key1"];
+    // change current value
+    map["key1"] = "Some string modified";
+    // restore initial value
+    map.set("key1", savElt);
+    CHECK(map["key1"] == "Some string");
+    // key not exist during set
+    map.set("key3", savElt);
+    CHECK(map["key3"] == "Some string");
+    CHECK(map.contains("key3"));
+    CHECK(map.size() == 3);
 }
 
 TEST_CASE("Value map serialization/deserialization")

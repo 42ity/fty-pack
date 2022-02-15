@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <map>
 #include <regex>
+#include <fmt/core.h>
 
 namespace pack {
 
@@ -74,6 +75,10 @@ public:
 
 // =========================================================================================================================================
 
+/// Object map class implementation.
+///
+/// Map is a unsorted associative container that contains key-value pairs.
+/// Value T is specialized to use pack::Node derivatives.
 template <typename T>
 class Map : public IObjectMap
 {
@@ -86,28 +91,41 @@ public:
     using IObjectMap::IObjectMap;
 
 public:
+    /// Iterators definition
     ConstIterator begin() const;
     ConstIterator end() const;
     Iterator      begin();
     Iterator      end();
 
+    /// Returns internal std container from the Map
     const MapType& value() const;
+    /// Set values of the map by internal representation
     void           setValue(const MapType& val);
+    /// Returns true if the key exists in the map
     bool           contains(const std::string& key) const;
-    const T&       operator[](const std::string& key) const;
+    /// Returns first reference to Map value by it's key. If the key
+    /// doesn't exist, return the new created element (default value)
     T&             operator[](const std::string& key);
+    /// Return size of the map
     int            size() const override;
+    /// Operators definition
     Map&           operator=(const Map& other);
                    operator const T&() const;
     Map&           operator=(const MapType& val);
 
+    /// Return type info
     static std::string typeInfo();
-
+    /// Append new empty element to map and return it (even if the key already exist)
     T&                 append(const std::string& key);
+    /// Append new element to map (even if the key already exist)
     void               append(const std::string& key, const T& val);
+    /// Get attribute of element
     const Attribute&   get(const std::string& key) const override;
-    void               set(const std::string& key, T& val);
+    /// Set value of an element. If the key not find, create a new element
+    void               set(const std::string& key, const T& val);
+    /// Create empty attribute of element and return a reference on it
     Attribute&         create(const std::string& key) override;
+    /// Return key element at index
     const std::string& keyByIndex(int index) const override;
 
 public:
@@ -124,6 +142,10 @@ private:
 
 // =========================================================================================================================================
 
+/// Values list class implementation.
+///
+/// ValueMap is a unsorted associative container that contains key-value pairs.
+/// ValType is specialized to use Basic types.
 template <Type ValType>
 class ValueMap : public IValueMap
 {
@@ -140,24 +162,35 @@ public:
     ValueMap(const ValueMap&) = default;
 
 public:
+    /// Iterators definition
     ConstIterator begin() const;
     ConstIterator end() const;
     Iterator      begin();
     Iterator      end();
 
+    /// Get map
     const MapType& value() const;
+    /// Set values of the map by internal representation
     void           setValue(const MapType& val);
+    /// Returns true if the key exists in the map
     bool           contains(const std::string& key) const;
-    const CppType& operator[](const std::string& key) const;
+    /// Returns first reference to Map value by it's key. If the key
+    /// doesn't exist, return the new created element (default value)
     CppType&       operator[](const std::string& key);
+    /// Return size of the map
     int            size() const;
+    /// Operators definition
     ValueMap&      operator=(const ValueMap& other);
     ValueMap&      operator=(const MapType& val);
+    /// Append new element to map (even if the key already exist)
     void           append(const std::string& key, const CppType& val);
-    void           set(const std::string& key, CppType& val);
+    /// Set value of an element. If the key not find, create a new element
+    void           set(const std::string& key, const CppType& val);
 
+    /// Return type info
     static std::string typeInfo();
 
+    /// Search functions
     template <typename T>
     Iterator find(const T& pred);
     Iterator find(const std::string& key);
@@ -215,7 +248,7 @@ int Map<T>::size() const
 }
 
 template <typename T>
-const T& Map<T>::operator[](const std::string& key) const
+T& Map<T>::operator[](const std::string& key)
 {
     const auto found = std::find_if(m_value.begin(), m_value.end(), [&](const auto& pair) {
         return pair.first == key;
@@ -225,21 +258,10 @@ const T& Map<T>::operator[](const std::string& key) const
         return found->second;
     }
 
-    throw std::out_of_range("Key " + key + " was not found");
-}
-
-template <typename T>
-T& Map<T>::operator[](const std::string& key)
-{
-    auto found = std::find_if(m_value.begin(), m_value.end(), [&](auto& pair) {
-        return pair.first == key;
-    });
-
-    if (found != m_value.end()) {
-        return found->second;
-    }
-
-    throw std::out_of_range("Key " + key + " was not found");
+    // if not found, return new element inserted
+    T val;
+    m_value.push_back(std::make_pair(key, val));
+    return m_value.back().second;
 }
 
 template <typename T>
@@ -332,6 +354,7 @@ template <typename T>
 T& Map<T>::append(const std::string& key)
 {
     T it;
+    // append element even if the key exist
     m_value.push_back(std::make_pair(key, it));
     return m_value.back().second;
 }
@@ -339,13 +362,14 @@ T& Map<T>::append(const std::string& key)
 template <typename T>
 void Map<T>::append(const std::string& key, const T& val)
 {
+    // append element even if the key exist
     m_value.push_back(std::make_pair(key, val));
 }
-
 
 template <typename T>
 const Attribute& Map<T>::get(const std::string& key) const
 {
+    // get element if the key exist, else an exception is triggered
     auto found = std::find_if(m_value.begin(), m_value.end(), [&](const auto& pair) {
         return pair.first == key;
     });
@@ -354,11 +378,11 @@ const Attribute& Map<T>::get(const std::string& key) const
         return found->second;
     }
 
-    throw std::out_of_range("Key " + key + " was not found");
+    throw std::out_of_range(fmt::format("Key {} was not found", key));
 }
 
 template <typename T>
-void Map<T>::set(const std::string& key, T& val)
+void Map<T>::set(const std::string& key, const T& val)
 {
     auto found = std::find_if(m_value.begin(), m_value.end(), [&](const auto& pair) {
         return pair.first == key;
@@ -367,7 +391,8 @@ void Map<T>::set(const std::string& key, T& val)
     if (found != m_value.end()) {
         found->second = val;
     } else {
-        throw std::out_of_range("Key " + key + " was not found");
+        // insert value if not found
+        m_value.push_back(std::make_pair(key, val));
     }
 }
 
@@ -423,25 +448,9 @@ int ValueMap<ValType>::size() const
 }
 
 template <Type ValType>
-const typename ValueMap<ValType>::CppType& ValueMap<ValType>::operator[](const std::string& key) const
-{
-    auto found = m_value.find(key);
-    if (found != m_value.end()) {
-        return found->second;
-    }
-
-    throw std::out_of_range("Key " + key + " was not found");
-}
-
-template <Type ValType>
 typename ValueMap<ValType>::CppType& ValueMap<ValType>::operator[](const std::string& key)
 {
-    auto found = m_value.find(key);
-    if (found != m_value.end()) {
-        return found->second;
-    }
-
-    throw std::out_of_range("Key " + key + " was not found");
+    return m_value[key];
 }
 
 template <Type ValType>
@@ -531,20 +540,20 @@ void ValueMap<ValType>::append(const std::string& key, const CppType& val)
 }
 
 template <Type ValType>
-void ValueMap<ValType>::set(const std::string& key, CppType& val)
+void ValueMap<ValType>::set(const std::string& key, const CppType& val)
 {
     auto found = m_value.find(key);
     if (found != m_value.end()) {
         found->second = val;
     } else {
-        throw std::out_of_range("Key " + key + " was not found");
+        m_value.emplace(key, val);
     }
 }
 
 template <Type ValType>
 std::string ValueMap<ValType>::typeInfo()
 {
-    return "ValueMap<" + valueTypeName(ValType) + ">";
+    return fmt::format("ValueMap<{}>", valueTypeName(ValType));
 }
 
 template <Type ValType>
