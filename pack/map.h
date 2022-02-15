@@ -106,6 +106,9 @@ public:
     /// Returns first reference to Map value by it's key. If the key
     /// doesn't exist, return the new created element (default value)
     T&             operator[](const std::string& key);
+    /// Returns first reference to Map value by it's key. If the key
+    /// doesn't exist, return an exception
+    const T&       operator[](const std::string& key) const;
     /// Return size of the map
     int            size() const override;
     /// Operators definition
@@ -177,6 +180,9 @@ public:
     /// Returns first reference to Map value by it's key. If the key
     /// doesn't exist, return the new created element (default value)
     CppType&       operator[](const std::string& key);
+    /// Returns first reference to Map value by it's key. If the key
+    /// doesn't exist, return an exception
+    const CppType& operator[](const std::string& key) const;
     /// Return size of the map
     int            size() const;
     /// Operators definition
@@ -262,6 +268,21 @@ T& Map<T>::operator[](const std::string& key)
     T val;
     m_value.push_back(std::make_pair(key, val));
     return m_value.back().second;
+}
+
+template <typename T>
+const T& Map<T>::operator[](const std::string& key) const
+{
+    const auto found = std::find_if(m_value.begin(), m_value.end(), [&](const auto& pair) {
+        return pair.first == key;
+    });
+
+    if (found != m_value.end()) {
+        return found->second;
+    }
+
+    // if not found, return an exception
+    throw std::out_of_range(fmt::format("Key {} was not found", key));
 }
 
 template <typename T>
@@ -451,6 +472,17 @@ template <Type ValType>
 typename ValueMap<ValType>::CppType& ValueMap<ValType>::operator[](const std::string& key)
 {
     return m_value[key];
+}
+
+template <Type ValType>
+const typename ValueMap<ValType>::CppType& ValueMap<ValType>::operator[](const std::string& key) const
+{
+    auto found = m_value.find(key);
+    if (found != m_value.end()) {
+        return found->second;
+    }
+    // if not found, return an exception
+    throw std::out_of_range(fmt::format("Key {} was not found", key));
 }
 
 template <Type ValType>
