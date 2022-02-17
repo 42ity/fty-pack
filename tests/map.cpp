@@ -306,7 +306,7 @@ TEST_CASE("Object map serialization/deserialization")
     ins.value = "Some other value";
     origin.append("key2", ins);
 
-    auto check = [](pack::Map<MapObj>& item) {
+    auto check = [](const pack::Map<MapObj>& item) {
         try {
             REQUIRE(2 == item.size());
             CHECK(item.contains("key1"));
