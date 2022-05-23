@@ -495,7 +495,7 @@ void ValueList<ValType>::sort(Func&& func)
 template <Type ValType>
 bool ValueList<ValType>::remove(const CppType& toRemove)
 {
-    if (auto it = std::find(m_value.begin(), m_value.end(), toRemove)) {
+    if (auto it = std::find(m_value.begin(), m_value.end(), toRemove); it != m_value.end()) {
         m_value.erase(it);
         return true;
     }
