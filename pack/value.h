@@ -71,12 +71,16 @@ public:
 
 public:
     bool        compare(const Attribute& other) const override;
+    
     std::string typeName() const override;
     void        set(const Attribute& other) override;
     void        set(Attribute&& other) override;
     bool        hasValue() const override;
     Type        valueType() const override;
     void        clear() override;
+    bool        compareValue(const CppType& val) const;
+    bool        operator==(const CppType& val) const;
+    bool        operator!=(const CppType& val) const;
 
 private:
     CppType m_val = {};
@@ -137,6 +141,24 @@ void Value<ValType>::setValue(const CppType& val)
     }
 
     m_val = val;
+}
+
+template <Type ValType>
+bool Value<ValType>::compareValue(const CppType& val) const
+{
+    return val == value(); 
+}
+
+template <Type ValType>
+bool Value<ValType>::operator==(const CppType& val) const
+{
+    return compareValue(val);
+}
+
+template <Type ValType>
+bool Value<ValType>::operator!=(const CppType& val) const
+{
+    return !compareValue(val);
 }
 
 template <Type ValType>
