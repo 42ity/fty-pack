@@ -18,6 +18,7 @@
 
 class A : public pack::Node
 {
+  public:
     pack::String a = FIELD("a");
     pack::String b = FIELD("b");
 
