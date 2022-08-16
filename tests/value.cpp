@@ -21,18 +21,30 @@ class A : public pack::Node
   public:
     pack::String a = FIELD("a");
     pack::String b = FIELD("b");
+    pack::UInt32 c = FIELD("c");
+    pack::UInt64 d = FIELD("d");
 
     using pack::Node::Node;
-    META(A, a, b); 
+    META(A, a, b, c, d); 
 };
 
 TEST_CASE("Value")
 {
+    // setup structure
     A data;
     data.a = "test";
     data.b = "test";
+    data.c = 12;
+    data.d = 13;
+    
+    //check tests on string
     REQUIRE(data.a.value() == "test");
     REQUIRE(data.a == data.b);
     REQUIRE(data.a.compareValue("test"));
     REQUIRE(data.a == "test");
+    
+    // check test with UInt32/64 and int
+    REQUIRE(data.c == 12);
+    REQUIRE(data.d == 13);
+    
 }
