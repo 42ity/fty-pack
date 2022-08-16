@@ -143,6 +143,7 @@ void Value<ValType>::setValue(const CppType& val)
     m_val = val;
 }
 
+// Compare with value
 template <Type ValType>
 bool Value<ValType>::compareValue(const CppType& val) const
 {
@@ -161,6 +162,28 @@ bool Value<ValType>::operator!=(const CppType& val) const
     return !compareValue(val);
 }
 
+// overload: Allow to use "int" to compare UInt32 and UInt64
+inline bool operator==(const Value<Type::UInt32> & val1, const int val2)
+{
+    return val1.compareValue(static_cast<uint32_t>(val2));
+}
+
+inline bool operator==(const Value<Type::UInt64> & val1, const int val2)
+{
+    return val1.compareValue(static_cast<uint64_t>(val2));
+}
+
+inline bool operator!=(const Value<Type::UInt32> & val1, const int val2)
+{
+    return !val1.compareValue(static_cast<uint32_t>(val2));
+}
+
+inline bool operator!=(const Value<Type::UInt64> & val1, const int val2)
+{
+    return val1.compareValue(static_cast<uint64_t>(val2));
+}
+
+// Setters
 template <Type ValType>
 Value<ValType>& Value<ValType>::operator=(const CppType& val)
 {
