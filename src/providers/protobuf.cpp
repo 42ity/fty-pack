@@ -182,7 +182,7 @@ public:
     static void packValue(const IObjectList& val, WalkType& proto, Option opt)
     {
         auto refl = std::get<0>(proto)->GetReflection();
-        for (int i = 0; i < val.size(); ++i) {
+        for (size_t i = 0; i < val.size(); ++i) {
             const Attribute& node       = val.get(i);
             pb::Message*     child      = refl->AddMessage(std::get<0>(proto), std::get<1>(proto));
             auto             childProto = std::make_tuple(child, std::get<1>(proto));
@@ -218,7 +218,7 @@ public:
     static void packValue(const IProtoMap& map, WalkType& proto, Option opt)
     {
         auto refl = std::get<0>(proto)->GetReflection();
-        for (int i = 0; i < map.size(); ++i) {
+        for (size_t i = 0; i < map.size(); ++i) {
             const INode& node       = map.get(i);
             pb::Message* child      = refl->AddMessage(std::get<0>(proto), std::get<1>(proto));
             auto         childProto = std::make_tuple(child, std::get<1>(proto));

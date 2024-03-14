@@ -54,8 +54,8 @@ public:
     /// Returns INode interface by index
     virtual const Attribute&   get(const std::string& key) const = 0;
     virtual Attribute&         create(const std::string& key)    = 0;
-    virtual int                size() const                      = 0;
-    virtual const std::string& keyByIndex(int index) const       = 0;
+    virtual size_t             size() const                      = 0;
+    virtual const std::string& keyByIndex(size_t index) const    = 0;
 };
 
 // =========================================================================================================================================
@@ -110,7 +110,7 @@ public:
     /// doesn't exist, return an exception
     const T&       operator[](const std::string& key) const;
     /// Return size of the map
-    int            size() const override;
+    size_t         size() const override;
     /// Operators definition
     Map&           operator=(const Map& other);
                    operator const T&() const;
@@ -129,7 +129,7 @@ public:
     /// Create empty attribute of element and return a reference on it
     Attribute&         create(const std::string& key) override;
     /// Return key element at index
-    const std::string& keyByIndex(int index) const override;
+    const std::string& keyByIndex(size_t index) const override;
 
 public:
     bool        compare(const Attribute& other) const override;
@@ -184,7 +184,7 @@ public:
     /// doesn't exist, return an exception
     const CppType& operator[](const std::string& key) const;
     /// Return size of the map
-    int            size() const;
+    size_t         size() const;
     /// Operators definition
     ValueMap&      operator=(const ValueMap& other);
     ValueMap&      operator=(const MapType& val);
@@ -248,7 +248,7 @@ typename Map<T>::Iterator Map<T>::end()
 }
 
 template <typename T>
-int Map<T>::size() const
+size_t Map<T>::size() const
 {
     return m_value.size();
 }
@@ -424,7 +424,7 @@ Attribute& Map<T>::create(const std::string& key)
 }
 
 template <typename T>
-const std::string& Map<T>::keyByIndex(int index) const
+const std::string& Map<T>::keyByIndex(size_t index) const
 {
     return m_value.at(index).first;
 }
@@ -463,9 +463,9 @@ typename ValueMap<ValType>::Iterator ValueMap<ValType>::end()
 }
 
 template <Type ValType>
-int ValueMap<ValType>::size() const
+size_t ValueMap<ValType>::size() const
 {
-    return int(m_value.size());
+    return m_value.size();
 }
 
 template <Type ValType>

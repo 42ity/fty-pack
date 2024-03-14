@@ -69,7 +69,7 @@ struct Convert
                     yaml.push_back(YAML::convert<CppType>::encode(it));
                 }
             } else if constexpr (ValType == Type::UChar) {
-                yaml = YAML::Binary(&node.value()[0], size_t(node.size()));
+                yaml = YAML::Binary(&node.value()[0], node.size());
             } else {
                 for (const auto& it : node) {
                     yaml.push_back(YAML::convert<CppType>::encode(it));
@@ -178,7 +178,7 @@ public:
     static void packValue(const IObjectMap& val, YAML::Node& yaml, Option opt)
     {
         if (val.size()) {
-            for (int i = 0; i < val.size(); ++i) {
+            for (size_t i = 0; i < val.size(); ++i) {
                 const auto&      key  = val.keyByIndex(i);
                 const Attribute& node = val.get(key);
                 YAML::Node       child;
@@ -194,7 +194,7 @@ public:
     static void packValue(const IObjectList& val, YAML::Node& yaml, Option opt)
     {
         if (val.size()) {
-            for (int i = 0; i < val.size(); ++i) {
+            for (size_t i = 0; i < val.size(); ++i) {
                 const Attribute& node = val.get(i);
                 YAML::Node       child;
                 visit(node, child, opt);
@@ -223,7 +223,7 @@ public:
     static void packValue(const IProtoMap& map, YAML::Node& yaml, Option opt)
     {
         if (map.size()) {
-            for (int i = 0; i < map.size(); ++i) {
+            for (size_t i = 0; i < map.size(); ++i) {
                 const INode& node = map.get(i);
 
                 YAML::Node temp;

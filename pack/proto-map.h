@@ -31,9 +31,9 @@ public:
     {
     }
 
-    virtual Node&       create()             = 0;
-    virtual const Node& get(int index) const = 0;
-    virtual int         size() const         = 0;
+    virtual Node&       create()                = 0;
+    virtual const Node& get(size_t index) const = 0;
+    virtual size_t      size() const            = 0;
 };
 
 // =========================================================================================================================================
@@ -71,8 +71,8 @@ public:
     bool        hasValue() const override;
     void        clear() override;
     Node&       create() override;
-    int         size() const override;
-    const Node& get(int index) const override;
+    size_t      size() const override;
+    const Node& get(size_t index) const override;
 
 private:
     MapType m_value;
@@ -190,9 +190,9 @@ typename ProtoMap<KeyValue>::ValueType ProtoMap<KeyValue>::operator[](const KeyT
 }
 
 template <typename KeyValue>
-int ProtoMap<KeyValue>::size() const
+size_t ProtoMap<KeyValue>::size() const
 {
-    return int(m_value.size());
+    return m_value.size();
 }
 
 template <typename KeyValue>
@@ -204,9 +204,9 @@ Node& ProtoMap<KeyValue>::create()
 }
 
 template <typename KeyValue>
-const Node& ProtoMap<KeyValue>::get(int index) const
+const Node& ProtoMap<KeyValue>::get(size_t index) const
 {
-    return m_value[size_t(index)];
+    return m_value[index];
 }
 
 // =========================================================================================================================================
