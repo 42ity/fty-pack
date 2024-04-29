@@ -40,7 +40,7 @@ Usage with Yaml
     }
 ```
 
-Usage is similar with zproject, json and protobuf
+Usage is similar with json and protobuf
 
 ## Options
 There is some options for serializing object:
