@@ -69,7 +69,7 @@ struct Convert
                 zconfig_set_value(child, "%s", fty::convert<std::string>(it).c_str());
             }
         } else if constexpr (ValType == Type::UChar) {
-            zconfig_set_value(zconf, "%s", YAML::EncodeBase64(node.value().data(), size_t(node.size())).c_str());
+            zconfig_set_value(zconf, "%s", YAML::EncodeBase64(node.value().data(), node.size()).c_str());
         } else {
             for (const auto& it : node) {
                 auto child = zconfig_new(fty::convert<std::string>(i++).c_str(), zconf);
@@ -118,7 +118,7 @@ public:
 
     static void packValue(const IObjectList& val, zconfig_t* zconf, Option opt)
     {
-        for (int i = 0; i < val.size(); ++i) {
+        for (size_t i = 0; i < val.size(); ++i) {
             const Attribute& node  = val.get(i);
             auto             child = zconfig_new(fty::convert<std::string>(i + 1).c_str(), zconf);
             visit(node, child, opt);
@@ -142,7 +142,7 @@ public:
 
     static void packValue(const IProtoMap& map, zconfig_t* zconf, Option opt)
     {
-        for (int i = 0; i < map.size(); ++i) {
+        for (size_t i = 0; i < map.size(); ++i) {
             const INode& node = map.get(i);
 
             auto temp = zconfig_new("", nullptr);

@@ -38,7 +38,7 @@ public:
     }
 
     /// Returns the size of the list
-    virtual int size() const = 0;
+    virtual size_t size() const = 0;
 };
 
 // =========================================================================================================================================
@@ -53,8 +53,8 @@ public:
 
 public:
     /// Returns INode interface by index
-    virtual const Attribute& get(int index) const = 0;
-    virtual Attribute&       create()             = 0;
+    virtual const Attribute& get(size_t index) const = 0;
+    virtual Attribute&       create()                = 0;
 };
 
 // =========================================================================================================================================
@@ -113,20 +113,20 @@ public:
     bool remove(Func&& func);
     template <typename Func>
     void     sort(Func&& func);
-    const T& operator[](int index) const;
-    T&       operator[](int index);
+    const T& operator[](size_t index) const;
+    T&       operator[](size_t index);
     bool     empty() const;
 
     static std::string typeInfo();
 
 public:
-    int              size() const override;
+    size_t           size() const override;
     bool             compare(const Attribute& other) const override;
     std::string      typeName() const override;
     void             set(const Attribute& other) override;
     void             set(Attribute&& other) override;
     bool             hasValue() const override;
-    const Attribute& get(int index) const override;
+    const Attribute& get(size_t index) const override;
     Attribute&       create() override;
     void             clear() override;
 
@@ -168,7 +168,7 @@ public:
 
     bool           find(const CppType& func) const;
     bool           remove(const CppType& toRemove);
-    const CppType& operator[](int index) const;
+    const CppType& operator[](size_t index) const;
     void           clear() override;
     bool           empty() const;
 
@@ -178,7 +178,7 @@ public:
     static std::string typeInfo();
 
 public:
-    int         size() const override;
+    size_t      size() const override;
     bool        compare(const Attribute& other) const override;
     std::string typeName() const override;
     void        set(const Attribute& other) override;
@@ -314,15 +314,15 @@ bool ObjectList<T>::remove(Func&& func)
 }
 
 template <typename T>
-const T& ObjectList<T>::operator[](int index) const
+const T& ObjectList<T>::operator[](size_t index) const
 {
-    return m_value[size_t(index)];
+    return m_value[index];
 }
 
 template <typename T>
-T& ObjectList<T>::operator[](int index)
+T& ObjectList<T>::operator[](size_t index)
 {
-    return m_value[size_t(index)];
+    return m_value[index];
 }
 
 template <typename T>
@@ -332,9 +332,9 @@ void ObjectList<T>::clear()
 }
 
 template <typename T>
-int ObjectList<T>::size() const
+size_t ObjectList<T>::size() const
 {
-    return int(m_value.size());
+    return m_value.size();
 }
 
 template <typename T>
@@ -375,9 +375,9 @@ bool ObjectList<T>::hasValue() const
 }
 
 template <typename T>
-const Attribute& ObjectList<T>::get(int index) const
+const Attribute& ObjectList<T>::get(size_t index) const
 {
-    return m_value[size_t(index)];
+    return m_value[index];
 }
 
 template <typename T>
@@ -503,9 +503,9 @@ bool ValueList<ValType>::remove(const CppType& toRemove)
 }
 
 template <Type ValType>
-const typename ValueList<ValType>::CppType& ValueList<ValType>::operator[](int index) const
+const typename ValueList<ValType>::CppType& ValueList<ValType>::operator[](size_t index) const
 {
-    return m_value[size_t(index)];
+    return m_value[index];
 }
 
 template <Type ValType>
@@ -515,9 +515,9 @@ void ValueList<ValType>::clear()
 }
 
 template <Type ValType>
-int ValueList<ValType>::size() const
+size_t ValueList<ValType>::size() const
 {
-    return int(m_value.size());
+    return m_value.size();
 }
 
 template <Type ValType>
