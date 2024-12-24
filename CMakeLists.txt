@@ -3,7 +3,10 @@ cmake_policy(VERSION 3.13)
 
 ##############################################################################################################
 
-project(fty-pack VERSION 1.0.0)
+project(fty-pack
+    VERSION 1.0.0
+    DESCRIPTION "fty-pack library"
+)
 
 ########################################################################################################################
 
@@ -76,6 +79,7 @@ etn_target(shared ${PROJECT_NAME}
         ${libs}
 )
 
+set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR})
 
 ##############################################################################################################
 
