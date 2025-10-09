@@ -20,7 +20,7 @@
 #include <algorithm>
 #include <map>
 #include <regex>
-#include <fmt/core.h>
+#include <fmt/args.h>
 
 namespace pack {
 

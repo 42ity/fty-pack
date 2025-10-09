@@ -24,6 +24,7 @@
 #include "pack/serialization.h"
 #include "pack/value.h"
 #include "pack/variant.h"
+#include <fmt/args.h>
 
 namespace pack {
 
